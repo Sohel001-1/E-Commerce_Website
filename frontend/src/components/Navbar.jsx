@@ -33,7 +33,7 @@ const Navbar = () => {
         <img src={assets.search_icon} className='w-5 cursor-pointer' alt="" />
 
       </div>
-
+          gdgdrsgfsf
     </div>
   )
 }
