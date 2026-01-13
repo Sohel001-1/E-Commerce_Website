@@ -1,18 +1,42 @@
-# React + Vite
+Project Setup:
+1. Clone the repository
+    git clone <your-repo-url>
+    cd E-Commerce_Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+2. Setup Node Version
+    nvm install
+    nvm use
 
-Currently, two official plugins are available:
+3. Install Dependencies
+    cd frontend
+    npm install
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+4. Run the Developement Server
+    npm run dev
 
-## React Compiler
+Project Structure:
+frontend/
+  src/
+    components/
+    pages/
+    assets/
+    App.jsx
+    main.jsx
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Team Workflow:
+Node version is locked using .nvmrc
+package-lock.json must always be committed
+Feature work should be done on branches
+Pull requests required before merging
 
-## Expanding the ESLint configuration
+Common Commands:
+    npm run dev      # start dev server
+    npm run build    # production build
+    npm run preview  # preview build
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
-ahdjDHDad
+Contribution Rules:
+Use clean, meaningful commit messages
+Keep components modular
+Do not commit node_modules
+Run project before pushing
