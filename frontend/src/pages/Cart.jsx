@@ -2,8 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
-import CartTotal from "../components/CartTotal"; // Fixes: CartTotal is not defined
-import { useNavigate } from "react-router-dom"; // Fixes: navigate is not defined
+import CartTotal from "../components/CartTotal";
+import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
   // Destructured updateQuantity and initialized navigate hook
