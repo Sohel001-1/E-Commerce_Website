@@ -11,6 +11,7 @@ import PlaceOrder from './pages/PlaceOrder'
 import Orders from './pages/Orders'
 import Navbar from './components/Navbar'
 import ShopContextProvider from './context/ShopContext'
+import Footer from './components/Footer'
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route path='/orders' element={<Orders />}/>
 
         </Routes>
+        <Footer/>
       </div>
     </ShopContextProvider>
   )

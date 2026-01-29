@@ -75,7 +75,7 @@ const Product = () => {
           <div className ='flex flex-col gap-4 mt-8'>
             <p>Select Size</p>
             <div className='flex gap-2'>
-              {productData.size.map((item,index)=>(
+              {productData.sizes.map((item,index)=>(
                 <button
   key={index}
   onClick={() => setSize(item)}
