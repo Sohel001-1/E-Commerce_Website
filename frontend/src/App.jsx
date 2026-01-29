@@ -13,10 +13,14 @@ import Navbar from './components/Navbar'
 import ShopContextProvider from './context/ShopContext'
 import Footer from './components/Footer'
 
+ import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 const App = () => {
   return (
     <ShopContextProvider>
       <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
+        <ToastContainer/>
         <Navbar />
         <Routes>
           <Route path='/' element={<Home/>}/>
