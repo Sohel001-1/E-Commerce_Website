@@ -107,7 +107,7 @@ const listProduct = async (req, res) => {
 // (Optional) remove product
 const removeProduct = async (req, res) => {
   try {
-    const { id } = req.body;
+    const id = req.params?.id || req.body?.id;
     if (!id) return res.status(400).json({ success: false, message: "Product id is required" });
 
     const deleted = await productModel.findByIdAndDelete(id);
@@ -123,7 +123,7 @@ const removeProduct = async (req, res) => {
 // (Optional) single product info
 const singleProduct = async (req, res) => {
   try {
-    const id = req.params?.id || req.body?.id; // typical style: /product/:id
+    const id = req.params?.id || req.body?.id || req.body?.productId; // typical style: /product/:id
     if (!id) return res.status(400).json({ success: false, message: "Product id is required" });
 
     const product = await productModel.findById(id);
