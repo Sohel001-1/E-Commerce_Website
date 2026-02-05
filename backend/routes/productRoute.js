@@ -12,9 +12,11 @@ productRouter.post('/add',adminAuth,upload.fields([{name:'image1',maxCount:1},{n
 productRouter.get('/list',listProduct);
 
 //route for removing product
-productRouter.delete('/remove',adminAuth,removeProduct);
+productRouter.delete('/remove/:id',removeProduct);
+productRouter.post('/remove', removeProduct);
 
 //route for single product info
 productRouter.get('/single',singleProduct);
+productRouter.post('/single', singleProduct);
 
 export default productRouter;
