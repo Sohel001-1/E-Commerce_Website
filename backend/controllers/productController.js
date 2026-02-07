@@ -1,20 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 
-const parseSizes = (sizes) => {
-  if (Array.isArray(sizes)) return sizes;
-  if (typeof sizes === "string" && sizes.trim() !== "") {
-    try {
-      const parsed = JSON.parse(sizes);
-      return Array.isArray(parsed) ? parsed : [parsed];
-    } catch {
-      return [sizes]; // if it's just "M"
-    }
-  }
-  return [];
-};
-
-
 // Helper: parse boolean safely (true/false OR "true"/"false")
 const parseBoolean = (val) => val === true || val === "true";
 
@@ -25,23 +11,21 @@ const addProduct = async (req, res) => {
       description,
       category,
       price,
-      subcategory, // client sends this
-      subCategory, // allow this too (optional)
-      sizes,
+      subcategory, // client sends this sometimes
+      subCategory, // allow this too
       bestseller,
     } = req.body;
 
     const finalSubCategory = subCategory || subcategory;
 
-    // Basic validation (keep it simple but safe)
     if (!name || !description || !category || !finalSubCategory || price === undefined) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: name, description, category, subCategory/subcategory, price",
+        message:
+          "Missing required fields: name, description, category, subCategory/subcategory, price",
       });
     }
 
-    // Safe file reading (works even when you send JSON with no files)
     const files = req.files || {};
     const image1 = files.image1?.[0];
     const image2 = files.image2?.[0];
@@ -50,7 +34,6 @@ const addProduct = async (req, res) => {
 
     const images = [image1, image2, image3, image4].filter(Boolean);
 
-    // Only upload if images exist
     let imagesUrl = [];
     if (images.length > 0) {
       imagesUrl = await Promise.all(
@@ -70,12 +53,10 @@ const addProduct = async (req, res) => {
       subCategory: String(finalSubCategory).trim(),
       price: Number(price),
       bestseller: parseBoolean(bestseller),
-      sizes: parseSizes(sizes),
-      image: imagesUrl, // [] when testing without images
+      image: imagesUrl,
       date: Date.now(),
     };
 
-    // Guard against invalid price
     if (Number.isNaN(productData.price)) {
       return res.status(400).json({ success: false, message: "Price must be a number" });
     }
@@ -93,7 +74,77 @@ const addProduct = async (req, res) => {
   }
 };
 
-// (Optional) list products (safe default)
+// ✅ UPDATE PRODUCT (for Edit feature)
+const updateProduct = async (req, res) => {
+  try {
+    const {
+      id,
+      name,
+      description,
+      category,
+      subCategory,
+      price,
+      bestseller,
+    } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ success: false, message: "Product id is required" });
+    }
+
+    // Build update object (only update fields that were provided)
+    const updateData = {};
+    if (name !== undefined) updateData.name = String(name).trim();
+    if (description !== undefined) updateData.description = String(description).trim();
+    if (category !== undefined) updateData.category = String(category).trim();
+    if (subCategory !== undefined) updateData.subCategory = String(subCategory).trim();
+    if (price !== undefined) updateData.price = Number(price);
+    if (bestseller !== undefined) updateData.bestseller = parseBoolean(bestseller);
+
+    if ("price" in updateData && Number.isNaN(updateData.price)) {
+      return res.status(400).json({ success: false, message: "Price must be a number" });
+    }
+
+    // Optional: allow updating images too (if you later add it in edit modal)
+    const files = req.files || {};
+    const image1 = files.image1?.[0];
+    const image2 = files.image2?.[0];
+    const image3 = files.image3?.[0];
+    const image4 = files.image4?.[0];
+
+    const images = [image1, image2, image3, image4].filter(Boolean);
+
+    if (images.length > 0) {
+      const imagesUrl = await Promise.all(
+        images.map(async (item) => {
+          const result = await cloudinary.uploader.upload(item.path, {
+            resource_type: "image",
+          });
+          return result.secure_url;
+        })
+      );
+      updateData.image = imagesUrl; // replaces images (simple & clean)
+    }
+
+    const updated = await productModel.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    return res.json({
+      success: true,
+      message: "Product Updated",
+      product: updated,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const listProduct = async (req, res) => {
   try {
     const products = await productModel.find({}).sort({ date: -1 });
@@ -104,7 +155,6 @@ const listProduct = async (req, res) => {
   }
 };
 
-// (Optional) remove product
 const removeProduct = async (req, res) => {
   try {
     const id = req.params?.id || req.body?.id;
@@ -120,10 +170,9 @@ const removeProduct = async (req, res) => {
   }
 };
 
-// (Optional) single product info
 const singleProduct = async (req, res) => {
   try {
-    const id = req.params?.id || req.body?.id || req.body?.productId; // typical style: /product/:id
+    const id = req.params?.id || req.body?.id || req.body?.productId;
     if (!id) return res.status(400).json({ success: false, message: "Product id is required" });
 
     const product = await productModel.findById(id);
@@ -136,4 +185,4 @@ const singleProduct = async (req, res) => {
   }
 };
 
-export { addProduct, listProduct, removeProduct, singleProduct };
+export { addProduct, updateProduct, listProduct, removeProduct, singleProduct };
