@@ -1,30 +1,34 @@
 import React from 'react';
 import Hero from '../components/Hero';
-import EngineOil from '../components/EngineOil';
-import Autodetailingandcare from '../components/Autodetailingandcare';
 import BestSeller from '../components/BestSeller';
 import OurPolicy from '../components/OurPolicy';
 import NewsletterBox from '../components/NewsletterBox';
-import Filters from '../components/Filter';
-import Brakes from '../components/Brakes';
-import Damping from '../components/Damping';
-import Ignition from '../components/Ignition';
+import CategorySection from '../components/CategorySection';
 
 const Home = () => {
   return (
     <div>
       <Hero />
+      
+      {/* Featured Section */}
       <BestSeller/>
-      <Autodetailingandcare/>
-      <EngineOil/>
-      <Filters/>
-      <Brakes/>
-      <Damping/>
-      <Ignition/>
+      
+      {/* Dynamic Sections: These pull directly from MongoDB. 
+          Ensure the 'categoryName' matches the 'category' string 
+          saved via your productController exactly.
+      */}
+      <CategorySection categoryName="Autodetailing" sectionTitle="Auto Detailing and Care" />
+      <CategorySection categoryName="Engine Oil" sectionTitle="Engine Oil" />
+      <CategorySection categoryName="Filters" sectionTitle="Filters" />
+      <CategorySection categoryName="Brakes" sectionTitle="Brakes" />
+      <CategorySection categoryName="Damping" sectionTitle="Damping" />
+      <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
+      
+      {/* Footer / Utility Sections */}
       <OurPolicy/>
       <NewsletterBox/>
     </div>
   )
 }
 
-export default Home
+export default Home;
