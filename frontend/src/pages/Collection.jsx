@@ -75,18 +75,49 @@ const Collection = () => {
         <div className={`border border-gray-300 pl-5 rounded-xl py-3 mt-6 ${showFilter ? "" : "hidden"} sm:block`}>
           <p className="mb-3 text-sm font-medium">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Men"} onChange={toggleCategory} /> Men</p>
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Women"} onChange={toggleCategory} /> Women</p>
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Kids"} onChange={toggleCategory} /> Kids</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Engine"} onChange={toggleCategory} /> Engine</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Brake"} onChange={toggleCategory} /> Brake</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Suspension"} onChange={toggleCategory} /> Suspension</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Ignition"} onChange={toggleCategory} /> Ignition</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Electrical"} onChange={toggleCategory} /> Electrical</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Body"} onChange={toggleCategory} /> Body</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Wheels"} onChange={toggleCategory} /> Wheels</p>
+
           </div>
         </div>
         {/* Sub Category Filter */}
         <div className={`border border-gray-300 pl-5 rounded-xl py-3 my-5 ${showFilter ? "" : "hidden"} sm:block`}>
           <p className="mb-3 text-sm font-medium">TYPE</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Topwear"} onChange={toggleSubCategory} /> Topwear</p>
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Bottomwear"} onChange={toggleSubCategory} /> Bottomwear</p>
-            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Winterwear"} onChange={toggleSubCategory} /> Winterwear</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Tire"} onChange={toggleSubCategory} /> Tire</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Brake pads"} onChange={toggleSubCategory} /> Brake pads</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Brake pipes"} onChange={toggleSubCategory} /> Brake pipes</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Master Cylinder"} onChange={toggleSubCategory} /> Master Cylinder</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Caliper repair kit"} onChange={toggleSubCategory} /> Caliper repair kit</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Engine mount"} onChange={toggleSubCategory} /> Engine mount</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Bush"} onChange={toggleSubCategory} /> Bush</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Thermostate"} onChange={toggleSubCategory} /> Thermostate</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Link rod"} onChange={toggleSubCategory} /> Link rod</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Insulator"} onChange={toggleSubCategory} /> Insulator</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Ball"} onChange={toggleSubCategory} /> Ball</p>
+          </div>
+        </div>
+        {/* Brand */}
+        <div className={`border border-gray-300 pl-5 rounded-xl py-3 my-5 ${showFilter ? "" : "hidden"} sm:block`}>
+          <p className="mb-3 text-sm font-medium">Brand</p>
+          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"3M"} onChange={toggleSubCategory} /> 3M</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"555"} onChange={toggleSubCategory} /> 555</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"AISIN"} onChange={toggleSubCategory} /> AISIN</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"Autolite"} onChange={toggleSubCategory} /> Autolite</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"AUTOPROFI"} onChange={toggleSubCategory} /> AUTOPROFI</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"bluechem"} onChange={toggleSubCategory} /> bluechem</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"BIZOL"} onChange={toggleSubCategory} /> BIZOL</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"AbBlue"} onChange={toggleSubCategory} /> AbBlue</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"AUTOGLYM"} onChange={toggleSubCategory} /> AUTOGLYM</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"BOSCH"} onChange={toggleSubCategory} /> BOSCH</p>
+            <p className="flex gap-2"><input className="w-3" type="checkbox" value={"CAT"} onChange={toggleSubCategory} /> CAT</p>
+
           </div>
         </div>
       </div>
