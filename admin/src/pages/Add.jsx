@@ -63,6 +63,12 @@ const Add = ({ token }) => {
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
+      formData.append("ignition", ignition);
+      formData.append("damping", damping);
+      formData.append("brakes", brakes);
+      formData.append("Autodetailingandcare", Autodetailingandcare);
+      formData.append("EngineOil", EngineOil);
+      formData.append("TiresandWheels", Tires);
       formData.append("sizes", JSON.stringify(sizes));
 
       if (image1) formData.append("image1", image1);
