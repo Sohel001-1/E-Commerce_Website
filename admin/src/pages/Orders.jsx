@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { backendUrl, currency } from "../App";
+import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets"; 
+
+const currency = "৳";   // ✅ BDT currency ONLY for Orders page
+
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
