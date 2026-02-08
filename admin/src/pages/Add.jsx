@@ -185,7 +185,7 @@ const Add = ({ token }) => {
         </div>
 
         <div className="flex flex-col gap-1">
-          <p>Product Price</p>
+          <p>Product Price (৳)</p>
           <input
             type="number"
             value={price}

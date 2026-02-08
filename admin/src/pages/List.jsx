@@ -186,7 +186,7 @@ const List = ({ token }) => {
                 </div>
 
                 <p>{item.category}</p>
-                <p>${item.price}</p>
+                <p>৳{item.price}</p>
 
                 <div className="flex items-center justify-center gap-4">
                   <MdEdit
