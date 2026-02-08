@@ -287,7 +287,7 @@ const List = ({ token }) => {
                     <option value="Damping">Damping</option>
                     <option value="Ignition">Ignition</option>
                     <option value="Engine">Engine</option>
-                    <option value="Brakes">Brakes</option>
+                    <option value="Brake">Brake</option>
                     <option value="Suspension">Suspension</option>
                     <option value="Electrical">Electrical</option>
                     <option value="Body">Body</option>
