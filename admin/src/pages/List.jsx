@@ -257,7 +257,7 @@ const List = ({ token }) => {
                     className="w-full border px-3 py-2 rounded"
                   >
                     <option value="Engine">Engine</option>
-                    <option value="Brakes">Brakes</option>
+                    <option value="Brake">Brake</option>
                     <option value="Suspension">Suspension</option>
                     <option value="Ignition">Ignition</option>
                     <option value="Electrical">Electrical</option>
@@ -276,8 +276,11 @@ const List = ({ token }) => {
                     className="w-full border px-3 py-2 rounded"
                   >
                     <option value="Tires">Tires</option>
-                    <option value="OEM">OEM</option>
-                    <option value="Performance">Performance</option>
+          <option value="Engine Mounts">Engine Mounts</option>
+          <option value="Spark Plugs">Spark Plugs</option>
+          <option value="Batteries">Batteries</option>
+          <option value="Headlights">Headlights</option>
+          <option value="General">General</option>
                   </select>
                 </div>
 
