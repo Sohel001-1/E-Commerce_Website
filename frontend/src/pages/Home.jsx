@@ -20,7 +20,7 @@ const Home = () => {
       <CategorySection categoryName="Autodetailing" sectionTitle="Auto Detailing and Care" />
       <CategorySection categoryName="Engine Oil" sectionTitle="Engine Oil" />
       <CategorySection categoryName="Filters" sectionTitle="Filters" />
-      <CategorySection categoryName="Brakes" sectionTitle="Brakes" />
+      <CategorySection categoryName="Brake" sectionTitle="Brakes" />
       <CategorySection categoryName="Damping" sectionTitle="Damping" />
       <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
       
