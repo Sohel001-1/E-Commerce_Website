@@ -135,11 +135,10 @@ const Add = ({ token }) => {
             <option value="Autodetailing">Autodetailing</option>
             <option value="Engine Oil">Engine Oil</option>
             <option value="Filters">Filters</option>
-            <option value="Brakes">Brakes</option>
             <option value="Damping">Damping</option>
             <option value="Ignition">Ignition</option>
             <option value="Engine">Engine</option>
-           <option value="Brakes">Brakes</option>
+           <option value="Brake">Brake</option>
            <option value="Suspension">Suspension</option>
            <option value="Electrical">Electrical</option>
            <option value="Body">Body</option>
