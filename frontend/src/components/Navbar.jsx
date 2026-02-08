@@ -7,26 +7,31 @@ const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const { setShowSearch, getCartCount, navigate, token, logout } = useContext(ShopContext);
 
+  // Prevent background scroll and ensure clean UI when mobile menu is open
   useEffect(() => {
-    document.body.style.overflow = visible ? "hidden" : "auto";
+    if (visible) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
     return () => (document.body.style.overflow = "auto");
   }, [visible]);
 
-  // Enhanced NavLink styling with a "sliding underline" effect
+  // Desktop NavLink styling with orange accent and sliding underline
   const navLinkClass = ({ isActive }) =>
     `relative px-1 py-1 text-sm font-bold tracking-widest transition-all duration-300
-     ${isActive ? "text-orange-600" : "text-gray-700 hover:text-orange-500"}
+     ${isActive ? "text-orange-600" : "text-gray-700 hover:text-orange-600"}
      after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:origin-right after:scale-x-0 after:bg-orange-600 after:transition-transform after:duration-300
      ${isActive ? "after:origin-left after:scale-x-100" : "hover:after:origin-left hover:after:scale-x-100"}`;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
-          {/* Logo Section */}
+          {/* Logo */}
           <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105 active:scale-95">
-            <img src={assets.logo} className="h-14 w-auto object-contain" alt="Japan Autos" />
+            <img src={assets.logo} className="h-16 w-auto object-contain" alt="Japan Autos" />
           </Link>
 
           {/* Desktop Navigation */}
@@ -37,10 +42,9 @@ const Navbar = () => {
             <NavLink to="/contact" className={navLinkClass}>CONTACT</NavLink>
           </nav>
 
-          {/* Icon Actions */}
+          {/* Actions (Search, Profile, Cart) */}
           <div className="flex items-center gap-1 sm:gap-3">
             
-            {/* Search */}
             <button
               onClick={() => setShowSearch(true)}
               className="p-2.5 rounded-full text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-colors"
@@ -48,7 +52,6 @@ const Navbar = () => {
               <img src={assets.search_icon} className="w-5" alt="Search" />
             </button>
 
-            {/* Profile Dropdown */}
             <div className="relative group">
               <button
                 onClick={() => (token ? null : navigate("/login"))}
@@ -58,7 +61,7 @@ const Navbar = () => {
               </button>
 
               {token && (
-                <div className="absolute right-0 mt-3 hidden w-48 origin-top-right rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl ring-1 ring-black ring-opacity-5 group-hover:block transition-all animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute right-0 mt-3 hidden w-48 origin-top-right rounded-2xl border border-gray-100 bg-white p-2 shadow-2xl group-hover:block animate-in fade-in zoom-in-95 duration-200">
                   <button onClick={() => navigate("/profile")} className="flex w-full px-4 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-gray-50">My Profile</button>
                   <button onClick={() => navigate("/orders")} className="flex w-full px-4 py-2.5 text-sm text-gray-700 rounded-xl hover:bg-gray-50">Orders</button>
                   <hr className="my-1 border-gray-100" />
@@ -67,7 +70,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Cart with Badge */}
             <Link to="/cart" className="relative p-2.5 rounded-full text-gray-600 hover:bg-orange-50 hover:text-orange-600 transition-all group">
               <img src={assets.cart_icon} className="w-5" alt="Cart" />
               <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-orange-600 text-[10px] font-bold text-white shadow-sm ring-2 ring-white group-hover:scale-110 transition-transform">
@@ -86,29 +88,39 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Modern Mobile Drawer */}
+      {/* --- MOBILE SIDEBAR DRAWER --- */}
       <div className={`fixed inset-0 z-[100] md:hidden transition-all duration-300 ${visible ? "visible" : "invisible"}`}>
-        {/* Darkened Backdrop */}
+        
+        {/* Backdrop (Dark & Blurred) */}
         <div
           onClick={() => setVisible(false)}
-          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+          className={`absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
         />
 
-        {/* Sidebar Panel */}
-        <div className={`absolute right-0 top-0 h-full w-[80%] max-w-xs bg-white flex flex-col transition-transform duration-500 ease-out ${visible ? "translate-x-0" : "translate-x-full"}`}>
-          <div className="flex items-center justify-between px-6 py-6 border-b border-gray-50">
+        {/* Sidebar Panel (SOLID bg-white) */}
+        <div className={`absolute right-0 top-0 h-full w-[80%] max-w-xs bg-white shadow-2xl flex flex-col transition-transform duration-500 ease-out ${visible ? "translate-x-0" : "translate-x-full"}`}>
+          
+          {/* Header - Solid Background */}
+          <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100 bg-white">
             <span className="text-xl font-bold tracking-tighter text-gray-900">MENU</span>
-            <button onClick={() => setVisible(false)} className="p-2 rounded-full bg-gray-50 active:scale-90 transition-transform">
+            <button 
+              onClick={() => setVisible(false)} 
+              className="p-2 rounded-full bg-gray-100 text-gray-600 active:scale-90 transition-transform"
+            >
               <img className="h-4 rotate-180" src={assets.dropdown_icon} alt="Close" />
             </button>
           </div>
 
-          <nav className="flex-1 px-4 py-8 space-y-1">
+          {/* Navigation Links - Solid Background */}
+          <nav className="flex-1 px-4 py-8 space-y-2 bg-white overflow-y-auto">
             {["HOME", "COLLECTION", "ABOUT", "CONTACT"].map((label) => (
               <NavLink
                 key={label}
                 onClick={() => setVisible(false)}
-                className={({ isActive }) => `block px-6 py-4 rounded-2xl text-base font-bold transition-all ${isActive ? "bg-orange-50 text-orange-600" : "text-gray-700 hover:bg-gray-50"}`}
+                className={({ isActive }) => 
+                  `block px-6 py-4 rounded-2xl text-base font-bold transition-all 
+                  ${isActive ? "bg-orange-600 text-white shadow-md shadow-orange-200" : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"}`
+                }
                 to={label === "HOME" ? "/" : `/${label.toLowerCase()}`}
               >
                 {label}
@@ -116,11 +128,22 @@ const Navbar = () => {
             ))}
           </nav>
 
-          <div className="p-6 border-t border-gray-50">
+          {/* Footer Actions - Solid Background */}
+          <div className="p-6 border-t border-gray-100 bg-white">
             {!token ? (
-              <button onClick={() => { setVisible(false); navigate("/login"); }} className="w-full py-4 rounded-2xl bg-gray-900 text-white font-bold shadow-xl active:scale-[0.98] transition-transform">Log In</button>
+              <button 
+                onClick={() => { setVisible(false); navigate("/login"); }} 
+                className="w-full py-4 rounded-2xl bg-gray-900 text-white font-bold shadow-xl active:scale-[0.98] transition-transform"
+              >
+                Log In
+              </button>
             ) : (
-              <button onClick={() => { setVisible(false); logout(); }} className="w-full py-4 rounded-2xl bg-red-50 text-red-600 font-bold hover:bg-red-100 active:scale-[0.98] transition-transform">Logout</button>
+              <button 
+                onClick={() => { setVisible(false); logout(); }} 
+                className="w-full py-4 rounded-2xl bg-red-600 text-white font-bold hover:bg-red-700 active:scale-[0.98] transition-transform shadow-lg shadow-red-100"
+              >
+                Logout
+              </button>
             )}
           </div>
         </div>
@@ -130,7 +153,6 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
 
 
 
