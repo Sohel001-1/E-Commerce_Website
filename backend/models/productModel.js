@@ -36,6 +36,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
+    brand: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     bestseller: {
       type: Boolean,
       default: false,

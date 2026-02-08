@@ -13,12 +13,13 @@ const addProduct = async (req, res) => {
       price,
       subcategory, // client sends this sometimes
       subCategory, // allow this too
+      brand,
       bestseller,
     } = req.body;
 
     const finalSubCategory = subCategory || subcategory;
 
-    if (!name || !description || !category || !finalSubCategory || price === undefined) {
+    if (!name || !description || !category || !finalSubCategory || price === undefined || !brand) {
       return res.status(400).json({
         success: false,
         message:
