@@ -1,0 +1,53 @@
+I have uploaded a MERN stack (React, Node.js, Express, MongoDB) project for a car parts shop. I want to upgrade this website to a premium, high-level e-commerce experience while keeping the codebase fully compatible with VS Code.
+
+Strict Guidelines:
+
+Preserve Logic: Do not change the existing ShopContext, authentication tokens, or MongoDB controller structures unless specifically asked.
+
+Modular Architecture: Keep all components in frontend/src/components and pages in frontend/src/pages. Use Tailwind CSS for all styling.
+
+3D & Motion Upgrade: Integrate Three.js and React Three Fiber for 3D product visualization and Framer Motion for premium transitions.
+
+Modern UI: Implement a 'Glassmorphism' design language with micro-interactions on all buttons and cards.
+
+Clean Code: Ensure all dependencies are added to package.json so I can run npm install and npm run dev back in VS Code later.
+
+First Task: Can you analyze my Navbar.jsx and Home.jsx and suggest a way to add a 3D car part (like a rotating brake disc or engine) that follows the scroll or mouse movement?"
+
+Key Areas for High-Level Upgrades
+To take the site to a "very high level," focus on these three specific technical implementations:
+
+1. 3D Product Visualization
+Instead of flat images, use 3D models (GLTF/GLB files).
+
+The Upgrade: Add a 3D viewer on the Product Detail page using @react-three/fiber and @react-three/drei.
+
+Replit Instruction: "Add a 3D model viewer component that renders a .glb car part model when the user clicks on a product."
+
+2. Advanced Motion & Transitions
+Standard page jumps look cheap. High-level sites use "Layout Transitions."
+
+The Upgrade: Use AnimatePresence from Framer Motion to make pages fade and slide smoothly.
+
+Replit Instruction: "Wrap my main App routes in Framer Motion's AnimatePresence to create a smooth 'fade-in-up' transition whenever a user switches between the Home, Collection, and Contact pages."
+
+3. Interactive Hero Section
+Your Hero section should feel like a high-performance machine.
+
+The Upgrade: Add a "Parallax" effect where the background engine parts move at a different speed than the text.
+
+Replit Instruction: "Upgrade the Hero component. When the user moves their mouse, the engine image should subtly tilt (parallax effect), and the text should have a 'staggered' entrance animation."
+
+How to ensure VS Code Compatibility
+Replit sometimes uses a unique .replit configuration. To make sure you can go back to VS Code easily:
+
+Sync Dependencies: Always tell the agent: "Make sure all new libraries like framer-motion or three are properly saved in the package.json file."
+
+Avoid Replit-Specific Hooks: Do not use Replit's internal database (Replit DB) or Auth. Stick to your MongoDB and JWT system.
+
+Relative Paths: Ensure the agent uses relative imports (e.g., import X from '../components/X') rather than absolute paths that might only work in the Replit environment.
+
+A Note on 3D Performance
+Since you are selling car parts, 3D models can be heavy. Ask the Replit agent to:
+
+"Implement React Suspense with a loading spinner for the 3D models to ensure the website remains fast and doesn't lag on mobile devices.
