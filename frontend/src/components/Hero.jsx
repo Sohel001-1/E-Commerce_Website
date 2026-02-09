@@ -3,39 +3,43 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 // We are using Link from react-router-dom as it is standard for most apps
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 
 const slides = [
   {
-    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000", // Placeholder: Replace with your actual oil/parts images
+    image:
+      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000", // Placeholder: Replace with your actual oil/parts images
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
   },
   {
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
+    image:
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
     title: "Genuine Engine Parts",
     subtitle: "OEM quality components for peak performance",
     cta: "Shop Engine Parts",
   },
   {
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
     title: "Premium Brake Systems",
     subtitle: "Safety first with authentic components",
     cta: "Browse Brakes",
-  }
+  },
 ];
 
 export default function HeroSlider() {
   // align: "center" creates that "peek" effect you want
-  const [emblaRef, emblaApi] = useEmblaCarousel({ 
-    loop: true, 
-    align: "center",
-    skipSnaps: false
-  }, [
-    Autoplay({ delay: 5000, stopOnInteraction: false }),
-  ]);
-  
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "center",
+      skipSnaps: false,
+    },
+    [Autoplay({ delay: 5000, stopOnInteraction: false })],
+  );
+
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
@@ -46,7 +50,9 @@ export default function HeroSlider() {
     const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     onSelect();
-    return () => { emblaApi.off("select", onSelect); };
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
   }, [emblaApi]);
 
   return (
@@ -55,10 +61,10 @@ export default function HeroSlider() {
     */
     <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4">
       <div className="overflow-visible" ref={emblaRef}>
-        <div className="flex"> 
+        <div className="flex">
           {slides.map((slide, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               // flex-[0_0_85%] leaves 15% space to see the next/previous slides (the peek)
               className="flex-[0_0_85%] sm:flex-[0_0_90%] min-w-0 px-2 relative"
             >
@@ -68,10 +74,10 @@ export default function HeroSlider() {
                   alt={slide.title}
                   className="w-full h-full object-cover"
                 />
-                
+
                 {/* Dark Overlay for Text Readability */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/20 to-transparent" />
-                
+
                 <div className="absolute inset-0 flex items-center px-8 md:px-16">
                   <div className="max-w-xl text-white">
                     <h2 className="text-3xl md:text-6xl font-bold mb-4 leading-tight uppercase">
@@ -80,7 +86,7 @@ export default function HeroSlider() {
                     <p className="text-lg md:text-xl mb-8 text-white/80">
                       {slide.subtitle}
                     </p>
-                    <Link to="/shop">
+                    <Link to="/collection">
                       {/* Using standard HTML button with Tailwind to replace the broken 'Button' component */}
                       <button className="bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-md transition-colors text-lg">
                         {slide.cta}
