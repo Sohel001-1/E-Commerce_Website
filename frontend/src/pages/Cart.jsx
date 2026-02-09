@@ -6,7 +6,8 @@ import CartTotal from "../components/CartTotal";
 import { useNavigate } from "react-router-dom";
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity } =
+    useContext(ShopContext);
   const navigate = useNavigate();
 
   const [cartData, setCartData] = useState([]);
@@ -49,7 +50,7 @@ const Cart = () => {
         {/* ✅ Cancel cart / clear all */}
         <button
           onClick={clearCart}
-          className="text-sm px-4 py-2 border rounded hover:bg-gray-50"
+          className="text-sm px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition disabled:text-gray-400 disabled:border-gray-200 disabled:cursor-not-allowed"
           disabled={cartData.length === 0}
         >
           CLEAR CART
@@ -58,10 +59,18 @@ const Cart = () => {
 
       <div>
         {cartData.length === 0 ? (
-          <p className="py-10 text-gray-500">Your cart is empty.</p>
+          <div className="py-16 text-center">
+            <div className="text-6xl mb-4">🛒</div>
+            <p className="text-gray-500 text-lg">Your cart is empty</p>
+            <p className="text-gray-400 text-sm mt-2">
+              Explore our collection to find amazing auto parts
+            </p>
+          </div>
         ) : (
           cartData.map((item, index) => {
-            const productData = products.find((product) => product._id === item._id);
+            const productData = products.find(
+              (product) => product._id === item._id,
+            );
 
             return (
               <div
@@ -75,7 +84,9 @@ const Cart = () => {
                     alt={productData?.name}
                   />
                   <div>
-                    <p className="text-xs sm:text-lg font-medium">{productData?.name}</p>
+                    <p className="text-xs sm:text-lg font-medium">
+                      {productData?.name}
+                    </p>
                     <div className="flex items-center gap-5 mt-2">
                       <p>
                         {currency}
@@ -87,9 +98,11 @@ const Cart = () => {
 
                 <input
                   onChange={(e) =>
-                    e.target.value === "" ? null : updateQuantity(item._id, Number(e.target.value))
+                    e.target.value === ""
+                      ? null
+                      : updateQuantity(item._id, Number(e.target.value))
                   }
-                  className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1 text-center"
+                  className="border border-gray-300 max-w-10 sm:max-w-20 px-2 sm:px-3 py-1 text-center rounded focus:outline-none focus:border-gray-600"
                   type="number"
                   min={1}
                   value={item.quantity}
@@ -114,14 +127,14 @@ const Cart = () => {
           <div className="w-full text-end flex justify-end gap-3">
             <button
               onClick={() => navigate("/collection")}
-              className="border text-sm my-8 px-8 py-3 uppercase hover:bg-gray-50"
+              className="border border-gray-300 text-sm my-8 px-8 py-3 uppercase hover:bg-gray-50 transition"
             >
               CONTINUE SHOPPING
             </button>
 
             <button
               onClick={() => navigate("/place-order")}
-              className="bg-black text-white text-sm my-8 px-8 py-3 uppercase"
+              className="bg-black text-white text-sm my-8 px-8 py-3 uppercase hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
               disabled={cartData.length === 0}
             >
               PROCEED TO CHECKOUT
