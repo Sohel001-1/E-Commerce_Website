@@ -22,6 +22,19 @@ const Add = ({ token }) => {
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const handleMultipleImages = (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files[0]) setImage1(files[0]);
+    if (files[1]) setImage2(files[1]);
+    if (files[2]) setImage3(files[2]);
+    if (files[3]) setImage4(files[3]);
+
+    if (files.length > 4) {
+      toast.info("Only first 4 images were added");
+    }
+  };
+
   const ImageUploadSlot = ({ id, image, setImage }) => (
     <div className="relative">
       <label htmlFor={id}>
@@ -99,12 +112,29 @@ const Add = ({ token }) => {
     <form onSubmit={onSubmitHandler} className="flex flex-col gap-4 w-full">
       <div>
         <p className="mb-2">Upload Images</p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-4">
           <ImageUploadSlot id="image1" image={image1} setImage={setImage1} />
           <ImageUploadSlot id="image2" image={image2} setImage={setImage2} />
           <ImageUploadSlot id="image3" image={image3} setImage={setImage3} />
           <ImageUploadSlot id="image4" image={image4} setImage={setImage4} />
         </div>
+
+        {/* Bulk Upload Button */}
+        <button
+          type="button"
+          onClick={() => document.getElementById("bulkImageInput").click()}
+          className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+        >
+          Upload Multiple Images at Once
+        </button>
+        <input
+          id="bulkImageInput"
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleMultipleImages}
+          hidden
+        />
       </div>
 
       <input
