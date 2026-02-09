@@ -5,7 +5,8 @@ import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-  const { setShowSearch, getCartCount, navigate, token, logout } = useContext(ShopContext);
+  const { setShowSearch, getCartCount, navigate, token, logout } =
+    useContext(ShopContext);
 
   // Prevent background scroll when mobile menu is open
   useEffect(() => {
@@ -20,13 +21,12 @@ const Navbar = () => {
      ${isActive ? "after:origin-left after:scale-x-100" : "hover:after:origin-left hover:after:scale-x-100"}`;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-sm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          
+    <header className="sticky top-0 z-50 w-full bg-white shadow-sm">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="flex items-center justify-between py-4">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 transition-transform hover:scale-105">
-            <img src={assets.logo} className="h-16 w-auto object-contain" alt="Japan Autos" />
+          <Link to="/" className="flex items-center gap-2">
+            <img src={assets.logo} className="h-20 w-20" alt="Japan Autos" />
           </Link>
 
           {/* Desktop Nav */}
