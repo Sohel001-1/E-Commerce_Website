@@ -1,0 +1,56 @@
+modules = ["nodejs-20", "web"]
+[agent]
+expertMode = true
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+MONGODB_URI = "mongodb+srv://greatstack:Ihategta5@cluster0.ooeczdb.mongodb.net"
+CLOUDINARY_API_KEY = "219322518696941"
+CLOUDINARY_SECRET_KEY = "I_V9pAivVwhYciiKhSdzMxBpt1A"
+CLOUDINARY_NAME = "df4shhoet"
+JWT_SECRET = "greatstack"
+ADMIN_EMAIL = "admin@japanautos.com"
+ADMIN_PASSWORD = "admin"
+STRIPE_SECRET_KEY = "pk_test_placeholder"
+PORT = "4000"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd backend && node server.js & cd frontend && npx vite --host 0.0.0.0 --port 5000"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 4000
+externalPort = 3000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd backend && node server.js & cd frontend && npx vite preview --host 0.0.0.0 --port 5000"]
+build = ["bash", "-c", "cd frontend && npm run build"]
