@@ -49,7 +49,11 @@ const Product = () => {
 
           <div className="w-full sm:w-[80%]">
             {image ? (
-              <img className="w-full h-auto rounded" src={image} alt={productData.name} />
+              <img
+                className="w-full h-auto rounded"
+                src={image}
+                alt={productData.name}
+              />
             ) : (
               <div className="w-full aspect-square bg-gray-100 rounded" />
             )}
@@ -60,19 +64,14 @@ const Product = () => {
         <div className="flex-1">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
 
-          <div className="flex items-center gap-1 mt-2">
-            {[...Array(5)].map((_, i) => (
-              <img key={i} src={assets.star_icon} alt="" className="w-3" />
-            ))}
-            <p className="pl-2">(122)</p>
-          </div>
-
           <p className="mt-5 text-3xl font-medium">
             {currency}
             {productData.price}
           </p>
 
-          <p className="mt-5 text-gray-500 md:w-4/5">{productData.description}</p>
+          <p className="mt-5 text-gray-500 md:w-4/5">
+            {productData.description}
+          </p>
 
           <button
             onClick={handleAddToCart}
@@ -91,7 +90,10 @@ const Product = () => {
         </div>
       </div>
 
-      <RelatedProducts category={productData.category} subCategory={productData.subCategory} />
+      <RelatedProducts
+        category={productData.category}
+        subCategory={productData.subCategory}
+      />
     </div>
   );
 };

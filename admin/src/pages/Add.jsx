@@ -17,8 +17,8 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Autodetailing");
   const [subCategory, setSubCategory] = useState("General");
   // 1. New State for Brand
-  const [brand, setBrand] = useState("NGK"); 
-  
+  const [brand, setBrand] = useState("NGK");
+
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -60,7 +60,7 @@ const Add = ({ token }) => {
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       // 2. Append Brand to FormData
-      formData.append("brand", brand); 
+      formData.append("brand", brand);
       formData.append("bestseller", bestseller);
 
       if (image1) formData.append("image1", image1);
@@ -71,7 +71,7 @@ const Add = ({ token }) => {
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
-        { headers: { token } }
+        { headers: { token } },
       );
 
       if (response.data.success) {
@@ -111,7 +111,7 @@ const Add = ({ token }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Product Name"
-        className="border px-3 py-2 w-full max-w-[500px]"
+        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
         required
       />
 
@@ -119,7 +119,7 @@ const Add = ({ token }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Product Description"
-        className="border px-3 py-2 w-full max-w-[500px]"
+        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
         required
       />
 
@@ -130,7 +130,7 @@ const Add = ({ token }) => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="Autodetailing">Autodetailing</option>
             <option value="Engine Oil">Engine Oil</option>
@@ -138,11 +138,11 @@ const Add = ({ token }) => {
             <option value="Damping">Damping</option>
             <option value="Ignition">Ignition</option>
             <option value="Engine">Engine</option>
-           <option value="Brake">Brake</option>
-           <option value="Suspension">Suspension</option>
-           <option value="Electrical">Electrical</option>
-           <option value="Body">Body</option>
-           <option value="Wheels">Wheels</option>
+            <option value="Brake">Brake</option>
+            <option value="Suspension">Suspension</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Body">Body</option>
+            <option value="Wheels">Wheels</option>
           </select>
         </div>
 
@@ -152,7 +152,7 @@ const Add = ({ token }) => {
           <select
             value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="General">General</option>
             <option value="Synthetic">Synthetic</option>
@@ -167,7 +167,7 @@ const Add = ({ token }) => {
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="3M">3M</option>
             <option value="555">555</option>
@@ -190,7 +190,7 @@ const Add = ({ token }) => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="25"
-            className="border px-3 py-2 w-full sm:w-28"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
             required
           />
         </div>
@@ -208,7 +208,7 @@ const Add = ({ token }) => {
       <button
         type="submit"
         disabled={loading}
-        className="bg-black text-white px-10 py-3 w-fit active:bg-gray-700"
+        className="bg-black text-white px-10 py-3 w-fit rounded hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {loading ? "ADDING..." : "ADD PRODUCT"}
       </button>
@@ -217,7 +217,6 @@ const Add = ({ token }) => {
 };
 
 export default Add;
-
 
 // import React, { useState } from "react";
 // import { assets } from "../assets/assets";
@@ -377,7 +376,7 @@ export default Add;
 //           <option value="Batteries">Batteries</option>
 //           <option value="Headlights">Headlights</option>
 //           <option value="General">General</option>
-        
+
 //         </select>
 
 //         <input
