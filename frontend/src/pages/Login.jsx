@@ -2,6 +2,8 @@ import React, { useState, useContext, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { fadeUp } from "../utils/animations";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
@@ -40,62 +42,78 @@ const Login = () => {
   }, [token]);
 
   return (
-    <form
-      onSubmit={onSubmitHandler}
-      className="flex flex-col items-center w-[90%] sm:max-w-96 m-auto mt-14 gap-4 text-gray-800"
-    >
-      <div className="inline-flex items-center gap-2 mb-2 mt-10">
-        <p className="prata-regular text-3xl">{currentState}</p>
-        <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
-      </div>
-      {currentState !== "Login" && (
-        <input
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          type="text"
-          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-600"
-          placeholder="Name"
-          required
-        />
-      )}
-      <input
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        type="email"
-        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-600"
-        placeholder="E-mail"
-        required
-      />
-      <input
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        type="password"
-        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-gray-600"
-        placeholder="Password"
-        required
-      />
-      <div className="w-full flex justify-between text-sm mt-[-8px]">
-        <p className="cursor-pointer">Forgot your password?</p>
-        <p
-          onClick={() =>
-            setCurrentState(currentState === "Login" ? "Sign Up" : "Login")
-          }
-          className="cursor-pointer"
-        >
-          {currentState === "Login" ? "Create account" : "Login Here"}
-        </p>
-      </div>
-      <button
-        disabled={loading}
-        className="bg-black text-white font-light px-8 py-2 mt-4 rounded hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+    <div className="min-h-[70vh] flex items-center justify-center">
+      <motion.form
+        onSubmit={onSubmitHandler}
+        className="w-full max-w-md glass-card p-8 sm:p-10 rounded-3xl"
+        {...fadeUp}
       >
-        {loading
-          ? "Loading..."
-          : currentState === "Login"
-            ? "Sign In"
-            : "Sign Up"}
-      </button>
-    </form>
+        <div className="text-center mb-8">
+          <h2 className="font-display text-3xl font-bold text-surface-900">{currentState}</h2>
+          <div className="w-12 h-[2px] bg-gradient-to-r from-brand-500 to-orange-300 rounded-full mx-auto mt-3" />
+        </div>
+
+        <div className="space-y-4">
+          {currentState !== "Login" && (
+            <motion.input
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              onChange={(e) => setName(e.target.value)}
+              value={name}
+              type="text"
+              className="input-glass"
+              placeholder="Full Name"
+              required
+            />
+          )}
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            type="email"
+            className="input-glass"
+            placeholder="Email Address"
+            required
+          />
+          <input
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            type="password"
+            className="input-glass"
+            placeholder="Password"
+            required
+          />
+        </div>
+
+        <div className="flex justify-between text-sm mt-4 text-surface-500">
+          <button type="button" className="hover:text-brand-500 transition-colors">
+            Forgot password?
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              setCurrentState(currentState === "Login" ? "Sign Up" : "Login")
+            }
+            className="hover:text-brand-500 transition-colors font-medium"
+          >
+            {currentState === "Login" ? "Create account" : "Login Here"}
+          </button>
+        </div>
+
+        <motion.button
+          disabled={loading}
+          className="btn-primary btn-shimmer w-full mt-8 disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: loading ? 1 : 1.02 }}
+          whileTap={{ scale: loading ? 1 : 0.98 }}
+        >
+          {loading
+            ? "Loading..."
+            : currentState === "Login"
+              ? "Sign In"
+              : "Sign Up"}
+        </motion.button>
+      </motion.form>
+    </div>
   );
 };
 export default Login;
