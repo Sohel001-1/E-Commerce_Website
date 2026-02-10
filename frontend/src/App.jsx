@@ -10,7 +10,10 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
-import Profile from "./pages/Profile"; // 1. Import the Profile page
+import Profile from "./pages/Profile";
+import Addresses from "./pages/Addresses";
+import Wishlist from "./pages/Wishlist";
+import Account from "./pages/Account";
 import Navbar from "./components/Navbar";
 import ShopContextProvider from "./context/ShopContext";
 import Footer from "./components/Footer";
@@ -35,26 +38,110 @@ const App = () => {
         <SearchBar />
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<PageTransition><Home /></PageTransition>} />
-            <Route path="/collection" element={<PageTransition><Collection /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
-            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-            <Route path="/product/:productId" element={<PageTransition><Product /></PageTransition>} />
-            <Route path="/cart" element={<PageTransition><Cart /></PageTransition>} />
-            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-            <Route path="/place-order" element={<PageTransition><PlaceOrder /></PageTransition>} />
-            <Route path="/orders" element={<PageTransition><Orders /></PageTransition>} />
-            
-            {/* 2. Added the Profile Route with PageTransition */}
-            <Route 
-              path="/profile" 
+            <Route
+              path="/"
+              element={
+                <PageTransition>
+                  <Home />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/collection"
+              element={
+                <PageTransition>
+                  <Collection />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <PageTransition>
+                  <About />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/contact"
+              element={
+                <PageTransition>
+                  <Contact />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/product/:productId"
+              element={
+                <PageTransition>
+                  <Product />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/cart"
+              element={
+                <PageTransition>
+                  <Cart />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PageTransition>
+                  <Login />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/place-order"
+              element={
+                <PageTransition>
+                  <PlaceOrder />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <PageTransition>
+                  <Orders />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/profile"
               element={
                 <PageTransition>
                   <Profile />
                 </PageTransition>
-              } 
+              }
             />
-            
+            <Route
+              path="/addresses"
+              element={
+                <PageTransition>
+                  <Addresses />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/wishlist"
+              element={
+                <PageTransition>
+                  <Wishlist />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/account"
+              element={
+                <PageTransition>
+                  <Account />
+                </PageTransition>
+              }
+            />
           </Routes>
         </AnimatePresence>
         <Footer />
