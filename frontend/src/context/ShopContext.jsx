@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(false);
 
  const addToCart = async (itemId) => {
   toast.success("Product Added to cart.");
@@ -39,6 +40,20 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       toast.error(error.message);
     }
+  }
+};
+
+const getProfileData = async () => {
+  try {
+    const { data } = await axios.get(backendUrl + '/api/user/get-profile', { headers: { token } });
+    if (data.success) {
+      setUserData(data.userData);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.log(error);
+    toast.error(error.message);
   }
 };
 
@@ -137,11 +152,12 @@ const getCartAmount = () => {
     }
   }, []);
 
-  const value = {
-    products, currency, delivery_fee, search, setSearch, showSearch, setShowSearch,
-    cartItems, addToCart, setCartItems, getCartCount, updateQuantity, getCartAmount,
-    navigate, backendUrl, setToken, token, logout 
-  };
+const value = {
+  products, currency, delivery_fee, search, setSearch, showSearch, setShowSearch,
+  cartItems, addToCart, setCartItems, getCartCount, updateQuantity, getCartAmount,
+  navigate, backendUrl, setToken, token, logout, 
+  userData, setUserData, getProfileData // <--- ADD THESE
+}
 
   return <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>;
 };
