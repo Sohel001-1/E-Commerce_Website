@@ -5,14 +5,17 @@ import OurPolicy from '../components/OurPolicy';
 import NewsletterBox from '../components/NewsletterBox';
 import CategorySection from '../components/CategorySection';
 
+import FeaturedIcons from '../components/FeaturedIcons';
+
 const Home = () => {
   return (
     <div>
       <Hero />
-      
+      <FeaturedIcons />
+
       {/* Featured Section */}
-      <BestSeller/>
-      
+      <BestSeller />
+
       {/* Dynamic Sections: These pull directly from MongoDB. 
           Ensure the 'categoryName' matches the 'category' string 
           saved via your productController exactly.
@@ -23,10 +26,10 @@ const Home = () => {
       <CategorySection categoryName="Brake" sectionTitle="Brakes" />
       <CategorySection categoryName="Damping" sectionTitle="Damping" />
       <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
-      
+
       {/* Footer / Utility Sections */}
-      <OurPolicy/>
-      <NewsletterBox/>
+      <OurPolicy />
+      <NewsletterBox />
     </div>
   )
 }
