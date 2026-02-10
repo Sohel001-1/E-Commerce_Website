@@ -33,7 +33,7 @@ const CategorySection = ({ categoryName, sectionTitle }) => {
         whileInView={fadeUp.animate}
         viewport={{ once: true }}
       >
-        <Title text1={sectionTitle} text2={""} />
+        <Title text1={""} text2={sectionTitle} />
         <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-surface-500 mt-2">
           Explore our carefully selected collection of premium automotive
           components.
