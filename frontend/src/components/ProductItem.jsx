@@ -78,11 +78,11 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
           </div>
         </div>
         <div className="pt-3 pb-1">
-          <p className="text-sm font-medium text-surface-700 group-hover:text-surface-900 transition-colors line-clamp-2">
+          <p className="text-sm font-medium text-gray-900 group-hover:text-surface-900 transition-colors line-clamp-2">
             {name}
           </p>
         </div>
-        <p className="text-sm font-bold text-surface-900">
+        <p className="text-sm font-bold text-black line-clamp-2">
           {currency}
           {price}
         </p>
