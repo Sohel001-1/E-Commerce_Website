@@ -154,7 +154,7 @@ export default function HeroSlider() {
           <button
             key={idx}
             onClick={() => emblaApi?.scrollTo(idx)}
-            className={`h-2 rounded-full transition-all duration-500 ${
+            className={`h-2 rounded-full transition-all duration-150 ${
               idx === selectedIndex
                 ? "w-8 bg-brand-500 shadow-glow"
                 : "w-2 bg-surface-300 hover:bg-surface-400"
