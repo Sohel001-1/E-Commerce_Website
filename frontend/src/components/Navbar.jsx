@@ -100,11 +100,38 @@ const Navbar = () => {
                   <button
                     onClick={() => {
                       setShowProfile(false);
+                      navigate("/addresses");
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                  >
+                    Addresses
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
                       navigate("/orders");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
                   >
                     Orders
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      navigate("/wishlist");
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                  >
+                    Wishlist
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      navigate("/account");
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                  >
+                    Account Settings
                   </button>
                   <hr className="my-1 border-gray-100" />
                   <button
