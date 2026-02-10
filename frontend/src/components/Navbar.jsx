@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const { setShowSearch, getCartCount, navigate, token, logout } =
     useContext(ShopContext);
 
@@ -35,10 +36,18 @@ const Navbar = () => {
           </Link>
 
           <nav className="hidden md:flex items-center gap-10">
-            <NavLink to="/" className={navLinkClass}>HOME</NavLink>
-            <NavLink to="/collection" className={navLinkClass}>COLLECTION</NavLink>
-            <NavLink to="/about" className={navLinkClass}>ABOUT</NavLink>
-            <NavLink to="/contact" className={navLinkClass}>CONTACT</NavLink>
+            <NavLink to="/" className={navLinkClass}>
+              HOME
+            </NavLink>
+            <NavLink to="/collection" className={navLinkClass}>
+              COLLECTION
+            </NavLink>
+            <NavLink to="/about" className={navLinkClass}>
+              ABOUT
+            </NavLink>
+            <NavLink to="/contact" className={navLinkClass}>
+              CONTACT
+            </NavLink>
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-3">
@@ -51,7 +60,11 @@ const Navbar = () => {
               <img src={assets.search_icon} className="w-5" alt="" />
             </motion.button>
 
-            <div className="relative group">
+            <div
+              className="relative"
+              onMouseEnter={() => setShowProfile(true)}
+              onMouseLeave={() => setShowProfile(false)}
+            >
               <motion.button
                 onClick={() => (token ? null : navigate("/login"))}
                 className="p-2.5 rounded-full text-surface-500 hover:bg-brand-50 hover:text-brand-500 transition-colors"
@@ -60,17 +73,57 @@ const Navbar = () => {
               >
                 <img src={assets.profile_icon} className="w-5" alt="" />
               </motion.button>
+
+              {/* Invisible spacer to prevent dropdown from disappearing */}
+              {token && showProfile && (
+                <div className="absolute right-0 top-full w-48 h-2" />
+              )}
+
               {token && (
-                <div className="absolute right-0 mt-3 hidden w-48 rounded-2xl bg-white/90 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg group-hover:block">
-                  <button onClick={() => navigate("/profile")} className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors">My Profile</button>
-                  <button onClick={() => navigate("/orders")} className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors">Orders</button>
+                <motion.div
+                  className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg"
+                  initial={{ opacity: 0, y: -5 }}
+                  animate={
+                    showProfile ? { opacity: 1, y: 0 } : { opacity: 0, y: -5 }
+                  }
+                  transition={{ duration: 0.15 }}
+                >
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      navigate("/profile");
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                  >
+                    My Profile
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      navigate("/orders");
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                  >
+                    Orders
+                  </button>
                   <hr className="my-1 border-gray-100" />
-                  <button onClick={logout} className="flex w-full px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors">Logout</button>
-                </div>
+                  <button
+                    onClick={() => {
+                      setShowProfile(false);
+                      logout();
+                    }}
+                    className="flex w-full px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                  >
+                    Logout
+                  </button>
+                </motion.div>
               )}
             </div>
 
-            <Link to="/cart" className="relative p-2.5 rounded-full text-surface-500 group hover:bg-brand-50 transition-colors">
+            <Link
+              to="/cart"
+              className="relative p-2.5 rounded-full text-surface-500 group hover:bg-brand-50 transition-colors"
+            >
               <motion.img
                 src={assets.cart_icon}
                 className="w-5"
@@ -118,13 +171,19 @@ const Navbar = () => {
               className="absolute right-0 top-0 h-screen w-[85%] max-w-xs bg-white/95 backdrop-blur-2xl shadow-glass-lg flex flex-col"
             >
               <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100">
-                <span className="text-xl font-display font-bold tracking-tighter text-surface-900 uppercase">Menu</span>
+                <span className="text-xl font-display font-bold tracking-tighter text-surface-900 uppercase">
+                  Menu
+                </span>
                 <motion.button
                   onClick={() => setVisible(false)}
                   className="p-2 rounded-full bg-surface-100 hover:bg-surface-200 transition-colors"
                   whileTap={{ scale: 0.85 }}
                 >
-                  <img className="h-4 rotate-180" src={assets.dropdown_icon} alt="Close" />
+                  <img
+                    className="h-4 rotate-180"
+                    src={assets.dropdown_icon}
+                    alt="Close"
+                  />
                 </motion.button>
               </div>
 
@@ -153,7 +212,10 @@ const Navbar = () => {
               <div className="p-6 border-t border-gray-100">
                 {!token ? (
                   <motion.button
-                    onClick={() => { setVisible(false); navigate("/login"); }}
+                    onClick={() => {
+                      setVisible(false);
+                      navigate("/login");
+                    }}
                     className="w-full py-4 rounded-2xl bg-surface-900 text-white font-bold shadow-xl hover:bg-surface-800 transition-colors"
                     whileTap={{ scale: 0.98 }}
                   >
@@ -161,7 +223,10 @@ const Navbar = () => {
                   </motion.button>
                 ) : (
                   <motion.button
-                    onClick={() => { setVisible(false); logout(); }}
+                    onClick={() => {
+                      setVisible(false);
+                      logout();
+                    }}
                     className="w-full py-4 rounded-2xl bg-red-600 text-white font-bold shadow-lg shadow-red-100 hover:bg-red-700 transition-colors"
                     whileTap={{ scale: 0.98 }}
                   >
