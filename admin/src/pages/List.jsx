@@ -144,7 +144,7 @@ const List = ({ token }) => {
         <input
           type="text"
           placeholder="Search by name, brand, or category..."
-          className="border border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64 outline-none focus:border-orange-500 transition-all"
+          className="border border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64 outline-none focus:border-gray-600 transition-all"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -238,7 +238,7 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, name: e.target.value })
                     }
-                    className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                     type="text"
                     required
                   />
@@ -250,7 +250,7 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, price: e.target.value })
                     }
-                    className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                     type="number"
                     step="0.01"
                     required
@@ -265,7 +265,7 @@ const List = ({ token }) => {
                   onChange={(e) =>
                     setEditForm({ ...editForm, description: e.target.value })
                   }
-                  className="w-full border px-3 py-2 rounded min-h-[80px] focus:ring-1 focus:ring-orange-500 outline-none"
+                  className="w-full border border-gray-300 px-3 py-2 rounded min-h-[80px] focus:outline-none focus:border-gray-600"
                   required
                 />
               </div>
@@ -278,12 +278,11 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, category: e.target.value })
                     }
-                    className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
                     <option value="Autodetailing">Autodetailing</option>
                     <option value="Engine Oil">Engine Oil</option>
                     <option value="Filters">Filters</option>
-                    <option value="Brakes">Brakes</option>
                     <option value="Damping">Damping</option>
                     <option value="Ignition">Ignition</option>
                     <option value="Engine">Engine</option>
@@ -302,7 +301,7 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, subCategory: e.target.value })
                     }
-                    className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
                     <option value="General">General</option>
                     <option value="Tires">Tires</option>
@@ -349,7 +348,7 @@ const List = ({ token }) => {
               <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
                 <input
                   type="checkbox"
-                  className="accent-orange-600 w-4 h-4"
+                  className="accent-gray-600 w-4 h-4"
                   checked={editForm.bestseller}
                   onChange={() =>
                     setEditForm({
@@ -365,14 +364,14 @@ const List = ({ token }) => {
                 <button
                   type="button"
                   onClick={closeEdit}
-                  className="flex-1 px-4 py-2 rounded border font-medium hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 rounded border border-gray-300 font-medium hover:bg-gray-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 px-4 py-2 rounded bg-orange-600 text-white font-bold hover:bg-orange-700 transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2 rounded bg-black text-white font-bold hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {saving ? "SAVING..." : "SAVE CHANGES"}
                 </button>
