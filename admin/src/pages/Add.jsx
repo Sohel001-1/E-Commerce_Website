@@ -17,10 +17,23 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Autodetailing");
   const [subCategory, setSubCategory] = useState("General");
   // 1. New State for Brand
-  const [brand, setBrand] = useState("NGK"); 
-  
+  const [brand, setBrand] = useState("NGK");
+
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleMultipleImages = (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files[0]) setImage1(files[0]);
+    if (files[1]) setImage2(files[1]);
+    if (files[2]) setImage3(files[2]);
+    if (files[3]) setImage4(files[3]);
+
+    if (files.length > 4) {
+      toast.info("Only first 4 images were added");
+    }
+  };
 
   const ImageUploadSlot = ({ id, image, setImage }) => (
     <div className="relative">
@@ -60,7 +73,7 @@ const Add = ({ token }) => {
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       // 2. Append Brand to FormData
-      formData.append("brand", brand); 
+      formData.append("brand", brand);
       formData.append("bestseller", bestseller);
 
       if (image1) formData.append("image1", image1);
@@ -71,7 +84,7 @@ const Add = ({ token }) => {
       const response = await axios.post(
         backendUrl + "/api/product/add",
         formData,
-        { headers: { token } }
+        { headers: { token } },
       );
 
       if (response.data.success) {
@@ -99,19 +112,36 @@ const Add = ({ token }) => {
     <form onSubmit={onSubmitHandler} className="flex flex-col gap-4 w-full">
       <div>
         <p className="mb-2">Upload Images</p>
-        <div className="flex gap-3">
+        <div className="flex gap-3 mb-4">
           <ImageUploadSlot id="image1" image={image1} setImage={setImage1} />
           <ImageUploadSlot id="image2" image={image2} setImage={setImage2} />
           <ImageUploadSlot id="image3" image={image3} setImage={setImage3} />
           <ImageUploadSlot id="image4" image={image4} setImage={setImage4} />
         </div>
+
+        {/* Bulk Upload Button */}
+        <button
+          type="button"
+          onClick={() => document.getElementById("bulkImageInput").click()}
+          className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
+        >
+          Upload Multiple Images at Once
+        </button>
+        <input
+          id="bulkImageInput"
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleMultipleImages}
+          hidden
+        />
       </div>
 
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder="Product Name"
-        className="border px-3 py-2 w-full max-w-[500px]"
+        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
         required
       />
 
@@ -119,7 +149,7 @@ const Add = ({ token }) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Product Description"
-        className="border px-3 py-2 w-full max-w-[500px]"
+        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
         required
       />
 
@@ -130,20 +160,19 @@ const Add = ({ token }) => {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="Autodetailing">Autodetailing</option>
             <option value="Engine Oil">Engine Oil</option>
             <option value="Filters">Filters</option>
-            <option value="Brakes">Brakes</option>
             <option value="Damping">Damping</option>
             <option value="Ignition">Ignition</option>
             <option value="Engine">Engine</option>
-           <option value="Brakes">Brakes</option>
-           <option value="Suspension">Suspension</option>
-           <option value="Electrical">Electrical</option>
-           <option value="Body">Body</option>
-           <option value="Wheels">Wheels</option>
+            <option value="Brake">Brake</option>
+            <option value="Suspension">Suspension</option>
+            <option value="Electrical">Electrical</option>
+            <option value="Body">Body</option>
+            <option value="Wheels">Wheels</option>
           </select>
         </div>
 
@@ -153,7 +182,7 @@ const Add = ({ token }) => {
           <select
             value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="General">General</option>
             <option value="Synthetic">Synthetic</option>
@@ -168,7 +197,7 @@ const Add = ({ token }) => {
           <select
             value={brand}
             onChange={(e) => setBrand(e.target.value)}
-            className="border px-3 py-2 w-full sm:w-40"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
           >
             <option value="3M">3M</option>
             <option value="555">555</option>
@@ -191,7 +220,7 @@ const Add = ({ token }) => {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             placeholder="25"
-            className="border px-3 py-2 w-full sm:w-28"
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
             required
           />
         </div>
@@ -209,7 +238,7 @@ const Add = ({ token }) => {
       <button
         type="submit"
         disabled={loading}
-        className="bg-black text-white px-10 py-3 w-fit active:bg-gray-700"
+        className="bg-black text-white px-10 py-3 w-fit rounded hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {loading ? "ADDING..." : "ADD PRODUCT"}
       </button>
@@ -218,7 +247,6 @@ const Add = ({ token }) => {
 };
 
 export default Add;
-
 
 // import React, { useState } from "react";
 // import { assets } from "../assets/assets";
@@ -378,7 +406,7 @@ export default Add;
 //           <option value="Batteries">Batteries</option>
 //           <option value="Headlights">Headlights</option>
 //           <option value="General">General</option>
-        
+
 //         </select>
 
 //         <input
