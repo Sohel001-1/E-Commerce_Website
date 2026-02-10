@@ -27,7 +27,7 @@ const BestSeller = () => {
         whileInView={fadeUp.animate}
         viewport={{ once: true }}
       >
-        <Title text1={"BEST"} text2={"SELLERS"} />
+        <Title text1={""} text2={"BEST-SELLERS"} />
         <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-surface-500 mt-2">
           Premium auto parts selected for reliability and performance.
         </p>
