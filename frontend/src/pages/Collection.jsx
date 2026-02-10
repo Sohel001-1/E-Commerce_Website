@@ -46,16 +46,20 @@ const Collection = () => {
 
     if (showSearch && search) {
       productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
+        item.name.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) => category.includes(item.category));
+      productsCopy = productsCopy.filter((item) =>
+        category.includes(item.category),
+      );
     }
 
     if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) => subCategory.includes(item.subCategory));
+      productsCopy = productsCopy.filter((item) =>
+        subCategory.includes(item.subCategory),
+      );
     }
 
     if (brand.length > 0) {
@@ -89,21 +93,28 @@ const Collection = () => {
     sortProduct();
   }, [sortType]);
 
-  const FilterCheckbox = ({ value, onChange, label }) => (
+  const FilterCheckbox = ({ value, onChange, label, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-0.5">
       <input
         className="w-4 h-4 rounded border-surface-300 text-brand-500 focus:ring-brand-500 focus:ring-offset-0 transition-colors cursor-pointer"
         type="checkbox"
         value={value}
         onChange={onChange}
+        checked={checked}
       />
-      <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">{label}</span>
+      <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">
+        {label}
+      </span>
     </label>
   );
 
   const FilterSection = ({ title, children }) => (
-    <div className={`glass-card p-5 rounded-2xl ${showFilter ? "" : "hidden"} sm:block`}>
-      <p className="mb-3 text-xs font-bold tracking-wider text-surface-500 uppercase">{title}</p>
+    <div
+      className={`glass-card p-5 rounded-2xl ${showFilter ? "" : "hidden"} sm:block`}
+    >
+      <p className="mb-3 text-xs font-bold tracking-wider text-surface-500 uppercase">
+        {title}
+      </p>
       <div className="flex flex-col gap-1.5">{children}</div>
     </div>
   );
@@ -124,41 +135,156 @@ const Collection = () => {
         </button>
 
         <FilterSection title="CATEGORIES">
-          <FilterCheckbox value="Engine" onChange={toggleCategory} label="Engine" />
-          <FilterCheckbox value="Brake" onChange={toggleCategory} label="Brakes" />
-          <FilterCheckbox value="Suspension" onChange={toggleCategory} label="Suspension" />
-          <FilterCheckbox value="Ignition" onChange={toggleCategory} label="Ignition" />
-          <FilterCheckbox value="Electrical" onChange={toggleCategory} label="Electrical" />
-          <FilterCheckbox value="Body" onChange={toggleCategory} label="Body" />
-          <FilterCheckbox value="Wheels" onChange={toggleCategory} label="Wheels" />
+          <FilterCheckbox
+            value="Engine"
+            onChange={toggleCategory}
+            label="Engine"
+            checked={category.includes("Engine")}
+          />
+          <FilterCheckbox
+            value="Brake"
+            onChange={toggleCategory}
+            label="Brakes"
+            checked={category.includes("Brake")}
+          />
+          <FilterCheckbox
+            value="Suspension"
+            onChange={toggleCategory}
+            label="Suspension"
+            checked={category.includes("Suspension")}
+          />
+          <FilterCheckbox
+            value="Ignition"
+            onChange={toggleCategory}
+            label="Ignition"
+            checked={category.includes("Ignition")}
+          />
+          <FilterCheckbox
+            value="Electrical"
+            onChange={toggleCategory}
+            label="Electrical"
+            checked={category.includes("Electrical")}
+          />
+          <FilterCheckbox
+            value="Body"
+            onChange={toggleCategory}
+            label="Body"
+            checked={category.includes("Body")}
+          />
+          <FilterCheckbox
+            value="Wheels"
+            onChange={toggleCategory}
+            label="Wheels"
+            checked={category.includes("Wheels")}
+          />
         </FilterSection>
 
         <FilterSection title="TYPE">
-          <FilterCheckbox value="Tires" onChange={toggleSubCategory} label="Tires" />
-          <FilterCheckbox value="Brake pads" onChange={toggleSubCategory} label="Brake pads" />
-          <FilterCheckbox value="Brake pipes" onChange={toggleSubCategory} label="Brake pipes" />
-          <FilterCheckbox value="Master Cylinder" onChange={toggleSubCategory} label="Master Cylinder" />
-          <FilterCheckbox value="Caliper repair kit" onChange={toggleSubCategory} label="Caliper repair kit" />
-          <FilterCheckbox value="Engine mount" onChange={toggleSubCategory} label="Engine mount" />
-          <FilterCheckbox value="Bush" onChange={toggleSubCategory} label="Bush" />
-          <FilterCheckbox value="Thermostate" onChange={toggleSubCategory} label="Thermostate" />
-          <FilterCheckbox value="Link rod" onChange={toggleSubCategory} label="Link rod" />
-          <FilterCheckbox value="Insulator" onChange={toggleSubCategory} label="Insulator" />
-          <FilterCheckbox value="Ball" onChange={toggleSubCategory} label="Ball" />
+          <FilterCheckbox
+            value="Tires"
+            onChange={toggleSubCategory}
+            label="Tires"
+            checked={subCategory.includes("Tires")}
+          />
+          <FilterCheckbox
+            value="Brake pads"
+            onChange={toggleSubCategory}
+            label="Brake pads"
+            checked={subCategory.includes("Brake pads")}
+          />
+          <FilterCheckbox
+            value="Brake pipes"
+            onChange={toggleSubCategory}
+            label="Brake pipes"
+            checked={subCategory.includes("Brake pipes")}
+          />
+          <FilterCheckbox
+            value="Master Cylinder"
+            onChange={toggleSubCategory}
+            label="Master Cylinder"
+            checked={subCategory.includes("Master Cylinder")}
+          />
+          <FilterCheckbox
+            value="Caliper repair kit"
+            onChange={toggleSubCategory}
+            label="Caliper repair kit"
+            checked={subCategory.includes("Caliper repair kit")}
+          />
+          <FilterCheckbox
+            value="Engine mount"
+            onChange={toggleSubCategory}
+            label="Engine mount"
+            checked={subCategory.includes("Engine mount")}
+          />
+          <FilterCheckbox
+            value="Bush"
+            onChange={toggleSubCategory}
+            label="Bush"
+            checked={subCategory.includes("Bush")}
+          />
+          <FilterCheckbox
+            value="Thermostate"
+            onChange={toggleSubCategory}
+            label="Thermostate"
+            checked={subCategory.includes("Thermostate")}
+          />
+          <FilterCheckbox
+            value="Link rod"
+            onChange={toggleSubCategory}
+            label="Link rod"
+            checked={subCategory.includes("Link rod")}
+          />
+          <FilterCheckbox
+            value="Insulator"
+            onChange={toggleSubCategory}
+            label="Insulator"
+            checked={subCategory.includes("Insulator")}
+          />
+          <FilterCheckbox
+            value="Ball"
+            onChange={toggleSubCategory}
+            label="Ball"
+            checked={subCategory.includes("Ball")}
+          />
         </FilterSection>
 
         <FilterSection title="BRAND">
-          <FilterCheckbox value="3M" onChange={toggleBrand} label="3M" />
-          <FilterCheckbox value="555" onChange={toggleBrand} label="555" />
-          <FilterCheckbox value="AISIN" onChange={toggleBrand} label="AISIN" />
-          <FilterCheckbox value="Autolite" onChange={toggleBrand} label="Autolite" />
-          <FilterCheckbox value="AUTOPROFI" onChange={toggleBrand} label="AUTOPROFI" />
-          <FilterCheckbox value="bluechem" onChange={toggleBrand} label="bluechem" />
-          <FilterCheckbox value="BIZOL" onChange={toggleBrand} label="BIZOL" />
-          <FilterCheckbox value="AbBlue" onChange={toggleBrand} label="AbBlue" />
-          <FilterCheckbox value="AUTOGLYM" onChange={toggleBrand} label="AUTOGLYM" />
-          <FilterCheckbox value="BOSCH" onChange={toggleBrand} label="BOSCH" />
-          <FilterCheckbox value="CAT" onChange={toggleBrand} label="CAT" />
+          <FilterCheckbox value="3M" onChange={toggleBrand} label="3M" checked={brand.includes("3M")} />
+          <FilterCheckbox value="555" onChange={toggleBrand} label="555" checked={brand.includes("555")} />
+          <FilterCheckbox value="AISIN" onChange={toggleBrand} label="AISIN" checked={brand.includes("AISIN")} />
+          <FilterCheckbox
+            value="Autolite"
+            onChange={toggleBrand}
+            label="Autolite"
+            checked={brand.includes("Autolite")}
+          />
+          <FilterCheckbox
+            value="AUTOPROFI"
+            onChange={toggleBrand}
+            label="AUTOPROFI"
+            checked={brand.includes("AUTOPROFI")}
+          />
+          <FilterCheckbox
+            value="bluechem"
+            onChange={toggleBrand}
+            label="bluechem"
+            checked={brand.includes("bluechem")}
+          />
+          <FilterCheckbox value="BIZOL" onChange={toggleBrand} label="BIZOL" checked={brand.includes("BIZOL")} />
+          <FilterCheckbox
+            value="AbBlue"
+            onChange={toggleBrand}
+            label="AbBlue"
+            checked={brand.includes("AbBlue")}
+          />
+          <FilterCheckbox
+            value="AUTOGLYM"
+            onChange={toggleBrand}
+            label="AUTOGLYM"
+            checked={brand.includes("AUTOGLYM")}
+          />
+          <FilterCheckbox value="BOSCH" onChange={toggleBrand} label="BOSCH" checked={brand.includes("BOSCH")} />
+          <FilterCheckbox value="CAT" onChange={toggleBrand} label="CAT" checked={brand.includes("CAT")} />
         </FilterSection>
       </div>
 
@@ -176,15 +302,19 @@ const Collection = () => {
         </div>
 
         {loading ? (
-          <SkeletonGrid count={8} cols="grid-cols-2 md:grid-cols-3 lg:grid-cols-4" />
+          <SkeletonGrid
+            count={8}
+            cols="grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          />
         ) : filterProducts.length === 0 ? (
-          <motion.div
-            className="text-center py-20"
-            {...fadeUp}
-          >
+          <motion.div className="text-center py-20" {...fadeUp}>
             <p className="text-5xl mb-4">🔍</p>
-            <p className="text-surface-500 text-lg font-medium">No products found</p>
-            <p className="text-surface-400 text-sm mt-2">Try adjusting your filters or search terms</p>
+            <p className="text-surface-500 text-lg font-medium">
+              No products found
+            </p>
+            <p className="text-surface-400 text-sm mt-2">
+              Try adjusting your filters or search terms
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -195,7 +325,14 @@ const Collection = () => {
             viewport={{ once: true }}
           >
             {filterProducts.map((items, index) => (
-              <ProductItem key={index} name={items.name} id={items._id} price={items.price} image={items.image} index={index} />
+              <ProductItem
+                key={index}
+                name={items.name}
+                id={items._id}
+                price={items.price}
+                image={items.image}
+                index={index}
+              />
             ))}
           </motion.div>
         )}

@@ -12,11 +12,7 @@ const SearchBar = () => {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (location.pathname.includes("collection")) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
+    setVisible(true); // Always visible
   }, [location]);
 
   useEffect(() => {
@@ -37,7 +33,11 @@ const SearchBar = () => {
         >
           <div className="py-4">
             <div className="flex items-center gap-3 max-w-xl mx-auto glass-card rounded-2xl px-5 py-3 focus-within:border-orange-300 focus-within:shadow-glow transition-all duration-300">
-              <img className="w-4 opacity-40" src={assets.search_icon} alt="search" />
+              <img
+                className="w-4 opacity-40"
+                src={assets.search_icon}
+                alt="search"
+              />
               <input
                 ref={inputRef}
                 value={search}
@@ -58,7 +58,11 @@ const SearchBar = () => {
                 onClick={() => setShowSearch(false)}
                 className="p-1.5 rounded-full hover:bg-surface-100 transition-colors"
               >
-                <img className="w-3 opacity-50" src={assets.cross_icon} alt="close" />
+                <img
+                  className="w-3 opacity-50"
+                  src={assets.cross_icon}
+                  alt="close"
+                />
               </button>
             </div>
           </div>
