@@ -81,19 +81,15 @@ function BrakeDiscMesh({ mousePosition }) {
   );
 }
 
-function LoadingSpinner() {
-  return (
-    <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-12 h-12 border-4 border-orange-600/30 border-t-orange-600 rounded-full animate-spin" />
-    </div>
-  );
-}
-
 function FallbackDisc() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-8 border-gray-400/40 border-t-orange-500/60 animate-spin" style={{ animationDuration: '3s' }}>
-        <div className="absolute inset-4 rounded-full border-4 border-gray-500/30" />
+      <div className="relative w-40 h-40 md:w-56 md:h-56">
+        <div className="absolute inset-0 rounded-full border-[12px] border-surface-300/40 border-t-brand-500/70 animate-spin" style={{ animationDuration: '4s' }}>
+          <div className="absolute inset-3 rounded-full border-4 border-surface-400/20" />
+          <div className="absolute inset-8 rounded-full border-2 border-surface-500/15" />
+        </div>
+        <div className="absolute inset-[30%] rounded-full bg-surface-400/10 border border-surface-300/20" />
       </div>
     </div>
   );
@@ -101,7 +97,7 @@ function FallbackDisc() {
 
 export default function BrakeDisc3D({ mousePosition, className = '' }) {
   const [webglFailed, setWebglFailed] = useState(false);
-  const [isReady, setIsReady] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     try {
@@ -126,9 +122,9 @@ export default function BrakeDisc3D({ mousePosition, className = '' }) {
 
   return (
     <div className={`relative ${className}`}>
-      {!isReady && <LoadingSpinner />}
-      <React.Suspense fallback={<LoadingSpinner />}>
+      <React.Suspense fallback={<FallbackDisc />}>
         <Canvas
+          key={retryCount}
           camera={{ position: [0, 0, 4], fov: 45 }}
           gl={{
             antialias: false,
@@ -140,13 +136,16 @@ export default function BrakeDisc3D({ mousePosition, className = '' }) {
           style={{ background: 'transparent' }}
           frameloop="always"
           onCreated={(state) => {
-            setIsReady(true);
             const canvas = state.gl.domElement;
             canvas.addEventListener('webglcontextlost', (e) => {
               e.preventDefault();
-            });
-            canvas.addEventListener('webglcontextrestored', () => {
-              state.invalidate();
+              setTimeout(() => {
+                if (retryCount < 2) {
+                  setRetryCount(prev => prev + 1);
+                } else {
+                  setWebglFailed(true);
+                }
+              }, 1000);
             });
           }}
           onError={() => setWebglFailed(true)}
