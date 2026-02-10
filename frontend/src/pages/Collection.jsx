@@ -4,6 +4,7 @@ import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 import { staggerContainer, fadeUp } from "../utils/animations";
 import { SkeletonGrid } from "../components/Skeleton";
 
@@ -16,6 +17,7 @@ const Collection = () => {
   const [brand, setBrand] = useState([]);
   const [sortType, setSortType] = useState("relavent");
   const [loading, setLoading] = useState(true);
+  const [searchParams] = useSearchParams();
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -92,6 +94,13 @@ const Collection = () => {
   useEffect(() => {
     sortProduct();
   }, [sortType]);
+
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      setCategory([categoryParam]);
+    }
+  }, [searchParams]);
 
   const FilterCheckbox = ({ value, onChange, label, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-0.5">
