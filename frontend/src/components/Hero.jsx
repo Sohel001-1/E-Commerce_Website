@@ -4,7 +4,6 @@ import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import BrakeDisc3D from "./BrakeDisc3D";
 import { heroTextVariants } from "../utils/animations";
 
 const slides = [
@@ -34,24 +33,16 @@ const slides = [
 export default function HeroSlider() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "center", skipSnaps: false },
-    [Autoplay({ delay: 5000, stopOnInteraction: false })]
+    [Autoplay({ delay: 5000, stopOnInteraction: false })],
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const mousePosition = useRef({ x: 0, y: 0 });
   const heroRef = useRef(null);
   const [parallaxStyle, setParallaxStyle] = useState({ x: 0, y: 0 });
-  const [isDesktop, setIsDesktop] = useState(false);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth > 1024);
-    check();
-    window.addEventListener("resize", check);
-    return () => window.removeEventListener("resize", check);
-  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -92,7 +83,7 @@ export default function HeroSlider() {
                   className="w-full h-full object-cover"
                   style={{
                     transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
-                    transition: 'transform 0.3s ease-out',
+                    transition: "transform 0.3s ease-out",
                   }}
                 />
 
@@ -139,15 +130,6 @@ export default function HeroSlider() {
                     )}
                   </div>
                 </div>
-
-                {idx === selectedIndex && isDesktop && (
-                  <div className="absolute right-8 lg:right-16 top-1/2 -translate-y-1/2 w-[250px] h-[250px] lg:w-[300px] lg:h-[300px] pointer-events-auto">
-                    <BrakeDisc3D
-                      mousePosition={mousePosition}
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
               </div>
             </div>
           ))}
