@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import BrakeDisc3D from "./BrakeDisc3D";
+import { heroTextVariants } from "../utils/animations";
 
 const slides = [
   {
@@ -30,19 +31,6 @@ const slides = [
   },
 ];
 
-const textVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: (i) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.15 + 0.2,
-      duration: 0.7,
-      ease: [0.25, 0.46, 0.45, 0.94],
-    },
-  }),
-};
-
 export default function HeroSlider() {
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "center", skipSnaps: false },
@@ -53,9 +41,17 @@ export default function HeroSlider() {
   const mousePosition = useRef({ x: 0, y: 0 });
   const heroRef = useRef(null);
   const [parallaxStyle, setParallaxStyle] = useState({ x: 0, y: 0 });
+  const [isDesktop, setIsDesktop] = useState(false);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
+
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth > 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -89,7 +85,7 @@ export default function HeroSlider() {
               key={idx}
               className="flex-[0_0_85%] sm:flex-[0_0_90%] min-w-0 px-2 relative"
             >
-              <div className="relative h-[400px] md:h-[550px] overflow-hidden rounded-2xl shadow-xl group">
+              <div className="relative h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-glass-lg group">
                 <motion.img
                   src={slide.image}
                   alt={slide.title}
@@ -100,7 +96,7 @@ export default function HeroSlider() {
                   }}
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 
                 <div className="absolute inset-0 flex items-center px-8 md:px-16">
                   <div className="max-w-xl text-white">
@@ -111,8 +107,8 @@ export default function HeroSlider() {
                           custom={0}
                           initial="hidden"
                           animate="visible"
-                          variants={textVariants}
-                          className="text-3xl md:text-6xl font-bold mb-4 leading-tight uppercase drop-shadow-lg"
+                          variants={heroTextVariants}
+                          className="text-3xl md:text-6xl font-display font-bold mb-4 leading-tight uppercase drop-shadow-lg"
                         >
                           {slide.title}
                         </motion.h2>
@@ -121,8 +117,8 @@ export default function HeroSlider() {
                           custom={1}
                           initial="hidden"
                           animate="visible"
-                          variants={textVariants}
-                          className="text-lg md:text-xl mb-8 text-white/80"
+                          variants={heroTextVariants}
+                          className="text-lg md:text-xl mb-8 text-white/80 font-light"
                         >
                           {slide.subtitle}
                         </motion.p>
@@ -131,12 +127,11 @@ export default function HeroSlider() {
                           custom={2}
                           initial="hidden"
                           animate="visible"
-                          variants={textVariants}
+                          variants={heroTextVariants}
                         >
                           <Link to="/collection">
-                            <button className="relative overflow-hidden bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 text-lg shadow-lg shadow-orange-600/30 hover:shadow-orange-600/50 hover:scale-105 active:scale-95 group/btn">
+                            <button className="btn-primary btn-shimmer text-lg">
                               <span className="relative z-10">{slide.cta}</span>
-                              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-700 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
                             </button>
                           </Link>
                         </motion.div>
@@ -145,8 +140,8 @@ export default function HeroSlider() {
                   </div>
                 </div>
 
-                {idx === selectedIndex && (
-                  <div className="absolute right-4 md:right-12 top-1/2 -translate-y-1/2 w-[180px] h-[180px] md:w-[280px] md:h-[280px] hidden sm:block pointer-events-auto">
+                {idx === selectedIndex && isDesktop && (
+                  <div className="absolute right-8 lg:right-16 top-1/2 -translate-y-1/2 w-[250px] h-[250px] lg:w-[300px] lg:h-[300px] pointer-events-auto">
                     <BrakeDisc3D
                       mousePosition={mousePosition}
                       className="w-full h-full"
@@ -161,25 +156,26 @@ export default function HeroSlider() {
 
       <button
         onClick={scrollPrev}
-        className="absolute left-12 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 hover:scale-110 active:scale-95 z-20 transition-all duration-300 shadow-lg"
+        className="absolute left-4 sm:left-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full glass text-white flex items-center justify-center hover:bg-white/30 hover:scale-110 active:scale-95 z-20 transition-all duration-300"
       >
-        <ChevronLeft size={24} />
+        <ChevronLeft size={22} />
       </button>
       <button
         onClick={scrollNext}
-        className="absolute right-12 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white/20 hover:scale-110 active:scale-95 z-20 transition-all duration-300 shadow-lg"
+        className="absolute right-4 sm:right-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full glass text-white flex items-center justify-center hover:bg-white/30 hover:scale-110 active:scale-95 z-20 transition-all duration-300"
       >
-        <ChevronRight size={24} />
+        <ChevronRight size={22} />
       </button>
 
       <div className="flex justify-center gap-2 mt-6">
         {slides.map((_, idx) => (
-          <div
+          <button
             key={idx}
+            onClick={() => emblaApi?.scrollTo(idx)}
             className={`h-2 rounded-full transition-all duration-500 ${
               idx === selectedIndex
-                ? "w-8 bg-orange-600 shadow-lg shadow-orange-600/50"
-                : "w-2 bg-gray-300 hover:bg-gray-400"
+                ? "w-8 bg-brand-500 shadow-glow"
+                : "w-2 bg-surface-300 hover:bg-surface-400"
             }`}
           />
         ))}

@@ -10,26 +10,26 @@ const CartTotal = () => {
         <Title text1={"CART"} text2={"TOTALS"} />
       </div>
 
-      <div className="flex flex-col gap-2 mt-2 text-sm">
-        <div className="flex justify-between">
+      <div className="flex flex-col gap-3 mt-4 text-sm">
+        <div className="flex justify-between text-surface-600">
           <p>Subtotal</p>
-          <p>
+          <p className="font-medium">
             {currency} {getCartAmount().toFixed(2)}
           </p>
         </div>
-        <hr />
+        <hr className="border-surface-100" />
 
-        <div className="flex justify-between">
+        <div className="flex justify-between text-surface-600">
           <p>Shipping Fee</p>
-          <p>
+          <p className="font-medium">
             {currency} {delivery_fee.toFixed(2)}
           </p>
         </div>
-        <hr />
+        <hr className="border-surface-100" />
 
-        <div className="flex justify-between">
-          <b>Total</b>
-          <b>
+        <div className="flex justify-between pt-2">
+          <b className="text-surface-900 font-display">Total</b>
+          <b className="text-brand-500 text-lg font-display">
             {currency}{" "}
             {(getCartAmount() === 0
               ? 0

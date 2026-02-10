@@ -1,0 +1,69 @@
+I have a fully functional MERN stack e-commerce website for "Japan Autos" (car parts/accessories shop). I need to transform it into a premium, immersive shopping experience with modern animations, 3D elements, and polished UI/UX.
+
+═══════════════════════════════════════════════════════════════
+📋 CURRENT TECHNICAL STACK
+═══════════════════════════════════════════════════════════════
+- Frontend: React (Functional Components + Hooks), Tailwind CSS, React Context API
+- Backend: Node.js/Express + MongoDB Atlas
+- Icons: react-icons (md)
+- Working Features: Product filtering (categories/subcategories), Admin dashboard, Token-based auth, Mobile drawer
+
+═══════════════════════════════════════════════════════════════
+🎯 UPGRADE OBJECTIVES (Execute in This Order)
+═══════════════════════════════════════════════════════════════
+
+**PHASE 1: Animation Foundation (Start Here)**
+1. Install `framer-motion`
+2. Implement these animations:
+   ✓ Page transitions (fade + slide) for all route changes
+   ✓ Staggered grid animations for product cards (0.1s delay between each)
+   ✓ Hero section entrance (fade-up effect)
+   ✓ Smooth scroll-triggered animations for sections below fold
+
+**PHASE 2: Micro-Interactions**
+3. Add hover effects:
+   ✓ Product cards: Scale to 1.05 + subtle shadow increase (no layout shift)
+   ✓ Buttons: Magnetic cursor effect (element follows cursor slightly)
+   ✓ CTA buttons: Shimmer/gradient animation on hover
+4. Loading states: Skeleton screens for product grids (replace spinners)
+
+**PHASE 3: 3D Integration**
+5. Install: `three`, `@react-three/fiber`, `@react-three/drei`
+6. Create ONE 3D element:
+   ✓ Hero background: Floating, slowly rotating 3D car part (brake disc or turbocharger)
+   ✓ Responsive: Hide on mobile, show only on screens >1024px
+   ✓ Performance: Low poly model, optimized textures
+
+**PHASE 4: UI Polish**
+7. Design System Enhancements:
+   ✓ Glassmorphism: Apply to navbar, product cards, modals (backdrop-blur-md)
+   ✓ Color Scheme: Dark mode base (#0a0a0a), orange-600 accents, white text
+   ✓ Typography: Upgrade to 'Inter' or 'Outfit' font (CDN link)
+8. Instant Search: Convert search bar to live filtering (debounced, 300ms delay)
+
+═══════════════════════════════════════════════════════════════
+🔒 CRITICAL CONSTRAINTS
+═══════════════════════════════════════════════════════════════
+- DO NOT modify: MongoDB schemas, ShopContext logic, existing API endpoints
+- DO NOT remove: Any current filtering/auth/admin functionality
+- Code Style: Keep modular (separate animation configs in `/utils` folder)
+- Mobile-First: All animations must work smoothly on mobile (disable 3D on <768px)
+
+═══════════════════════════════════════════════════════════════
+📦 EXPECTED DELIVERABLES
+═══════════════════════════════════════════════════════════════
+1. Updated `package.json` with new dependencies
+2. Animation configuration file (`/utils/animations.js`)
+3. Modified components with Framer Motion wrappers
+4. 3D component (`components/Hero3D.jsx`) with usage example
+5. Updated Tailwind config with new color tokens
+
+═══════════════════════════════════════════════════════════════
+🎬 START WITH THIS SPECIFIC TASK
+═══════════════════════════════════════════════════════════════
+Create a detailed animation plan for the `Home.jsx` hero section:
+- Propose specific Framer Motion variants for heading, subheading, and CTA button
+- Show code example for staggered product grid animation
+- Explain performance optimization strategy (viewport-based triggering)
+
+After this is approved, we'll move to Phase 2.
