@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
+  const [showProfileClick, setShowProfileClick] = useState(false);
   const { setShowSearch, getCartCount, navigate, token, logout } =
     useContext(ShopContext);
 
@@ -14,6 +15,20 @@ const Navbar = () => {
     document.body.style.overflow = visible ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
   }, [visible]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showProfileClick && !e.target.closest(".profile-menu-container")) {
+        setShowProfileClick(false);
+      }
+    };
+
+    if (showProfileClick) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [showProfileClick]);
 
   const navLinkClass = ({ isActive }) =>
     `relative px-1 py-1 text-sm font-bold tracking-widest transition-all duration-300
@@ -60,37 +75,35 @@ const Navbar = () => {
               <img src={assets.search_icon} className="w-5" alt="" />
             </motion.button>
 
-            <div
-              className="relative"
-              onMouseEnter={() => setShowProfile(true)}
-              onMouseLeave={() => setShowProfile(false)}
-            >
+            <div className="relative profile-menu-container">
               <motion.button
-                onClick={() => (token ? null : navigate("/login"))}
+                onClick={() => token && setShowProfileClick(!showProfileClick)}
                 className="p-2.5 rounded-full text-surface-500 hover:bg-brand-50 hover:text-brand-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
+                onMouseEnter={() => token && setShowProfile(true)}
+                onMouseLeave={() => token && setShowProfile(false)}
               >
                 <img src={assets.profile_icon} className="w-5" alt="" />
               </motion.button>
 
-              {/* Invisible spacer to prevent dropdown from disappearing */}
-              {token && showProfile && (
-                <div className="absolute right-0 top-full w-48 h-2" />
-              )}
-
               {token && (
                 <motion.div
-                  className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg"
+                  className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg z-[100]"
                   initial={{ opacity: 0, y: -5 }}
                   animate={
-                    showProfile ? { opacity: 1, y: 0 } : { opacity: 0, y: -5 }
+                    showProfile || showProfileClick
+                      ? { opacity: 1, y: 0 }
+                      : { opacity: 0, y: -5 }
                   }
                   transition={{ duration: 0.15 }}
+                  pointerEvents={
+                    showProfile || showProfileClick ? "auto" : "none"
+                  }
                 >
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       navigate("/profile");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
@@ -99,7 +112,7 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       navigate("/addresses");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
@@ -108,7 +121,7 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       navigate("/orders");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
@@ -117,7 +130,7 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       navigate("/wishlist");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
@@ -126,7 +139,7 @@ const Navbar = () => {
                   </button>
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       navigate("/account");
                     }}
                     className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
@@ -136,7 +149,7 @@ const Navbar = () => {
                   <hr className="my-1 border-gray-100" />
                   <button
                     onClick={() => {
-                      setShowProfile(false);
+                      setShowProfileClick(false);
                       logout();
                     }}
                     className="flex w-full px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
