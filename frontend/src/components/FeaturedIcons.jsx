@@ -14,14 +14,14 @@ import {
 
 const categories = [
     { name: 'Engine', icon: Cog, query: 'Engine' },
-    { name: 'Brakes', icon: Disc, query: 'Brakes' },
+    { name: 'Brakes', icon: Disc, query: 'Brake' },
     { name: 'Suspension', icon: Car, query: 'Suspension' },
     { name: 'Ignition', icon: Zap, query: 'Ignition' },
     { name: 'Electrical', icon: Battery, query: 'Electrical' },
     { name: 'Body', icon: ShieldCheck, query: 'Body' },
     { name: 'Wheels', icon: Car, query: 'Wheels' },
     { name: 'Auto Detailing', icon: SprayCan, query: 'Autodetailing' }, // Mapping to "Autodetailing"
-    { name: 'Engine Oil', icon: Droplets, query: 'Engine' }, // Maybe map to Engine or create new? Let's map to Engine for now or just pass "Engine Oil" if it exists in data
+    { name: 'Engine Oil', icon: Droplets, query: 'Engine Oil' }, // Corrected query to match DB
     { name: 'Filters', icon: Wrench, query: 'Filters' },
 ];
 

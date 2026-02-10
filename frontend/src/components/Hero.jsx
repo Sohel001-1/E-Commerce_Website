@@ -6,24 +6,35 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { heroTextVariants } from "../utils/animations";
 
+// 1. Video served from public folder
+const engineVideo = "/engine_video.mp4";
+
 const slides = [
   {
-    image:
-      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
+    type: "video",
+    videoSource: engineVideo,
+    title: "Precision Engineering",
+    subtitle: "Experience the power of genuine Japanese components",
+    cta: "Explore Parts",
+  },
+
+  {
+    type: "image",
+    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
+    type: "image",
+    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
     title: "Genuine Engine Parts",
     subtitle: "OEM quality components for peak performance",
     cta: "Shop Engine Parts",
   },
   {
-    image:
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
+    type: "image",
+    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
     title: "Premium Brake Systems",
     subtitle: "Safety first with authentic components",
     cta: "Browse Brakes",
@@ -37,7 +48,6 @@ export default function HeroSlider() {
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const mousePosition = useRef({ x: 0, y: 0 });
   const heroRef = useRef(null);
   const [parallaxStyle, setParallaxStyle] = useState({ x: 0, y: 0 });
 
@@ -59,7 +69,6 @@ export default function HeroSlider() {
     const rect = heroRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
     const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    mousePosition.current = { x, y };
     setParallaxStyle({ x: x * 15, y: y * 10 });
   }, []);
 
@@ -77,16 +86,34 @@ export default function HeroSlider() {
               className="flex-[0_0_85%] sm:flex-[0_0_90%] min-w-0 px-2 relative"
             >
               <div className="relative h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-glass-lg group">
-                <motion.img
-                  src={slide.image}
-                  alt={slide.title}
-                  className="w-full h-full object-cover"
-                  style={{
-                    transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
-                    transition: "transform 0.3s ease-out",
-                  }}
-                />
 
+                {/* 2. Conditional Rendering for Video or Image */}
+                {slide.type === "video" ? (
+                  <video
+                    src={slide.videoSource}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover"
+                    style={{
+                      transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.15)`,
+                      transition: "transform 0.3s ease-out",
+                    }}
+                  />
+                ) : (
+                  <motion.img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="w-full h-full object-cover"
+                    style={{
+                      transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
+                      transition: "transform 0.3s ease-out",
+                    }}
+                  />
+                )}
+
+                {/* Dark Overlay to make text readable */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 
                 <div className="absolute inset-0 flex items-center px-8 md:px-16">
@@ -136,6 +163,7 @@ export default function HeroSlider() {
         </div>
       </div>
 
+      {/* Navigation Arrows */}
       <button
         onClick={scrollPrev}
         className="absolute left-4 sm:left-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full glass text-white flex items-center justify-center hover:bg-white/30 hover:scale-110 active:scale-95 z-20 transition-all duration-300"
@@ -149,16 +177,16 @@ export default function HeroSlider() {
         <ChevronRight size={22} />
       </button>
 
+      {/* Pagination Dots */}
       <div className="flex justify-center gap-2 mt-6">
         {slides.map((_, idx) => (
           <button
             key={idx}
             onClick={() => emblaApi?.scrollTo(idx)}
-            className={`h-2 rounded-full transition-all duration-150 ${
-              idx === selectedIndex
-                ? "w-8 bg-brand-500 shadow-glow"
-                : "w-2 bg-surface-300 hover:bg-surface-400"
-            }`}
+            className={`h-2 rounded-full transition-all duration-500 ${idx === selectedIndex
+              ? "w-8 bg-brand-500 shadow-glow"
+              : "w-2 bg-surface-300 hover:bg-surface-400"
+              }`}
           />
         ))}
       </div>
