@@ -50,8 +50,12 @@ const Orders = () => {
         {orderData.length === 0 ? (
           <motion.div className="text-center py-20" {...fadeUp}>
             <p className="text-5xl mb-4">📦</p>
-            <p className="text-surface-500 text-lg font-display font-semibold">No orders yet</p>
-            <p className="text-surface-400 text-sm mt-2">Your order history will appear here</p>
+            <p className="text-surface-500 text-lg font-display font-semibold">
+              No orders yet
+            </p>
+            <p className="text-surface-400 text-sm mt-2">
+              Your order history will appear here
+            </p>
           </motion.div>
         ) : (
           <motion.div
@@ -66,9 +70,15 @@ const Orders = () => {
                 className="py-5 border-b border-surface-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:bg-surface-50/50 px-4 -mx-4 rounded-2xl transition-colors"
               >
                 <div className="flex items-start gap-5 text-sm">
-                  <img className="w-16 sm:w-20 rounded-xl shadow-card object-cover" src={item.image[0]} alt="" />
+                  <img
+                    className="w-16 sm:w-20 rounded-xl shadow-card object-cover"
+                    src={item.image?.[0]}
+                    alt=""
+                  />
                   <div>
-                    <p className="text-base font-display font-semibold text-surface-800">{item.name}</p>
+                    <p className="text-base font-display font-semibold text-surface-800">
+                      {item.name}
+                    </p>
                     <div className="flex items-center gap-3 mt-2 text-surface-600">
                       <p className="text-lg font-bold text-brand-500">
                         {currency}
@@ -78,7 +88,8 @@ const Orders = () => {
                       <p className="text-sm">Qty: {item.quantity}</p>
                     </div>
                     <p className="mt-2 text-surface-400 text-xs">
-                      {new Date(item.date).toDateString()} &middot; {item.paymentMethod}
+                      {new Date(item.date).toDateString()} &middot;{" "}
+                      {item.paymentMethod}
                     </p>
                   </div>
                 </div>

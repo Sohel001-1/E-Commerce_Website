@@ -62,7 +62,9 @@ const Cart = () => {
         {cartData.length === 0 ? (
           <motion.div className="py-20 text-center" {...fadeUp}>
             <div className="text-6xl mb-4">🛒</div>
-            <p className="text-surface-500 text-lg font-display font-semibold">Your cart is empty</p>
+            <p className="text-surface-500 text-lg font-display font-semibold">
+              Your cart is empty
+            </p>
             <p className="text-surface-400 text-sm mt-2">
               Explore our collection to find amazing auto parts
             </p>
@@ -76,7 +78,11 @@ const Cart = () => {
             </motion.button>
           </motion.div>
         ) : (
-          <motion.div variants={staggerContainer} initial="initial" animate="animate">
+          <motion.div
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+          >
             <AnimatePresence>
               {cartData.map((item, index) => {
                 const productData = products.find(
@@ -91,22 +97,28 @@ const Cart = () => {
                     className="py-4 border-b border-surface-100 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
                   >
                     <div className="flex items-start gap-4 sm:gap-6">
-                      <img
-                        className="w-16 sm:w-20 rounded-xl object-cover shadow-card"
-                        src={productData?.image?.[0]}
-                        alt={productData?.name}
-                      />
-                      <div>
-                        <p className="text-xs sm:text-base font-display font-semibold text-surface-800">
-                          {productData?.name}
-                        </p>
-                        <div className="flex items-center gap-5 mt-2">
-                          <p className="text-brand-500 font-bold">
-                            {currency}
-                            {productData?.price}
-                          </p>
-                        </div>
-                      </div>
+                      {productData ? (
+                        <>
+                          <img
+                            className="w-16 sm:w-20 rounded-xl object-cover shadow-card"
+                            src={productData?.image?.[0]}
+                            alt={productData?.name}
+                          />
+                          <div>
+                            <p className="text-xs sm:text-base font-display font-semibold text-surface-800">
+                              {productData?.name}
+                            </p>
+                            <div className="flex items-center gap-5 mt-2">
+                              <p className="text-brand-500 font-bold">
+                                {currency}
+                                {productData?.price}
+                              </p>
+                            </div>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="w-16 sm:w-20 h-20 rounded-xl bg-gray-200 animate-pulse" />
+                      )}
                     </div>
 
                     <input
