@@ -297,6 +297,7 @@ const getWishlist = async (req, res) => {
   try {
     const { userId } = req.body;
     const user = await userModel.findById(userId).populate("wishlist");
+    console.log("Fetched Wishlist for user:", userId, user.wishlist);
     res.json({ success: true, wishlist: user.wishlist });
   } catch (error) {
     res.json({ success: false, message: error.message });
