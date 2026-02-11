@@ -146,37 +146,40 @@ const Cart = () => {
               })}
             </AnimatePresence>
           </motion.div>
-        )}
-      </div>
+        )
+        }
+      </div >
 
-      {cartData.length > 0 && (
-        <motion.div className="flex justify-end my-16" {...fadeUp}>
-          <div className="w-full sm:w-[450px] glass-card p-8 rounded-3xl">
-            <CartTotal />
-            <div className="w-full flex justify-end gap-3 mt-8">
-              <motion.button
-                onClick={() => navigate("/collection")}
-                className="btn-secondary text-sm px-6 py-3 uppercase"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Continue Shopping
-              </motion.button>
+      {
+        cartData.length > 0 && (
+          <motion.div className="flex justify-end my-16" {...fadeUp}>
+            <div className="w-full sm:w-[450px] glass-card p-8 rounded-3xl">
+              <CartTotal />
+              <div className="w-full flex justify-end gap-3 mt-8">
+                <motion.button
+                  onClick={() => navigate("/collection")}
+                  className="btn-secondary text-sm px-6 py-3 uppercase"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Continue Shopping
+                </motion.button>
 
-              <motion.button
-                onClick={() => navigate("/place-order")}
-                className="btn-primary btn-shimmer text-sm px-6 py-3 uppercase disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={cartData.length === 0}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Checkout
-              </motion.button>
+                <motion.button
+                  onClick={() => navigate("/place-order")}
+                  className="btn-primary btn-shimmer text-sm px-6 py-3 uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={cartData.length === 0}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Checkout
+                </motion.button>
+              </div>
             </div>
-          </div>
-        </motion.div>
-      )}
-    </div>
+          </motion.div>
+        )
+      }
+    </div >
   );
 };
 

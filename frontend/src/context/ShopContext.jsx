@@ -71,8 +71,13 @@ const ShopContextProvider = (props) => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
+
+  useEffect(() => {
+    console.log("Wishlist Data:", wishlist);
+  }, [wishlist]);
 
   const toggleWishlist = async (productId) => {
     if (!token) {

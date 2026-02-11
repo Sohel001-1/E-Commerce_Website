@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
             isDefault: { type: Boolean, default: false }
         }
     ],
-    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'product' }] 
+    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
 }, { minimize: false, timestamps: true });
 
 const userModel = mongoose.models.user || mongoose.model('user', userSchema);
