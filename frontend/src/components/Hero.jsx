@@ -7,7 +7,7 @@ import { motion } from "framer-motion";
 import { heroTextVariants } from "../utils/animations";
 
 // 1. Video served from public folder
-const engineVideo = "/engine_video.mp4";
+import engineVideo from "../assets/engine_video.mp4";
 
 const slides = [
   {
