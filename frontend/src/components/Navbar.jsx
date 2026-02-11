@@ -75,89 +75,87 @@ const Navbar = () => {
               <img src={assets.search_icon} className="w-5" alt="" />
             </motion.button>
 
-            <div className="relative profile-menu-container">
+            <div
+              className="relative profile-menu-container"
+              onMouseEnter={() => token && setShowProfile(true)}
+              onMouseLeave={() => token && setShowProfile(false)}
+            >
               <motion.button
                 onClick={() => token && setShowProfileClick(!showProfileClick)}
                 className="p-2.5 rounded-full text-surface-500 hover:bg-brand-50 hover:text-brand-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onMouseEnter={() => token && setShowProfile(true)}
-                onMouseLeave={() => token && setShowProfile(false)}
               >
                 <img src={assets.profile_icon} className="w-5" alt="" />
               </motion.button>
 
-              {token && (
-                <motion.div
-                  className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg z-[100]"
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={
-                    showProfile || showProfileClick
-                      ? { opacity: 1, y: 0 }
-                      : { opacity: 0, y: -5 }
-                  }
-                  transition={{ duration: 0.15 }}
-                  pointerEvents={
-                    showProfile || showProfileClick ? "auto" : "none"
-                  }
-                >
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      navigate("/profile");
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+              <AnimatePresence>
+                {token && (showProfile || showProfileClick) && (
+                  <motion.div
+                    className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg z-[100]"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                    transition={{ duration: 0.15 }}
                   >
-                    My Profile
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      navigate("/addresses");
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
-                  >
-                    Addresses
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      navigate("/orders");
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
-                  >
-                    Orders
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      navigate("/wishlist");
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
-                  >
-                    Wishlist
-                  </button>
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      navigate("/account");
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
-                  >
-                    Account Settings
-                  </button>
-                  <hr className="my-1 border-gray-100" />
-                  <button
-                    onClick={() => {
-                      setShowProfileClick(false);
-                      logout();
-                    }}
-                    className="flex w-full px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
-                  >
-                    Logout
-                  </button>
-                </motion.div>
-              )}
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        navigate("/profile");
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                    >
+                      My Profile
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        navigate("/addresses");
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                    >
+                      Addresses
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        navigate("/orders");
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                    >
+                      Orders
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        navigate("/wishlist");
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                    >
+                      Wishlist
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        navigate("/account");
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm hover:bg-brand-50 rounded-xl transition-colors"
+                    >
+                      Account Settings
+                    </button>
+                    <hr className="my-1 border-gray-100" />
+                    <button
+                      onClick={() => {
+                        setShowProfileClick(false);
+                        logout();
+                      }}
+                      className="flex w-full px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             <Link
