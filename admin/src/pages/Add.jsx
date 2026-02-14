@@ -14,7 +14,7 @@ const Add = ({ token }) => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   // Updated initial categories to match your requested sections
-  const [category, setCategory] = useState("Autodetailing");
+  const [category, setCategory] = useState("Suspension");
   // 1. New State for Brand and Advanced Filters
   const [brand, setBrand] = useState("NGK");
   const [countryOfOrigin, setCountryOfOrigin] = useState("");
@@ -106,7 +106,7 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
-        setBrand("NGK"); // Reset Brand
+        setBrand(""); // Reset Brand
         setCountryOfOrigin("");
         setCountryOfImport("");
         setUnitSize("");
@@ -212,17 +212,26 @@ const Add = ({ token }) => {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="Autodetailing">Autodetailing</option>
-              <option value="Engine Oil">Engine Oil</option>
+              <option value="Suspension">Suspension</option>
+              <option value="Fuel Supply System">Fuel Supply System</option>
               <option value="Filters">Filters</option>
               <option value="Damping">Damping</option>
-              <option value="Ignition">Ignition</option>
-              <option value="Engine">Engine</option>
-              <option value="Brake">Brake</option>
-              <option value="Suspension">Suspension</option>
-              <option value="Electrical">Electrical</option>
-              <option value="Body">Body</option>
               <option value="Wheels">Wheels</option>
+              <option value="Brakes">Brakes</option>
+              <option value="Ignition">Ignition</option>
+              <option value="Gasket and Sealing Rings">Gasket and Sealing Rings</option>
+              <option value="Steering">Steering</option>
+              <option value="Belts, Chains and Rollers">Belts, Chains and Rollers</option>
+              <option value="Engine">Engine</option>
+              <option value="Interior">Interior</option>
+              <option value="Body">Body</option>
+              <option value="Electrics">Electrics</option>
+              <option value="Clutch">Clutch</option>
+              <option value="Oils and Fluids">Oils and Fluids</option>
+              <option value="Engine Cooling System">Engine Cooling System</option>
+              <option value="Wiper and Washer System">Wiper and Washer System</option>
+              <option value="Exhaust">Exhaust</option>
+              <option value="Heating and Ventilation">Heating and Ventilation</option>
             </select>
           </div>
           <div className="flex flex-col gap-2">
