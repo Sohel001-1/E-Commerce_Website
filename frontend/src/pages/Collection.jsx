@@ -223,19 +223,17 @@ const Collection = () => {
 
   ];
 
-  const BRAND_DATA = [
-    { name: "3M", image: assets.quality_icon },
-    { name: "555", image: assets.quality_icon },
-    { name: "AISIN", image: assets.quality_icon },
-    { name: "Autolite", image: assets.quality_icon },
-    { name: "AUTOPROFI", image: assets.quality_icon },
-    { name: "bluechem", image: assets.quality_icon },
-    { name: "BIZOL", image: assets.quality_icon },
-    { name: "AbBlue", image: assets.quality_icon },
-    { name: "AUTOGLYM", image: assets.quality_icon },
-    { name: "BOSCH", image: assets.quality_icon },
-    { name: "CAT", image: assets.quality_icon },
-  ];
+  const formatBrandLabel = (key) =>
+    key
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const BRAND_DATA = Object.entries(assets.brandAssets).map(
+    ([key, image]) => ({
+      name: formatBrandLabel(key),
+      image,
+    }),
+  );
 
   const FilterCheckbox = ({ value, onChange, label, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-0.5">
@@ -255,26 +253,27 @@ const Collection = () => {
   const FilterGridItem = ({ value, onChange, label, image, checked }) => (
     <div
       onClick={() => onChange({ target: { value } })}
-      className={`cursor-pointer group flex flex-col items-center gap-2 p-2 rounded-xl transition-all duration-200 border ${checked
-        ? "border-brand-500 bg-brand-50/50"
-        : "border-surface-200 hover:border-surface-300 hover:bg-surface-50"
+      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${checked
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
         }`}
     >
-      <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg p-2 shadow-sm group-hover:shadow-md transition-shadow">
+      <div className="w-24 h-24 mb-3 flex items-center justify-center">
         <img
           src={image}
           alt={label}
           loading="eager"
           decoding="sync"
-          className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+          className="w-full h-full object-contain"
+          style={{ imageRendering: "-webkit-optimize-contrast" }}
         />
       </div>
-      <span
-        className={`text-xs text-center font-medium leading-tight ${checked ? "text-brand-700" : "text-surface-600 group-hover:text-surface-900"
+      <p
+        className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${checked ? "text-orange-700" : "text-gray-900"
           }`}
       >
         {label}
-      </span>
+      </p>
     </div>
   );
 
