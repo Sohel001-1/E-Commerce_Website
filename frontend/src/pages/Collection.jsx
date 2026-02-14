@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { staggerContainer, fadeUp } from "../utils/animations";
 import { SkeletonGrid } from "../components/Skeleton";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
+import { CATEGORY_DATA, BRAND_DATA } from "../assets/data";
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
@@ -187,55 +188,7 @@ const Collection = () => {
 
   // Placeholder data for categories and brands with images
   // In a real app, these would likely come from an API or a separate data file with real image paths
-  const CATEGORY_DATA = [
-    { name: "Suspension", image: assets.suspension },
-    { name: "Fuel Supply System", image: assets.fuel_supply_system },
-    { name: "Filters", image: assets.filters },
-    { name: "Damping", image: assets.damping },
-    { name: "Wheels", image: assets.wheels },
-    { name: "Brakes", image: assets.brakes },
-    { name: "Ignition", image: assets.ignition },
-    { name: "Gasket and Sealing Rings", image: assets.gasket_and_sealing_rings },
-    { name: "Steering", image: assets.steering },
-    { name: "Belts, Chains and Rollers", image: assets.belts_chains_and_rollers },
-    { name: "Engine", image: assets.engine },
-    { name: "Interior", image: assets.interior },
-    { name: "Body", image: assets.body },
-    { name: "Electrics", image: assets.electrics },
-    { name: "Clutch", image: assets.clutch },
-    { name: "Oils and Fluids", image: assets.oils_and_fluids },
-    { name: "Engine Cooling System", image: assets.engine_cooling_system },
-    { name: "Wiper and Washer System", image: assets.wiper_and_washer_system },
-    { name: "Exhaust", image: assets.exhaust },
-    { name: "Heating and Ventilation", image: assets.heating_and_ventilation },
-    { name: "Transmission", image: assets.transmission },
-    { name: "Air Conditioning", image: assets.air_conditioning },
-    { name: "Bearing", image: assets.bearing },
-    { name: "Propshaft and Differentials", image: assets.propshaft_and_differentials },
-    { name: "Sensors, Relay and Control Units", image: assets.sensors_relay_and_control_units },
-    { name: "Car Accessories", image: assets.car_accessories },
-    { name: "Repair Kits", image: assets.repair_kits },
-    { name: "Tools and Equipment", image: assets.tools_and_equipment },
-    { name: "Pipes and Hoses", image: assets.pipes_and_hoses },
-    { name: "Auto Detailing and Care", image: assets.auto_detailing_and_care },
-    { name: "Lighting", image: assets.lighting },
-    { name: "Tuning", image: assets.tuning },
 
-  ];
-
-  const BRAND_DATA = [
-    { name: "3M", image: assets.quality_icon },
-    { name: "555", image: assets.quality_icon },
-    { name: "AISIN", image: assets.quality_icon },
-    { name: "Autolite", image: assets.quality_icon },
-    { name: "AUTOPROFI", image: assets.quality_icon },
-    { name: "bluechem", image: assets.quality_icon },
-    { name: "BIZOL", image: assets.quality_icon },
-    { name: "AbBlue", image: assets.quality_icon },
-    { name: "AUTOGLYM", image: assets.quality_icon },
-    { name: "BOSCH", image: assets.quality_icon },
-    { name: "CAT", image: assets.quality_icon },
-  ];
 
   const FilterCheckbox = ({ value, onChange, label, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-0.5">
@@ -281,23 +234,21 @@ const Collection = () => {
   const CategoryCard = ({ category, isActive, onClick }) => (
     <div
       onClick={onClick}
-      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
-        isActive
-          ? "border-orange-500 bg-orange-50 shadow-lg"
-          : "border-gray-300 hover:border-gray-400 bg-white"
-      }`}
+      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${isActive
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
+        }`}
     >
       <div className="w-24 h-24 mb-3 flex items-center justify-center">
-        <img 
-          src={category.image} 
+        <img
+          src={category.image}
           alt={category.name}
           className="w-full h-full object-contain"
           style={{ imageRendering: '-webkit-optimize-contrast' }}
         />
       </div>
-      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${
-        isActive ? "text-orange-700" : "text-gray-900"
-      }`}>
+      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${isActive ? "text-orange-700" : "text-gray-900"
+        }`}>
         {category.name}
       </p>
     </div>
