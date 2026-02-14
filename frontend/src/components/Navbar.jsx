@@ -166,6 +166,7 @@ const Navbar = () => {
 
             <Link
               to="/cart"
+              onClick={() => token && getUserCart(token)}
               className="relative p-2.5 rounded-full text-surface-500 group hover:bg-brand-50 transition-colors"
             >
               <motion.img
