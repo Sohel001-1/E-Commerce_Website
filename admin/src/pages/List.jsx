@@ -18,8 +18,15 @@ const List = ({ token }) => {
     description: "",
     price: "",
     category: "Autodetailing",
-    subCategory: "General",
     brand: "3M",
+    countryOfOrigin: "",
+    countryOfImport: "",
+    unitSize: "",
+    sae: "",
+    oilType: "",
+    api: "",
+    acea: "",
+    appropriateUse: "",
     bestseller: false,
   });
 
@@ -69,8 +76,15 @@ const List = ({ token }) => {
       description: item.description || "",
       price: item.price ?? "",
       category: item.category || "Autodetailing",
-      subCategory: item.subCategory || "General",
       brand: item.brand || "3M",
+      countryOfOrigin: item.countryOfOrigin || "",
+      countryOfImport: item.countryOfImport || "",
+      unitSize: item.unitSize || "",
+      sae: item.sae || "",
+      oilType: item.oilType || "",
+      api: item.api || "",
+      acea: item.acea || "",
+      appropriateUse: item.appropriateUse || "",
       bestseller: !!item.bestseller,
     });
     setIsEditOpen(true);
@@ -100,8 +114,15 @@ const List = ({ token }) => {
           description: editForm.description,
           price: Number(editForm.price),
           category: editForm.category,
-          subCategory: editForm.subCategory,
           brand: editForm.brand,
+          countryOfOrigin: editForm.countryOfOrigin,
+          countryOfImport: editForm.countryOfImport,
+          unitSize: editForm.unitSize,
+          sae: editForm.sae,
+          oilType: editForm.oilType,
+          api: editForm.api,
+          acea: editForm.acea,
+          appropriateUse: editForm.appropriateUse,
           bestseller: editForm.bestseller,
         },
         { headers: { token } },
@@ -294,29 +315,169 @@ const List = ({ token }) => {
                   </select>
                 </div>
 
+
+
+                {/* Advanced Filters Dropdowns for Edit */}
                 <div>
-                  <p className="text-sm font-medium mb-1">Sub Category</p>
+                  <p className="text-sm font-medium mb-1">Country of Origin</p>
                   <select
-                    value={editForm.subCategory}
+                    value={editForm.countryOfOrigin}
                     onChange={(e) =>
-                      setEditForm({ ...editForm, subCategory: e.target.value })
+                      setEditForm({ ...editForm, countryOfOrigin: e.target.value })
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="General">General</option>
-                    <option value="Tires">Tires</option>
-                    <option value="Brake pads">Brake pads</option>
-                    <option value="Brake pipes">Brake pipes</option>
-                    <option value="Master Cylinder">Master Cylinder</option>
-                    <option value="Caliper repair kit">
-                      Caliper repair kit
-                    </option>
-                    <option value="Engine mount">Engine mount</option>
-                    <option value="Bush">Bush</option>
-                    <option value="Thermostate">Thermostate</option>
-                    <option value="Link rod">Link rod</option>
-                    <option value="Insulator">Insulator</option>
-                    <option value="Ball">Ball</option>{" "}
+                    <option value="N/A">Select</option>
+                    <option value="Japan">Japan</option>
+                    <option value="China">China</option>
+                    <option value="Germany">Germany</option>
+                    <option value="USA">USA</option>
+                    <option value="India">India</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Taiwan">Taiwan</option>
+                    <option value="UAE">UAE</option>
+                    <option value="Korea">Korea</option>
+                    <option value="Singapore">Singapore</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">Country of Import</p>
+                  <select
+                    value={editForm.countryOfImport}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, countryOfImport: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="Japan">Japan</option>
+                    <option value="China">China</option>
+                    <option value="Germany">Germany</option>
+                    <option value="USA">USA</option>
+                    <option value="India">India</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Turkey">Turkey</option>
+                    <option value="Taiwan">Taiwan</option>
+                    <option value="UAE">UAE</option>
+                    <option value="Korea">Korea</option>
+                    <option value="Singapore">Singapore</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">Unit Size</p>
+                  <select
+                    value={editForm.unitSize}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, unitSize: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="1L">1L</option>
+                    <option value="3L">3L</option>
+                    <option value="3.5L">3.5L</option>
+                    <option value="4L">4L</option>
+                    <option value="5L">5L</option>
+                    <option value="20L">20L</option>
+                    <option value="208L">208L</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">SAE</p>
+                  <select
+                    value={editForm.sae}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, sae: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="0W-16">0W-16</option>
+                    <option value="0W-20">0W-20</option>
+                    <option value="5W-20">5W-20</option>
+                    <option value="5W-30">5W-30</option>
+                    <option value="5W-40">5W-40</option>
+                    <option value="10W-30">10W-30</option>
+                    <option value="10W-40">10W-40</option>
+                    <option value="15W-40">15W-40</option>
+                    <option value="20W-50">20W-50</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">Oil Type</p>
+                  <select
+                    value={editForm.oilType}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, oilType: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="Mineral">Mineral</option>
+                    <option value="Semi Synthetic">Semi Synthetic</option>
+                    <option value="Fully Synthetic">Fully Synthetic</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">API</p>
+                  <select
+                    value={editForm.api}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, api: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="SJ">SJ</option>
+                    <option value="SL">SL</option>
+                    <option value="SM">SM</option>
+                    <option value="SN">SN</option>
+                    <option value="SN Plus">SN Plus</option>
+                    <option value="SP">SP</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">ACEA</p>
+                  <select
+                    value={editForm.acea}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, acea: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="A3/B3">A3/B3</option>
+                    <option value="A3/B4">A3/B4</option>
+                    <option value="A5/B5">A5/B5</option>
+                    <option value="C2">C2</option>
+                    <option value="C3">C3</option>
+                    <option value="C5">C5</option>
+                    <option value="E4">E4</option>
+                    <option value="E7">E7</option>
+                  </select>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium mb-1">Appropriate Use</p>
+                  <select
+                    value={editForm.appropriateUse}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, appropriateUse: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="N/A">Select</option>
+                    <option value="Car">Car</option>
+                    <option value="Motorcycle">Motorcycle</option>
+                    <option value="Heavy Duty">Heavy Duty</option>
+                    <option value="Industry">Industry</option>
                   </select>
                 </div>
 
@@ -377,8 +538,8 @@ const List = ({ token }) => {
                 </button>
               </div>
             </form>
-          </div>
-        </div>
+          </div >
+        </div >
       )}
     </>
   );

@@ -20,10 +20,19 @@ const Cart = () => {
 
       for (const itemId in cartItems) {
         const qty = cartItems[itemId];
-        if (qty > 0) {
+
+        // Handle both number format (new) and object format (old legacy data with sizes)
+        let quantity = 0;
+        if (typeof qty === "number") {
+          quantity = qty;
+        } else if (qty && typeof qty === "object") {
+          quantity = Object.values(qty).reduce((a, b) => a + b, 0);
+        }
+
+        if (quantity > 0) {
           tempData.push({
             _id: itemId,
-            quantity: qty,
+            quantity,
           });
         }
       }
