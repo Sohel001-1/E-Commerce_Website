@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
+import Categories from "./pages/Categories";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Product from "./pages/Product";
@@ -51,6 +52,14 @@ const App = () => {
               element={
                 <PageTransition>
                   <Collection />
+                </PageTransition>
+              }
+            />
+            <Route
+              path="/category"
+              element={
+                <PageTransition>
+                  <Categories />
                 </PageTransition>
               }
             />
