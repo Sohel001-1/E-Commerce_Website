@@ -15,30 +15,27 @@ const Cart = () => {
   const [cartData, setCartData] = useState([]);
 
   useEffect(() => {
-    if (products.length > 0) {
-      const tempData = [];
+    const tempData = [];
 
-      for (const itemId in cartItems) {
-        const qty = cartItems[itemId];
+    for (const itemId in cartItems) {
+      const qty = cartItems[itemId];
 
-        // Handle both number format (new) and object format (old legacy data with sizes)
-        let quantity = 0;
-        if (typeof qty === "number") {
-          quantity = qty;
-        } else if (qty && typeof qty === "object") {
-          quantity = Object.values(qty).reduce((a, b) => a + b, 0);
-        }
-
-        if (quantity > 0) {
-          tempData.push({
-            _id: itemId,
-            quantity,
-          });
-        }
+      // Handle both number format (new) and object format (old legacy data with sizes)
+      let quantity = 0;
+      if (typeof qty === "number") {
+        quantity = qty;
+      } else if (qty && typeof qty === "object") {
+        quantity = Object.values(qty).reduce((a, b) => a + b, 0);
       }
 
-      setCartData(tempData);
+      if (quantity > 0) {
+        tempData.push({
+          _id: itemId,
+          quantity,
+        });
+      }
     }
+    setCartData(tempData);
   }, [cartItems, products]);
 
   const clearCart = () => {
@@ -112,6 +109,8 @@ const Cart = () => {
                             className="w-16 sm:w-20 rounded-xl object-cover shadow-card"
                             src={productData?.image?.[0]}
                             alt={productData?.name}
+                            loading="eager"
+                            decoding="sync"
                           />
                           <div>
                             <p className="text-xs sm:text-base font-display font-semibold text-surface-800">
