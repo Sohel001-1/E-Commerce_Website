@@ -81,7 +81,13 @@ const Navbar = () => {
               onMouseLeave={() => token && setShowProfile(false)}
             >
               <motion.button
-                onClick={() => token && setShowProfileClick(!showProfileClick)}
+                onClick={() => {
+                  if (token) {
+                    setShowProfileClick(!showProfileClick);
+                  } else {
+                    navigate("/login");
+                  }
+                }}
                 className="p-2.5 rounded-full text-surface-500 hover:bg-brand-50 hover:text-brand-500 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}

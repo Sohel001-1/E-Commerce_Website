@@ -15,9 +15,16 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState("");
   // Updated initial categories to match your requested sections
   const [category, setCategory] = useState("Autodetailing");
-  const [subCategory, setSubCategory] = useState("General");
-  // 1. New State for Brand
+  // 1. New State for Brand and Advanced Filters
   const [brand, setBrand] = useState("NGK");
+  const [countryOfOrigin, setCountryOfOrigin] = useState("");
+  const [countryOfImport, setCountryOfImport] = useState("");
+  const [unitSize, setUnitSize] = useState("");
+  const [sae, setSae] = useState("");
+  const [oilType, setOilType] = useState("");
+  const [api, setApi] = useState("");
+  const [acea, setAcea] = useState("");
+  const [appropriateUse, setAppropriateUse] = useState("");
 
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -71,9 +78,16 @@ const Add = ({ token }) => {
       formData.append("description", description);
       formData.append("price", price);
       formData.append("category", category);
-      formData.append("subCategory", subCategory);
-      // 2. Append Brand to FormData
+      // 2. Append Brand and Advanced Filters to FormData
       formData.append("brand", brand);
+      formData.append("countryOfOrigin", countryOfOrigin);
+      formData.append("countryOfImport", countryOfImport);
+      formData.append("unitSize", unitSize);
+      formData.append("sae", sae);
+      formData.append("oilType", oilType);
+      formData.append("api", api);
+      formData.append("acea", acea);
+      formData.append("appropriateUse", appropriateUse);
       formData.append("bestseller", bestseller);
 
       if (image1) formData.append("image1", image1);
@@ -93,6 +107,14 @@ const Add = ({ token }) => {
         setDescription("");
         setPrice("");
         setBrand("NGK"); // Reset Brand
+        setCountryOfOrigin("");
+        setCountryOfImport("");
+        setUnitSize("");
+        setSae("");
+        setOilType("");
+        setApi("");
+        setAcea("");
+        setAppropriateUse("");
         setImage1(false);
         setImage2(false);
         setImage3(false);
@@ -176,20 +198,7 @@ const Add = ({ token }) => {
           </select>
         </div>
 
-        {/* Sub Category Dropdown */}
-        <div className="flex flex-col gap-1">
-          <p>Sub Category</p>
-          <select
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="General">General</option>
-            <option value="Synthetic">Synthetic</option>
-            <option value="Premium">Premium</option>
-            <option value="OEM">OEM</option>
-          </select>
-        </div>
+
 
         {/* 3. Brand Dropdown Field */}
         <div className="flex flex-col gap-1">
@@ -210,6 +219,154 @@ const Add = ({ token }) => {
             <option value="AYTOGLYM">AYTOGLYM</option>
             <option value="BOSCH">BOSCH</option>
             <option value="CAT">CAT</option>
+          </select>
+        </div>
+
+        {/* Advanced Filters Inputs */}
+        <div className="flex flex-col gap-1">
+          <p>Country of Origin</p>
+          <select
+            value={countryOfOrigin}
+            onChange={(e) => setCountryOfOrigin(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="Japan">Japan</option>
+            <option value="China">China</option>
+            <option value="Germany">Germany</option>
+            <option value="USA">USA</option>
+            <option value="India">India</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Turkey">Turkey</option>
+            <option value="Taiwan">Taiwan</option>
+            <option value="UAE">UAE</option>
+            <option value="Korea">Korea</option>
+            <option value="Singapore">Singapore</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>Country of Import</p>
+          <select
+            value={countryOfImport}
+            onChange={(e) => setCountryOfImport(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="Japan">Japan</option>
+            <option value="China">China</option>
+            <option value="Germany">Germany</option>
+            <option value="USA">USA</option>
+            <option value="India">India</option>
+            <option value="Thailand">Thailand</option>
+            <option value="Turkey">Turkey</option>
+            <option value="Taiwan">Taiwan</option>
+            <option value="UAE">UAE</option>
+            <option value="Korea">Korea</option>
+            <option value="Singapore">Singapore</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>Unit Size</p>
+          <select
+            value={unitSize}
+            onChange={(e) => setUnitSize(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="1L">1L</option>
+            <option value="3L">3L</option>
+            <option value="3.5L">3.5L</option>
+            <option value="4L">4L</option>
+            <option value="5L">5L</option>
+            <option value="20L">20L</option>
+            <option value="208L">208L</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>SAE</p>
+          <select
+            value={sae}
+            onChange={(e) => setSae(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="0W-16">0W-16</option>
+            <option value="0W-20">0W-20</option>
+            <option value="5W-20">5W-20</option>
+            <option value="5W-30">5W-30</option>
+            <option value="5W-40">5W-40</option>
+            <option value="10W-30">10W-30</option>
+            <option value="10W-40">10W-40</option>
+            <option value="15W-40">15W-40</option>
+            <option value="20W-50">20W-50</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>Oil Type</p>
+          <select
+            value={oilType}
+            onChange={(e) => setOilType(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="Mineral">Mineral</option>
+            <option value="Semi Synthetic">Semi Synthetic</option>
+            <option value="Fully Synthetic">Fully Synthetic</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>API</p>
+          <select
+            value={api}
+            onChange={(e) => setApi(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="SJ">SJ</option>
+            <option value="SL">SL</option>
+            <option value="SM">SM</option>
+            <option value="SN">SN</option>
+            <option value="SN Plus">SN Plus</option>
+            <option value="SP">SP</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>ACEA</p>
+          <select
+            value={acea}
+            onChange={(e) => setAcea(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="A3/B3">A3/B3</option>
+            <option value="A3/B4">A3/B4</option>
+            <option value="A5/B5">A5/B5</option>
+            <option value="C2">C2</option>
+            <option value="C3">C3</option>
+            <option value="C5">C5</option>
+            <option value="E4">E4</option>
+            <option value="E7">E7</option>
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p>Appropriate Use</p>
+          <select
+            value={appropriateUse}
+            onChange={(e) => setAppropriateUse(e.target.value)}
+            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
+          >
+            <option value="N/A">Select</option>
+            <option value="Car">Car</option>
+            <option value="Motorcycle">Motorcycle</option>
+            <option value="Heavy Duty">Heavy Duty</option>
+            <option value="Industry">Industry</option>
           </select>
         </div>
 

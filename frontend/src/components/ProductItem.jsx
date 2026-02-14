@@ -26,9 +26,6 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
   return (
     <motion.div
       variants={staggerItem}
-      initial="initial"
-      whileInView="animate"
-      viewport={{ once: true, margin: "-50px" }}
     >
       <Link className="group block" to={`/product/${id}`}>
         <div className="relative overflow-hidden aspect-square rounded-2xl bg-surface-100 shadow-card hover:shadow-card-hover transition-all duration-500">
@@ -44,11 +41,10 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
           {/* Wishlist Heart Button */}
           <motion.button
             onClick={handleWishlistClick}
-            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 z-10 ${
-              isInWishlist
+            className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 z-10 ${isInWishlist
                 ? "bg-red-500/90 text-white scale-100"
                 : "bg-white/80 text-surface-600 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
-            }`}
+              }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
