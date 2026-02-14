@@ -208,6 +208,19 @@ const Collection = () => {
     { name: "Wiper and Washer System", image: assets.wiper_and_washer_system },
     { name: "Exhaust", image: assets.exhaust },
     { name: "Heating and Ventilation", image: assets.heating_and_ventilation },
+    { name: "Transmission", image: assets.transmission },
+    { name: "Air Conditioning", image: assets.air_conditioning },
+    { name: "Bearing", image: assets.bearing },
+    { name: "Propshaft and Differentials", image: assets.propshaft_and_differentials },
+    { name: "Sensors, Relay and Control Units", image: assets.sensors_relay_and_control_units },
+    { name: "Car Accessories", image: assets.car_accessories },
+    { name: "Repair Kits", image: assets.repair_kits },
+    { name: "Tools and Equipment", image: assets.tools_and_equipment },
+    { name: "Pipes and Hoses", image: assets.pipes_and_hoses },
+    { name: "Auto Detailing and Care", image: assets.auto_detailing_and_care },
+    { name: "Lighting", image: assets.lighting },
+    { name: "Tuning", image: assets.tuning },
+
   ];
 
   const BRAND_DATA = [
