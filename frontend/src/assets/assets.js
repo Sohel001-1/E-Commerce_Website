@@ -72,6 +72,27 @@ import contact_img from './contact_img.png'
 import razorpay_logo from './razorpay_logo.png'
 import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
+import steering from './steering.png'
+import belts_chains_and_rollers from './belts_chains_and_rollers.png'
+import engine from './engine.png'
+import interior from './interior.png'
+import body from './body.png'
+import electrics from './electrics.png'
+import clutch from './clutch.png'
+import oils_and_fluids from './oils_and_fluids.png'
+import engine_cooling_system from './engine_cooling_system.png'
+import wiper_and_washer_system from './wiper_and_washer_system.png'
+import exhaust from './exhaust.png'
+import heating_and_ventilation from './heating_and_ventilation.png'
+import suspension from './suspension.png'
+import fuel_supply_system from './fuel_supply_system.png'
+import filters from './filters.png'
+import damping from './damping.png'
+import wheels from './wheels.png'
+import brakes from './brakes.png'
+import ignition from './ignition.png'
+import gasket_and_sealing_rings from './gasket_and_sealing_rings.png'
+
 
 export const assets = {
     logo,
@@ -90,6 +111,26 @@ export const assets = {
     contact_img,
     razorpay_logo,
     stripe_logo,
-    cross_icon
+    cross_icon,
+    steering,
+    belts_chains_and_rollers,
+    engine,
+    interior,
+    body,
+    electrics,
+    clutch,
+    oils_and_fluids,
+    engine_cooling_system,
+    wiper_and_washer_system,
+    exhaust,
+    heating_and_ventilation,
+    suspension,
+    fuel_supply_system,
+    filters,
+    damping,
+    wheels,
+    brakes,
+    ignition,
+    gasket_and_sealing_rings
 }
 

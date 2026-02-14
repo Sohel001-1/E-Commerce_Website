@@ -188,13 +188,26 @@ const Collection = () => {
   // Placeholder data for categories and brands with images
   // In a real app, these would likely come from an API or a separate data file with real image paths
   const CATEGORY_DATA = [
-    { name: "Engine", image: assets.quality_icon }, // Using placeholder icon
-    { name: "Brake", image: assets.quality_icon },
-    { name: "Suspension", image: assets.quality_icon },
-    { name: "Ignition", image: assets.quality_icon },
-    { name: "Electrical", image: assets.quality_icon },
-    { name: "Body", image: assets.quality_icon },
-    { name: "Wheels", image: assets.quality_icon },
+    { name: "Suspension", image: assets.suspension },
+    { name: "Fuel Supply System", image: assets.fuel_supply_system },
+    { name: "Filters", image: assets.filters },
+    { name: "Damping", image: assets.damping },
+    { name: "Wheels", image: assets.wheels },
+    { name: "Brakes", image: assets.brakes },
+    { name: "Ignition", image: assets.ignition },
+    { name: "Gasket and Sealing Rings", image: assets.gasket_and_sealing_rings },
+    { name: "Steering", image: assets.steering },
+    { name: "Belts, Chains and Rollers", image: assets.belts_chains_and_rollers },
+    { name: "Engine", image: assets.engine },
+    { name: "Interior", image: assets.interior },
+    { name: "Body", image: assets.body },
+    { name: "Electrics", image: assets.electrics },
+    { name: "Clutch", image: assets.clutch },
+    { name: "Oils and Fluids", image: assets.oils_and_fluids },
+    { name: "Engine Cooling System", image: assets.engine_cooling_system },
+    { name: "Wiper and Washer System", image: assets.wiper_and_washer_system },
+    { name: "Exhaust", image: assets.exhaust },
+    { name: "Heating and Ventilation", image: assets.heating_and_ventilation },
   ];
 
   const BRAND_DATA = [
@@ -252,6 +265,31 @@ const Collection = () => {
     </div>
   );
 
+  const CategoryCard = ({ category, isActive, onClick }) => (
+    <div
+      onClick={onClick}
+      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
+        isActive
+          ? "border-orange-500 bg-orange-50 shadow-lg"
+          : "border-gray-300 hover:border-gray-400 bg-white"
+      }`}
+    >
+      <div className="w-24 h-24 mb-3 flex items-center justify-center">
+        <img 
+          src={category.image} 
+          alt={category.name}
+          className="w-full h-full object-contain"
+          style={{ imageRendering: '-webkit-optimize-contrast' }}
+        />
+      </div>
+      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${
+        isActive ? "text-orange-700" : "text-gray-900"
+      }`}>
+        {category.name}
+      </p>
+    </div>
+  );
+
   const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
@@ -274,7 +312,7 @@ const Collection = () => {
           className={`grid transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
             }`}
         >
-          <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-3 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
+          <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
             {children}
           </div>
         </div>
@@ -303,7 +341,7 @@ const Collection = () => {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[320px] bg-white z-50 shadow-2xl flex flex-col"
+              className="fixed inset-y-0 left-0 w-[820px] bg-white z-50 shadow-2xl flex flex-col"
             >
               {/* Sidebar Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
@@ -343,15 +381,13 @@ const Collection = () => {
                   ))}
                 </FilterSection>
 
-                <FilterSection title="CATEGORY" defaultOpen={false} layout="grid">
+                <FilterSection title="CATEGORY" defaultOpen={true} layout="grid">
                   {CATEGORY_DATA.map((item) => (
-                    <FilterGridItem
+                    <CategoryCard
                       key={item.name}
-                      value={item.name}
-                      onChange={toggleCategory}
-                      label={item.name}
-                      image={item.image}
-                      checked={category.includes(item.name)}
+                      category={item}
+                      isActive={category.includes(item.name)}
+                      onClick={() => toggleCategory({ target: { value: item.name } })}
                     />
                   ))}
                 </FilterSection>
