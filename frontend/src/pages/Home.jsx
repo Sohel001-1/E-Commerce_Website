@@ -5,13 +5,11 @@ import OurPolicy from '../components/OurPolicy';
 import NewsletterBox from '../components/NewsletterBox';
 import CategorySection from '../components/CategorySection';
 
-import FeaturedIcons from '../components/FeaturedIcons';
 
 const Home = () => {
   return (
     <div>
       <Hero />
-      <FeaturedIcons />
 
       {/* Featured Section */}
       <BestSeller />

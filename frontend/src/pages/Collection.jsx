@@ -238,6 +238,8 @@ const Collection = () => {
         <img
           src={image}
           alt={label}
+          loading="eager"
+          decoding="sync"
           className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
         />
       </div>

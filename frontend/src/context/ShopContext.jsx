@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -17,26 +17,29 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(false);
   const [wishlist, setWishlist] = useState([]);
+  const cartModificationRef = useRef(0); // Track local modifications to prevent stale server updates
 
   const addToCart = async (itemId) => {
     toast.success("Product Added to cart.");
 
-    let cartData = structuredClone(cartItems);
+    // Update modification timestamp
+    cartModificationRef.current = Date.now();
 
-    // ✅ cartData[itemId] is now a number (quantity)
-    if (cartData[itemId]) {
-      cartData[itemId] += 1;
-    } else {
-      cartData[itemId] = 1;
-    }
-
-    setCartItems(cartData);
+    setCartItems((prevCart) => {
+      const cartData = structuredClone(prevCart);
+      if (cartData[itemId]) {
+        cartData[itemId] += 1;
+      } else {
+        cartData[itemId] = 1;
+      }
+      return cartData;
+    });
 
     if (token) {
       try {
         await axios.post(
           backendUrl + "/api/cart/add",
-          { itemId }, // ✅ no size
+          { itemId },
           { headers: { token } },
         );
       } catch (error) {
@@ -142,21 +145,24 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, quantity) => {
-    let cartData = structuredClone(cartItems);
+    // Update modification timestamp
+    cartModificationRef.current = Date.now();
 
-    if (quantity <= 0) {
-      delete cartData[itemId];
-    } else {
-      cartData[itemId] = quantity;
-    }
-
-    setCartItems(cartData);
+    setCartItems((prevCart) => {
+      const cartData = structuredClone(prevCart);
+      if (quantity <= 0) {
+        delete cartData[itemId];
+      } else {
+        cartData[itemId] = quantity;
+      }
+      return cartData;
+    });
 
     if (token) {
       try {
         await axios.post(
           backendUrl + "/api/cart/update",
-          { itemId, quantity }, // ✅ no size
+          { itemId, quantity },
           { headers: { token } },
         );
       } catch (error) {
@@ -188,13 +194,21 @@ const ShopContextProvider = (props) => {
   };
 
   const getUserCart = async (token) => {
+    const requestStartTime = Date.now();
     try {
       const { data } = await axios.post(
         backendUrl + "/api/cart/get",
         {},
         { headers: { token } },
       );
-      if (data.success) setCartItems(data.cartData);
+      if (data.success) {
+        // Only update if no local modifications happened since the request started
+        if (cartModificationRef.current < requestStartTime) {
+          setCartItems(data.cartData);
+        } else {
+          console.log("Discarding stale cart data from server due to local modifications.");
+        }
+      }
     } catch (error) {
       toast.error(error.message);
     }
@@ -243,6 +257,7 @@ const ShopContextProvider = (props) => {
     updateQuantity,
     getCartAmount,
     navigate,
+    getUserCart,
     backendUrl,
     setToken,
     token,
