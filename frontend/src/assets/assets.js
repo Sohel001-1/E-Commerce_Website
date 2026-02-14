@@ -92,6 +92,19 @@ import wheels from './wheels.png'
 import brakes from './brakes.png'
 import ignition from './ignition.png'
 import gasket_and_sealing_rings from './gasket_and_sealing_rings.png'
+import drive_shaft_and_cv_joint from './drive_shaft_and_cv_joint.png'
+import transmission from './transmission.png'
+import air_conditioning from './air_conditioning.png'
+import bearing from './bearing.png'
+import propshaft_and_differentials from './propshaft_and_differentials.png'
+import sensors_relay_and_control_units from './sensors_relay_and_control_units.png'
+import car_accessories from './car_accessories.png'
+import repair_kits from './repair_kits.png'
+import tools_and_equipment from './tools_and_equipment.png'
+import pipes_and_hoses from './pipes_and_hoses.png'
+import auto_detailing_and_care from './auto_detailing_and_care.png'
+import lighting from './lighting.png'
+import tuning from './tuning.png'
 
 
 export const assets = {
@@ -131,6 +144,19 @@ export const assets = {
     wheels,
     brakes,
     ignition,
-    gasket_and_sealing_rings
+    gasket_and_sealing_rings,
+    drive_shaft_and_cv_joint,
+    transmission,
+    air_conditioning,
+    bearing,
+    propshaft_and_differentials,
+    sensors_relay_and_control_units,
+    car_accessories,
+    repair_kits,
+    tools_and_equipment,
+    pipes_and_hoses,
+    auto_detailing_and_care,
+    lighting,
+    tuning
 }
 
