@@ -131,24 +131,29 @@ const Add = ({ token }) => {
   };
 
   return (
-    <form onSubmit={onSubmitHandler} className="flex flex-col gap-4 w-full">
-      <div>
-        <p className="mb-2">Upload Images</p>
-        <div className="flex gap-3 mb-4">
+    <form
+      onSubmit={onSubmitHandler}
+      className="flex w-full max-w-5xl flex-col gap-6"
+    >
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-gray-800">
+            Upload Images
+          </h2>
+          <button
+            type="button"
+            onClick={() => document.getElementById("bulkImageInput").click()}
+            className="rounded bg-blue-600 px-4 py-2 text-sm text-white transition hover:bg-blue-700"
+          >
+            Upload Multiple Images at Once
+          </button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-3">
           <ImageUploadSlot id="image1" image={image1} setImage={setImage1} />
           <ImageUploadSlot id="image2" image={image2} setImage={setImage2} />
           <ImageUploadSlot id="image3" image={image3} setImage={setImage3} />
           <ImageUploadSlot id="image4" image={image4} setImage={setImage4} />
         </div>
-
-        {/* Bulk Upload Button */}
-        <button
-          type="button"
-          onClick={() => document.getElementById("bulkImageInput").click()}
-          className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 transition"
-        >
-          Upload Multiple Images at Once
-        </button>
         <input
           id="bulkImageInput"
           type="file"
@@ -157,248 +162,317 @@ const Add = ({ token }) => {
           onChange={handleMultipleImages}
           hidden
         />
-      </div>
+      </section>
 
-      <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Product Name"
-        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
-        required
-      />
-
-      <textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Product Description"
-        className="border border-gray-300 px-3 py-2 w-full max-w-[500px] rounded focus:outline-none focus:border-gray-600"
-        required
-      />
-
-      <div className="flex flex-col sm:flex-row gap-4">
-        {/* Category Dropdown */}
-        <div className="flex flex-col gap-1">
-          <p>Category</p>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="Autodetailing">Autodetailing</option>
-            <option value="Engine Oil">Engine Oil</option>
-            <option value="Filters">Filters</option>
-            <option value="Damping">Damping</option>
-            <option value="Ignition">Ignition</option>
-            <option value="Engine">Engine</option>
-            <option value="Brake">Brake</option>
-            <option value="Suspension">Suspension</option>
-            <option value="Electrical">Electrical</option>
-            <option value="Body">Body</option>
-            <option value="Wheels">Wheels</option>
-          </select>
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-base font-semibold text-gray-800">Product Info</h2>
+        <div className="mt-4 grid gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="productName" className="text-sm font-medium text-gray-700">
+              Product Name
+            </label>
+            <input
+              id="productName"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Product Name"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="productDescription"
+              className="text-sm font-medium text-gray-700"
+            >
+              Product Description
+            </label>
+            <textarea
+              id="productDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Product Description"
+              className="min-h-[120px] w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
+              required
+            />
+          </div>
         </div>
+      </section>
 
-
-
-        {/* 3. Brand Dropdown Field */}
-        <div className="flex flex-col gap-1">
-          <p>Brand</p>
-          <select
-            value={brand}
-            onChange={(e) => setBrand(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="3M">3M</option>
-            <option value="555">555</option>
-            <option value="AISIN">AISIN</option>
-            <option value="Autolite">Autolite</option>
-            <option value="AUTOPROFI">AUTOPROFI</option>
-            <option value="bluechem">bluechem</option>
-            <option value="BIZOL">BIZOL</option>
-            <option value="AbBlue">AbBlue</option>
-            <option value="AYTOGLYM">AYTOGLYM</option>
-            <option value="BOSCH">BOSCH</option>
-            <option value="CAT">CAT</option>
-          </select>
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-base font-semibold text-gray-800">Classification</h2>
+        <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="category" className="text-sm font-medium text-gray-700">
+              Category
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="Autodetailing">Autodetailing</option>
+              <option value="Engine Oil">Engine Oil</option>
+              <option value="Filters">Filters</option>
+              <option value="Damping">Damping</option>
+              <option value="Ignition">Ignition</option>
+              <option value="Engine">Engine</option>
+              <option value="Brake">Brake</option>
+              <option value="Suspension">Suspension</option>
+              <option value="Electrical">Electrical</option>
+              <option value="Body">Body</option>
+              <option value="Wheels">Wheels</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="brand" className="text-sm font-medium text-gray-700">
+              Brand
+            </label>
+            <select
+              id="brand"
+              value={brand}
+              onChange={(e) => setBrand(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="3M">3M</option>
+              <option value="555">555</option>
+              <option value="AISIN">AISIN</option>
+              <option value="Autolite">Autolite</option>
+              <option value="AUTOPROFI">AUTOPROFI</option>
+              <option value="bluechem">bluechem</option>
+              <option value="BIZOL">BIZOL</option>
+              <option value="AbBlue">AbBlue</option>
+              <option value="AYTOGLYM">AYTOGLYM</option>
+              <option value="BOSCH">BOSCH</option>
+              <option value="CAT">CAT</option>
+            </select>
+          </div>
         </div>
+      </section>
 
-        {/* Advanced Filters Inputs */}
-        <div className="flex flex-col gap-1">
-          <p>Country of Origin</p>
-          <select
-            value={countryOfOrigin}
-            onChange={(e) => setCountryOfOrigin(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="Japan">Japan</option>
-            <option value="China">China</option>
-            <option value="Germany">Germany</option>
-            <option value="USA">USA</option>
-            <option value="India">India</option>
-            <option value="Thailand">Thailand</option>
-            <option value="Turkey">Turkey</option>
-            <option value="Taiwan">Taiwan</option>
-            <option value="UAE">UAE</option>
-            <option value="Korea">Korea</option>
-            <option value="Singapore">Singapore</option>
-          </select>
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-base font-semibold text-gray-800">Origin & Import</h2>
+        <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="countryOfOrigin"
+              className="text-sm font-medium text-gray-700"
+            >
+              Country of Origin
+            </label>
+            <select
+              id="countryOfOrigin"
+              value={countryOfOrigin}
+              onChange={(e) => setCountryOfOrigin(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="Japan">Japan</option>
+              <option value="China">China</option>
+              <option value="Germany">Germany</option>
+              <option value="USA">USA</option>
+              <option value="India">India</option>
+              <option value="Thailand">Thailand</option>
+              <option value="Turkey">Turkey</option>
+              <option value="Taiwan">Taiwan</option>
+              <option value="UAE">UAE</option>
+              <option value="Korea">Korea</option>
+              <option value="Singapore">Singapore</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="countryOfImport"
+              className="text-sm font-medium text-gray-700"
+            >
+              Country of Import
+            </label>
+            <select
+              id="countryOfImport"
+              value={countryOfImport}
+              onChange={(e) => setCountryOfImport(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="Japan">Japan</option>
+              <option value="China">China</option>
+              <option value="Germany">Germany</option>
+              <option value="USA">USA</option>
+              <option value="India">India</option>
+              <option value="Thailand">Thailand</option>
+              <option value="Turkey">Turkey</option>
+              <option value="Taiwan">Taiwan</option>
+              <option value="UAE">UAE</option>
+              <option value="Korea">Korea</option>
+              <option value="Singapore">Singapore</option>
+            </select>
+          </div>
         </div>
+      </section>
 
-        <div className="flex flex-col gap-1">
-          <p>Country of Import</p>
-          <select
-            value={countryOfImport}
-            onChange={(e) => setCountryOfImport(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="Japan">Japan</option>
-            <option value="China">China</option>
-            <option value="Germany">Germany</option>
-            <option value="USA">USA</option>
-            <option value="India">India</option>
-            <option value="Thailand">Thailand</option>
-            <option value="Turkey">Turkey</option>
-            <option value="Taiwan">Taiwan</option>
-            <option value="UAE">UAE</option>
-            <option value="Korea">Korea</option>
-            <option value="Singapore">Singapore</option>
-          </select>
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-base font-semibold text-gray-800">Technical Specs</h2>
+        <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="unitSize" className="text-sm font-medium text-gray-700">
+              Unit Size
+            </label>
+            <select
+              id="unitSize"
+              value={unitSize}
+              onChange={(e) => setUnitSize(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="1L">1L</option>
+              <option value="3L">3L</option>
+              <option value="3.5L">3.5L</option>
+              <option value="4L">4L</option>
+              <option value="5L">5L</option>
+              <option value="20L">20L</option>
+              <option value="208L">208L</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="sae" className="text-sm font-medium text-gray-700">
+              SAE
+            </label>
+            <select
+              id="sae"
+              value={sae}
+              onChange={(e) => setSae(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="0W-16">0W-16</option>
+              <option value="0W-20">0W-20</option>
+              <option value="5W-20">5W-20</option>
+              <option value="5W-30">5W-30</option>
+              <option value="5W-40">5W-40</option>
+              <option value="10W-30">10W-30</option>
+              <option value="10W-40">10W-40</option>
+              <option value="15W-40">15W-40</option>
+              <option value="20W-50">20W-50</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="oilType" className="text-sm font-medium text-gray-700">
+              Oil Type
+            </label>
+            <select
+              id="oilType"
+              value={oilType}
+              onChange={(e) => setOilType(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="Mineral">Mineral</option>
+              <option value="Semi Synthetic">Semi Synthetic</option>
+              <option value="Fully Synthetic">Fully Synthetic</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="api" className="text-sm font-medium text-gray-700">
+              API
+            </label>
+            <select
+              id="api"
+              value={api}
+              onChange={(e) => setApi(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="SJ">SJ</option>
+              <option value="SL">SL</option>
+              <option value="SM">SM</option>
+              <option value="SN">SN</option>
+              <option value="SN Plus">SN Plus</option>
+              <option value="SP">SP</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="acea" className="text-sm font-medium text-gray-700">
+              ACEA
+            </label>
+            <select
+              id="acea"
+              value={acea}
+              onChange={(e) => setAcea(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="A3/B3">A3/B3</option>
+              <option value="A3/B4">A3/B4</option>
+              <option value="A5/B5">A5/B5</option>
+              <option value="C2">C2</option>
+              <option value="C3">C3</option>
+              <option value="C5">C5</option>
+              <option value="E4">E4</option>
+              <option value="E7">E7</option>
+            </select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label
+              htmlFor="appropriateUse"
+              className="text-sm font-medium text-gray-700"
+            >
+              Appropriate Use
+            </label>
+            <select
+              id="appropriateUse"
+              value={appropriateUse}
+              onChange={(e) => setAppropriateUse(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              <option value="N/A">Select</option>
+              <option value="Car">Car</option>
+              <option value="Motorcycle">Motorcycle</option>
+              <option value="Heavy Duty">Heavy Duty</option>
+              <option value="Industry">Industry</option>
+            </select>
+          </div>
         </div>
+      </section>
 
-        <div className="flex flex-col gap-1">
-          <p>Unit Size</p>
-          <select
-            value={unitSize}
-            onChange={(e) => setUnitSize(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="1L">1L</option>
-            <option value="3L">3L</option>
-            <option value="3.5L">3.5L</option>
-            <option value="4L">4L</option>
-            <option value="5L">5L</option>
-            <option value="20L">20L</option>
-            <option value="208L">208L</option>
-          </select>
+      <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+        <h2 className="text-base font-semibold text-gray-800">Pricing</h2>
+        <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="price" className="text-sm font-medium text-gray-700">
+              Product Price (৳)
+            </label>
+            <input
+              id="price"
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              placeholder="25"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
+              required
+            />
+          </div>
         </div>
+      </section>
 
-        <div className="flex flex-col gap-1">
-          <p>SAE</p>
-          <select
-            value={sae}
-            onChange={(e) => setSae(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="0W-16">0W-16</option>
-            <option value="0W-20">0W-20</option>
-            <option value="5W-20">5W-20</option>
-            <option value="5W-30">5W-30</option>
-            <option value="5W-40">5W-40</option>
-            <option value="10W-30">10W-30</option>
-            <option value="10W-40">10W-40</option>
-            <option value="15W-40">15W-40</option>
-            <option value="20W-50">20W-50</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <p>Oil Type</p>
-          <select
-            value={oilType}
-            onChange={(e) => setOilType(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="Mineral">Mineral</option>
-            <option value="Semi Synthetic">Semi Synthetic</option>
-            <option value="Fully Synthetic">Fully Synthetic</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <p>API</p>
-          <select
-            value={api}
-            onChange={(e) => setApi(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="SJ">SJ</option>
-            <option value="SL">SL</option>
-            <option value="SM">SM</option>
-            <option value="SN">SN</option>
-            <option value="SN Plus">SN Plus</option>
-            <option value="SP">SP</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <p>ACEA</p>
-          <select
-            value={acea}
-            onChange={(e) => setAcea(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="A3/B3">A3/B3</option>
-            <option value="A3/B4">A3/B4</option>
-            <option value="A5/B5">A5/B5</option>
-            <option value="C2">C2</option>
-            <option value="C3">C3</option>
-            <option value="C5">C5</option>
-            <option value="E4">E4</option>
-            <option value="E7">E7</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <p>Appropriate Use</p>
-          <select
-            value={appropriateUse}
-            onChange={(e) => setAppropriateUse(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full sm:w-40 rounded focus:outline-none focus:border-gray-600"
-          >
-            <option value="N/A">Select</option>
-            <option value="Car">Car</option>
-            <option value="Motorcycle">Motorcycle</option>
-            <option value="Heavy Duty">Heavy Duty</option>
-            <option value="Industry">Industry</option>
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <p>Product Price (৳)</p>
+      <section className="flex flex-col gap-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6 sm:flex-row sm:items-center sm:justify-between">
+        <label className="flex gap-2 text-sm font-medium text-gray-700">
           <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="25"
-            className="border border-gray-300 px-3 py-2 w-full sm:w-28 rounded focus:outline-none focus:border-gray-600"
-            required
+            type="checkbox"
+            checked={bestseller}
+            onChange={() => setBestseller((p) => !p)}
           />
-        </div>
-      </div>
+          Add to Bestseller
+        </label>
 
-      <label className="flex gap-2 items-center cursor-pointer">
-        <input
-          type="checkbox"
-          checked={bestseller}
-          onChange={() => setBestseller((p) => !p)}
-        />
-        <p>Add to Bestseller</p>
-      </label>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="bg-black text-white px-10 py-3 w-fit rounded hover:bg-gray-800 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-      >
-        {loading ? "ADDING..." : "ADD PRODUCT"}
-      </button>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full rounded bg-black px-10 py-3 text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:bg-gray-400 sm:w-auto"
+        >
+          {loading ? "ADDING..." : "ADD PRODUCT"}
+        </button>
+      </section>
     </form>
   );
 };
