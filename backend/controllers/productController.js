@@ -11,15 +11,19 @@ const addProduct = async (req, res) => {
       description,
       category,
       price,
-      subcategory, // client sends this sometimes
-      subCategory, // allow this too
       brand,
+      countryOfOrigin,
+      countryOfImport,
+      unitSize,
+      sae,
+      oilType,
+      api,
+      acea,
+      appropriateUse,
       bestseller,
     } = req.body;
 
-    const finalSubCategory = subCategory || subcategory;
-
-    if (!name || !description || !category || !finalSubCategory || price === undefined || !brand) {
+    if (!name || !description || !category || price === undefined || !brand) {
       return res.status(400).json({
         success: false,
         message:
@@ -51,7 +55,15 @@ const addProduct = async (req, res) => {
       name: String(name).trim(),
       description: String(description).trim(),
       category: String(category).trim(),
-      subCategory: String(finalSubCategory).trim(),
+      brand: String(brand).trim(),
+      countryOfOrigin: countryOfOrigin ? String(countryOfOrigin).trim() : "N/A",
+      countryOfImport: countryOfImport ? String(countryOfImport).trim() : "N/A",
+      unitSize: unitSize ? String(unitSize).trim() : "N/A",
+      sae: sae ? String(sae).trim() : "N/A",
+      oilType: oilType ? String(oilType).trim() : "N/A",
+      api: api ? String(api).trim() : "N/A",
+      acea: acea ? String(acea).trim() : "N/A",
+      appropriateUse: appropriateUse ? String(appropriateUse).trim() : "N/A",
       price: Number(price),
       bestseller: parseBoolean(bestseller),
       image: imagesUrl,
@@ -83,8 +95,16 @@ const updateProduct = async (req, res) => {
       name,
       description,
       category,
-      subCategory,
       price,
+      brand,
+      countryOfOrigin,
+      countryOfImport,
+      unitSize,
+      sae,
+      oilType,
+      api,
+      acea,
+      appropriateUse,
       bestseller,
     } = req.body;
 
@@ -97,7 +117,15 @@ const updateProduct = async (req, res) => {
     if (name !== undefined) updateData.name = String(name).trim();
     if (description !== undefined) updateData.description = String(description).trim();
     if (category !== undefined) updateData.category = String(category).trim();
-    if (subCategory !== undefined) updateData.subCategory = String(subCategory).trim();
+    if (brand !== undefined) updateData.brand = String(brand).trim();
+    if (countryOfOrigin !== undefined) updateData.countryOfOrigin = String(countryOfOrigin).trim();
+    if (countryOfImport !== undefined) updateData.countryOfImport = String(countryOfImport).trim();
+    if (unitSize !== undefined) updateData.unitSize = String(unitSize).trim();
+    if (sae !== undefined) updateData.sae = String(sae).trim();
+    if (oilType !== undefined) updateData.oilType = String(oilType).trim();
+    if (api !== undefined) updateData.api = String(api).trim();
+    if (acea !== undefined) updateData.acea = String(acea).trim();
+    if (appropriateUse !== undefined) updateData.appropriateUse = String(appropriateUse).trim();
     if (price !== undefined) updateData.price = Number(price);
     if (bestseller !== undefined) updateData.bestseller = parseBoolean(bestseller);
 
