@@ -30,16 +30,50 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
-    subCategory: {
+    brand: {
       type: String,
       required: true,
       trim: true,
     },
 
-    brand: {
+    countryOfOrigin: {
       type: String,
-      required: true,
-      trim: true,
+      default: "N/A",
+    },
+
+    countryOfImport: {
+      type: String,
+      default: "N/A",
+    },
+
+    unitSize: {
+      type: String,
+      default: "N/A",
+    },
+
+    sae: {
+      type: String,
+      default: "N/A",
+    },
+
+    oilType: {
+      type: String,
+      default: "N/A",
+    },
+
+    api: {
+      type: String,
+      default: "N/A",
+    },
+
+    acea: {
+      type: String,
+      default: "N/A",
+    },
+
+    appropriateUse: {
+      type: String,
+      default: "N/A",
     },
 
     bestseller: {
