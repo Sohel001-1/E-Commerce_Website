@@ -8,7 +8,7 @@ const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showProfileClick, setShowProfileClick] = useState(false);
-  const { setShowSearch, getCartCount, navigate, token, logout } =
+  const { setShowSearch, getCartCount, navigate, token, logout, setIsCartOpen, getUserCart } =
     useContext(ShopContext);
 
   useEffect(() => {
@@ -167,9 +167,11 @@ const Navbar = () => {
               </AnimatePresence>
             </div>
 
-            <Link
-              to="/cart"
-              onClick={() => token && getUserCart(token)}
+            <button
+              onClick={() => {
+                if (token) getUserCart(token);
+                setIsCartOpen(true);
+              }}
               className="relative p-2.5 rounded-full text-surface-500 group hover:bg-brand-50 transition-colors"
             >
               <motion.img
@@ -187,7 +189,7 @@ const Navbar = () => {
               >
                 {getCartCount()}
               </motion.span>
-            </Link>
+            </button>
 
             <motion.button
               onClick={() => setVisible(true)}

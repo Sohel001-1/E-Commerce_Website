@@ -23,6 +23,7 @@ import PageTransition from "./components/PageTransition";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SearchBar from "./components/SearchBar";
+import CartDrawer from "./components/CartDrawer";
 
 const App = () => {
   const location = useLocation();
@@ -37,6 +38,7 @@ const App = () => {
         <ToastContainer position="bottom-right" autoClose={2000} />
         <Navbar />
         <SearchBar />
+        <CartDrawer />
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route
