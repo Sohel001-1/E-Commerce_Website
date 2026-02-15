@@ -17,6 +17,7 @@ const Product = () => {
     toggleWishlist,
     navigate,
     token,
+    setIsCartOpen,
   } = useContext(ShopContext);
 
   const [productData, setProductData] = useState(null);
@@ -48,6 +49,7 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!productData) return;
     addToCart(productData._id);
+    setIsCartOpen(true);
   };
 
   const handleToggleWishlist = async () => {
@@ -88,11 +90,10 @@ const Product = () => {
                   setImgLoaded(false);
                 }}
                 src={item}
-                className={`w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer rounded-xl border-2 transition-all duration-300 object-cover ${
-                  image === item
-                    ? "border-brand-500 shadow-glow"
-                    : "border-transparent hover:border-surface-200"
-                }`}
+                className={`w-[24%] sm:w-full sm:mb-3 flex-shrink-0 cursor-pointer rounded-xl border-2 transition-all duration-300 object-cover ${image === item
+                  ? "border-brand-500 shadow-glow"
+                  : "border-transparent hover:border-surface-200"
+                  }`}
                 alt={`${productData.name} ${index + 1}`}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
@@ -144,11 +145,10 @@ const Product = () => {
 
             <motion.button
               onClick={handleToggleWishlist}
-              className={`px-5 py-3 rounded-lg border-2 transition-all ${
-                isInWishlist
-                  ? "bg-red-50 border-red-500 text-red-500 hover:bg-red-100"
-                  : "bg-white border-surface-300 text-surface-600 hover:border-red-500 hover:text-red-500"
-              }`}
+              className={`px-5 py-3 rounded-lg border-2 transition-all ${isInWishlist
+                ? "bg-red-50 border-red-500 text-red-500 hover:bg-red-100"
+                : "bg-white border-surface-300 text-surface-600 hover:border-red-500 hover:text-red-500"
+                }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
