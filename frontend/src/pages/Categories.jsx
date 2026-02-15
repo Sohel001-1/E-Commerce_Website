@@ -38,17 +38,17 @@ const Categories = () => {
                             <Link
                                 to={`/collection?category=${cat.name}`}
                                 // Added 'no-underline' to ensure no hidden lines appear
-                                className="flex flex-row items-center justify-between p-4 sm:p-6 bg-white border border-gray-100 rounded-2xl transition-all duration-500 hover:shadow-lg hover:border-orange-200 h-full relative no-underline overflow-hidden group"
+                                className="flex flex-col-reverse sm:flex-row items-center justify-between p-3 sm:p-6 bg-white border border-gray-100 rounded-2xl transition-all duration-500 hover:shadow-lg hover:border-orange-200 h-full relative no-underline overflow-hidden group gap-3 sm:gap-0"
                             >
-                                <div className="flex-1 min-w-0 pr-4 z-10">
-                                    <h3 className="text-sm sm:text-base font-bold text-gray-900 uppercase tracking-wide group-hover:text-orange-600 transition-colors truncate">
+                                <div className="flex-1 min-w-0 z-10 text-center sm:text-left w-full sm:w-auto sm:pr-4">
+                                    <h3 className="text-xs sm:text-base font-bold text-gray-900 uppercase tracking-wide group-hover:text-orange-600 transition-colors truncate">
                                         {cat.name}
                                     </h3>
-                                    <div className="w-8 h-1 bg-orange-500 mt-2 rounded-full transform origin-left group-hover:scale-x-150 transition-transform duration-300" />
+                                    <div className="w-6 sm:w-8 h-1 bg-orange-500 mt-2 rounded-full transform origin-center sm:origin-left group-hover:scale-x-150 transition-transform duration-300 mx-auto sm:mx-0" />
                                 </div>
 
                                 {/* Image Container */}
-                                <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-2xl p-2 group-hover:bg-orange-50/50 transition-colors duration-500">
+                                <div className="w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-2xl p-2 group-hover:bg-orange-50/50 transition-colors duration-500">
                                     <img
                                         src={cat.image}
                                         alt={cat.name}
