@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
+import { subCategories } from "../assets/subCategories";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
@@ -15,6 +16,7 @@ const Add = ({ token }) => {
   const [price, setPrice] = useState("");
   // Updated initial categories to match your requested sections
   const [category, setCategory] = useState("Suspension");
+  const [subCategory, setSubCategory] = useState("Shock Absorber");
   // 1. New State for Brand and Advanced Filters
   const [brand, setBrand] = useState("NGK");
   const [countryOfOrigin, setCountryOfOrigin] = useState("");
@@ -78,6 +80,7 @@ const Add = ({ token }) => {
       formData.append("description", description);
       formData.append("price", price);
       formData.append("category", category);
+      formData.append("subCategory", subCategory);
       // 2. Append Brand and Advanced Filters to FormData
       formData.append("brand", brand);
       formData.append("countryOfOrigin", countryOfOrigin);
@@ -106,6 +109,8 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
+        setCategory("Suspension");
+        setSubCategory("Shock Absorber");
         setBrand(""); // Reset Brand
         setCountryOfOrigin("");
         setCountryOfImport("");
@@ -209,7 +214,10 @@ const Add = ({ token }) => {
             <select
               id="category"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setSubCategory(subCategories[e.target.value] ? subCategories[e.target.value][0] : "");
+              }}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
               <option value="Suspension">Suspension</option>
@@ -234,6 +242,23 @@ const Add = ({ token }) => {
               <option value="Heating and Ventilation">Heating and Ventilation</option>
             </select>
           </div>
+
+          <div className="flex flex-col gap-2">
+            <label htmlFor="subCategory" className="text-sm font-medium text-gray-700">
+              Sub Category
+            </label>
+            <select
+              id="subCategory"
+              value={subCategory}
+              onChange={(e) => setSubCategory(e.target.value)}
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+            >
+              {subCategories[category] && subCategories[category].map((sub) => (
+                <option key={sub} value={sub}>{sub}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="flex flex-col gap-2">
             <label htmlFor="brand" className="text-sm font-medium text-gray-700">
               Brand

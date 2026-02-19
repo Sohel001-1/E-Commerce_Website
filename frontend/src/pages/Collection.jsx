@@ -9,12 +9,14 @@ import { staggerContainer, fadeUp } from "../utils/animations";
 import { SkeletonGrid } from "../components/Skeleton";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
 import { CATEGORY_DATA, BRAND_DATA } from "../assets/data";
+import { subCategories } from "../assets/subCategories";
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
   const [brand, setBrand] = useState([]);
   const [countryOfOrigin, setCountryOfOrigin] = useState([]);
   const [countryOfImport, setCountryOfImport] = useState([]);
@@ -34,6 +36,9 @@ const Collection = () => {
     } else {
       setCategory((prev) => [...prev, e.target.value]);
     }
+    // Optional: Reset subCategory when category changes? 
+    // Usually better to keep selected subcategories if they still apply, 
+    // or reset if they don't. For now, let's keep it simple.
   };
 
   const toggleSubCategory = (e) => {
@@ -72,6 +77,12 @@ const Collection = () => {
     if (category.length > 0) {
       productsCopy = productsCopy.filter((item) =>
         category.includes(item.category),
+      );
+    }
+
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        subCategory.includes(item.subCategory),
       );
     }
 
@@ -128,6 +139,8 @@ const Collection = () => {
     applyFilter();
   }, [
     category,
+    subCategory,
+    brand,
     brand,
     countryOfOrigin,
     countryOfImport,
@@ -148,13 +161,19 @@ const Collection = () => {
 
   useEffect(() => {
     const categoryParam = searchParams.get("category");
+    const subCategoryParam = searchParams.get("subCategory");
+
     if (categoryParam) {
       setCategory([categoryParam]);
+    }
+    if (subCategoryParam) {
+      setSubCategory([subCategoryParam]);
     }
   }, [searchParams]);
 
   const resetFilters = () => {
     setCategory([]);
+    setSubCategory([]);
     setBrand([]);
     setCountryOfOrigin([]);
     setCountryOfImport([]);
@@ -402,6 +421,21 @@ const Collection = () => {
                     />
                   ))}
                 </FilterSection>
+
+                {/* Sub Category Filter - Only show if categories are selected */}
+                {category.length > 0 && (
+                  <FilterSection title="SUB CATEGORY" defaultOpen={true}>
+                    {category.flatMap(cat => subCategories[cat] || []).map((sub, index) => (
+                      <FilterCheckbox
+                        key={`${sub}-${index}`}
+                        value={sub}
+                        onChange={toggleSubCategory}
+                        label={sub}
+                        checked={subCategory.includes(sub)}
+                      />
+                    ))}
+                  </FilterSection>
+                )}
 
                 {/* New Advanced Filters */}
 

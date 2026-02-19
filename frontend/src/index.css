@@ -98,7 +98,6 @@ a.active hr {
     /* Prevents blurriness during/after Framer Motion animations */
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
-    transform: translateZ(0);
     image-rendering: -webkit-optimize-contrast;
   }
 }
