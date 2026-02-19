@@ -3,9 +3,9 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useSearchParams } from "react-router-dom";
-import { staggerContainer, fadeUp } from "../utils/animations";
+// staggerContainer and fadeUp removed to fix sub-pixel blur on refresh
 import { SkeletonGrid } from "../components/Skeleton";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
 import { CATEGORY_DATA } from "../assets/data";
@@ -601,7 +601,7 @@ const Collection = () => {
             cols="grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
           />
         ) : filterProducts.length === 0 ? (
-          <motion.div className="text-center py-20" {...fadeUp}>
+          <div className="text-center py-20">
             <p className="text-5xl mb-4">🔍</p>
             <p className="text-surface-500 text-lg font-medium">
               No products found
@@ -609,17 +609,14 @@ const Collection = () => {
             <p className="text-surface-400 text-sm mt-2">
               Try adjusting your filters or search terms
             </p>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
+          <div
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
           >
             {filterProducts.map((items, index) => (
               <ProductItem
-                key={index}
+                key={items._id}
                 name={items.name}
                 id={items._id}
                 price={items.price}
@@ -627,7 +624,7 @@ const Collection = () => {
                 index={index}
               />
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </div>

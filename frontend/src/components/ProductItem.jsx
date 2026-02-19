@@ -2,7 +2,6 @@ import React, { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { staggerItem } from "../utils/animations";
 
 const ProductItem = ({ id, image, name, price, index = 0 }) => {
   const { currency, wishlist, toggleWishlist } = useContext(ShopContext);
@@ -24,9 +23,7 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
   };
 
   return (
-    <motion.div
-      variants={staggerItem}
-    >
+    <div>
       <Link className="group block" to={`/product/${id}`}>
         <div className="relative overflow-hidden aspect-square rounded-2xl bg-surface-100 shadow-card hover:shadow-card-hover transition-all duration-500">
           {!imgLoaded && <div className="absolute inset-0 skeleton-pulse" />}
@@ -42,8 +39,8 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
           <motion.button
             onClick={handleWishlistClick}
             className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all duration-300 z-10 ${isInWishlist
-                ? "bg-red-500/90 text-white scale-100"
-                : "bg-white/80 text-surface-600 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
+              ? "bg-red-500/90 text-white scale-100"
+              : "bg-white/80 text-surface-600 opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100"
               }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
@@ -83,7 +80,7 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
           {price}
         </p>
       </Link>
-    </motion.div>
+    </div>
   );
 };
 
