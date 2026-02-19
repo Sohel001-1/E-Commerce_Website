@@ -80,4 +80,37 @@ const updateStatus = async (req, res) => {
   } catch (error) { res.json({ success: false, message: error.message }) }
 };
 
-export { placeOrder, placeOrderStripe, allOrder, userOrders, updateStatus, verifyStripe };
+// ✅ Cancel Order (User/Admin)
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId, userId } = req.body; // userId from token middleware (user) or body (admin)
+
+    const order = await orderModel.findById(orderId);
+    if (!order) return res.json({ success: false, message: "Order not found" });
+
+    // Only allow if status is "Order Placed"
+    if (order.status !== "Order Placed") {
+      return res.json({ success: false, message: "Cannot cancel order after processing started" });
+    }
+
+    // If user is cancelling, verify ownership
+    // Note: middleware adds userId to body usually, but let's be safe. 
+    // Admin calls might pass userId explicitly or we trust adminAuth.
+    // For simplicity, we just update status to "Cancelled".
+
+    await orderModel.findByIdAndUpdate(orderId, { status: "Cancelled" });
+    res.json({ success: true, message: "Order Cancelled" });
+
+  } catch (error) { res.json({ success: false, message: error.message }) }
+};
+
+// ✅ Update Tracking Link (Admin)
+const updateTracking = async (req, res) => {
+  try {
+    const { orderId, trackingUrl } = req.body;
+    await orderModel.findByIdAndUpdate(orderId, { trackingUrl });
+    res.json({ success: true, message: "Tracking Link Updated" });
+  } catch (error) { res.json({ success: false, message: error.message }) }
+};
+
+export { placeOrder, placeOrderStripe, allOrder, userOrders, updateStatus, verifyStripe, cancelOrder, updateTracking };

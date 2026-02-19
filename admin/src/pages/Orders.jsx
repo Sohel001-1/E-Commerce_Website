@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
-import { assets } from "../assets/assets"; 
+import { assets } from "../assets/assets";
 
 const currency = "৳";   // ✅ BDT currency ONLY for Orders page
 
@@ -12,11 +12,11 @@ const Orders = ({ token }) => {
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
-  
-  const [stats, setStats] = useState({ 
-    totalRevenue: 0, 
-    totalOrders: 0, 
-    bestSeller: "N/A" 
+
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    totalOrders: 0,
+    bestSeller: "N/A"
   });
 
   const fetchAllOrders = async () => {
@@ -39,14 +39,14 @@ const Orders = ({ token }) => {
           });
         });
 
-        const topProduct = Object.keys(productCounts).length > 0 
+        const topProduct = Object.keys(productCounts).length > 0
           ? Object.keys(productCounts).reduce((a, b) => productCounts[a] > productCounts[b] ? a : b)
           : "N/A";
 
-        setStats({ 
-          totalRevenue: revenue, 
-          totalOrders: allOrders.length, 
-          bestSeller: topProduct 
+        setStats({
+          totalRevenue: revenue,
+          totalOrders: allOrders.length,
+          bestSeller: topProduct
         });
 
       } else {
@@ -132,8 +132,8 @@ const Orders = ({ token }) => {
     let temp = orders;
     if (filterStatus !== "All") temp = temp.filter(o => o.status === filterStatus);
     if (searchTerm) {
-      temp = temp.filter(o => o._id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      (o.address.firstName + " " + o.address.lastName).toLowerCase().includes(searchTerm.toLowerCase()));
+      temp = temp.filter(o => o._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (o.address.firstName + " " + o.address.lastName).toLowerCase().includes(searchTerm.toLowerCase()));
     }
     setFilteredOrders(temp);
   }, [searchTerm, filterStatus, orders]);
@@ -166,8 +166,8 @@ const Orders = ({ token }) => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-3 mb-5">
-        <input 
-          type="text" placeholder="Search by ID or Name..." 
+        <input
+          type="text" placeholder="Search by ID or Name..."
           className="flex-1 p-2 border border-gray-300 rounded outline-none text-sm"
           value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -184,7 +184,7 @@ const Orders = ({ token }) => {
         {filteredOrders.length > 0 ? filteredOrders.map((order, index) => (
           <div key={index} className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border border-gray-200 p-5 text-xs sm:text-sm bg-white rounded-lg shadow-sm">
             <img className="w-12" src={assets.parcel_icon} alt="Parcel" />
-            
+
             {/* Column 1: Items & Address */}
             <div>
               <div className="mb-3">
@@ -210,7 +210,7 @@ const Orders = ({ token }) => {
             {/* Column 3: Total & Print */}
             <div className="flex flex-col gap-2">
               <p className="font-bold text-lg text-gray-800">{currency}{order.amount}</p>
-              <button 
+              <button
                 onClick={() => printInvoice(order)}
                 className="bg-gray-100 text-gray-700 px-2 py-1 rounded border border-gray-300 hover:bg-gray-200"
               >
@@ -218,17 +218,48 @@ const Orders = ({ token }) => {
               </button>
             </div>
 
-            {/* Column 4: Status Selector */}
-            <select 
-              className="p-2 border border-gray-300 rounded cursor-pointer font-medium" 
-              onChange={(e) => statusHandler(e, order._id)} 
-              value={order.status}
-            >
-              <option value="Order Placed">Order Placed</option>
-              <option value="Packing">Packing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-            </select>
+            {/* Column 4: Status Selector & Tracking */}
+            <div className="flex flex-col gap-2">
+              <select
+                className="p-2 border border-gray-300 rounded cursor-pointer font-medium"
+                onChange={(e) => statusHandler(e, order._id)}
+                value={order.status}
+              >
+                <option value="Order Placed">Order Placed</option>
+                <option value="Packing">Packing</option>
+                <option value="Shipped">Shipped</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+
+              {["Shipped", "Delivered"].includes(order.status) && (
+                <div className="flex gap-1">
+                  <input
+                    type="text"
+                    placeholder="Tracking URL"
+                    defaultValue={order.trackingUrl || ""}
+                    className="p-1 border border-gray-300 rounded text-xs flex-1"
+                    onBlur={(e) => {
+                      // Only save if changed
+                      if (e.target.value !== order.trackingUrl) {
+                        // Call update tracking API
+                        axios.post(backendUrl + "/api/order/tracking", { orderId: order._id, trackingUrl: e.target.value }, { headers: { token } })
+                          .then(res => {
+                            if (res.data.success) toast.success("Tracking Updated");
+                            else toast.error(res.data.message);
+                          })
+                          .catch(err => toast.error(err.message));
+                      }
+                    }}
+                  />
+                  {order.trackingUrl && (
+                    <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="p-1 text-blue-600 hover:text-blue-800" title="Test Link">
+                      🔗
+                    </a>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         )) : (
           <div className="text-center py-20 bg-gray-50 rounded border border-dashed border-gray-300">

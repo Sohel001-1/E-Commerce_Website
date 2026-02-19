@@ -24,6 +24,8 @@ const Orders = () => {
             item["payment"] = order.payment;
             item["paymentMethod"] = order.paymentMethod;
             item["date"] = order.date;
+            item["orderId"] = order._id;
+            item["trackingUrl"] = order.trackingUrl;
             allOrdersItem.push(item);
           });
         });
@@ -96,17 +98,51 @@ const Orders = () => {
                 </div>
                 <div className="md:w-1/3 flex justify-between items-center">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span className={`w-2 h-2 rounded-full animate-pulse ${item.status === 'Cancelled' ? 'bg-red-500' :
+                        item.status === 'Delivered' ? 'bg-gray-500' : 'bg-green-500'
+                      }`}></span>
                     <p className="text-sm font-semibold text-surface-700">
                       {item.status}
                     </p>
                   </div>
-                  <button
-                    onClick={loadOrderData}
-                    className="btn-secondary text-xs px-5 py-2"
-                  >
-                    Track Order
-                  </button>
+
+                  <div className="flex gap-2">
+                    {item.status === "Order Placed" && (
+                      <button
+                        onClick={async () => {
+                          if (window.confirm("Are you sure you want to cancel this order?")) {
+                            try {
+                              const { data } = await axios.post(backendUrl + '/api/order/cancel', { orderId: item.orderId }, { headers: { token } });
+                              if (data.success) {
+                                toast.success(data.message);
+                                loadOrderData();
+                              } else {
+                                toast.error(data.message);
+                              }
+                            } catch (error) {
+                              toast.error(error.message);
+                            }
+                          }
+                        }}
+                        className="bg-red-50 text-red-600 border border-red-200 text-xs px-4 py-2 rounded hover:bg-red-100 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        if (item.trackingUrl) {
+                          window.open(item.trackingUrl, '_blank');
+                        } else {
+                          loadOrderData();
+                        }
+                      }}
+                      className="btn-secondary text-xs px-5 py-2"
+                    >
+                      {item.trackingUrl ? "Track Shipment" : "Track Order"}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
