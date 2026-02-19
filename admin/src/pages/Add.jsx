@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import { subCategories } from "../assets/subCategories";
+import { brands } from "../assets/brands";
+import { importCountries, originCountries } from "../assets/countries";
+import { unitSizes } from "../assets/unitSizes";
+import { saeViscosities } from "../assets/sae";
+import { oilTypes } from "../assets/oilTypes";
+import { apiOptions } from "../assets/apiOptions";
+import { aceaOptions } from "../assets/aceaOptions";
+import { appropriateUseOptions } from "../assets/appropriateUse";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
@@ -18,7 +26,7 @@ const Add = ({ token }) => {
   const [category, setCategory] = useState("Suspension");
   const [subCategory, setSubCategory] = useState("Shock Absorber");
   // 1. New State for Brand and Advanced Filters
-  const [brand, setBrand] = useState("NGK");
+  const [brand, setBrand] = useState(brands[0]);
   const [countryOfOrigin, setCountryOfOrigin] = useState("");
   const [countryOfImport, setCountryOfImport] = useState("");
   const [unitSize, setUnitSize] = useState("");
@@ -220,26 +228,9 @@ const Add = ({ token }) => {
               }}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="Suspension">Suspension</option>
-              <option value="Fuel Supply System">Fuel Supply System</option>
-              <option value="Filters">Filters</option>
-              <option value="Damping">Damping</option>
-              <option value="Wheels">Wheels</option>
-              <option value="Brakes">Brakes</option>
-              <option value="Ignition">Ignition</option>
-              <option value="Gasket and Sealing Rings">Gasket and Sealing Rings</option>
-              <option value="Steering">Steering</option>
-              <option value="Belts, Chains and Rollers">Belts, Chains and Rollers</option>
-              <option value="Engine">Engine</option>
-              <option value="Interior">Interior</option>
-              <option value="Body">Body</option>
-              <option value="Electrics">Electrics</option>
-              <option value="Clutch">Clutch</option>
-              <option value="Oils and Fluids">Oils and Fluids</option>
-              <option value="Engine Cooling System">Engine Cooling System</option>
-              <option value="Wiper and Washer System">Wiper and Washer System</option>
-              <option value="Exhaust">Exhaust</option>
-              <option value="Heating and Ventilation">Heating and Ventilation</option>
+              {Object.keys(subCategories).map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
 
@@ -269,17 +260,9 @@ const Add = ({ token }) => {
               onChange={(e) => setBrand(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="3M">3M</option>
-              <option value="555">555</option>
-              <option value="AISIN">AISIN</option>
-              <option value="Autolite">Autolite</option>
-              <option value="AUTOPROFI">AUTOPROFI</option>
-              <option value="bluechem">bluechem</option>
-              <option value="BIZOL">BIZOL</option>
-              <option value="AbBlue">AbBlue</option>
-              <option value="AYTOGLYM">AYTOGLYM</option>
-              <option value="BOSCH">BOSCH</option>
-              <option value="CAT">CAT</option>
+              {brands.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -301,18 +284,9 @@ const Add = ({ token }) => {
               onChange={(e) => setCountryOfOrigin(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="Japan">Japan</option>
-              <option value="China">China</option>
-              <option value="Germany">Germany</option>
-              <option value="USA">USA</option>
-              <option value="India">India</option>
-              <option value="Thailand">Thailand</option>
-              <option value="Turkey">Turkey</option>
-              <option value="Taiwan">Taiwan</option>
-              <option value="UAE">UAE</option>
-              <option value="Korea">Korea</option>
-              <option value="Singapore">Singapore</option>
+              {originCountries.map((country) => (
+                <option key={country} value={country}>{country}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -328,18 +302,9 @@ const Add = ({ token }) => {
               onChange={(e) => setCountryOfImport(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="Japan">Japan</option>
-              <option value="China">China</option>
-              <option value="Germany">Germany</option>
-              <option value="USA">USA</option>
-              <option value="India">India</option>
-              <option value="Thailand">Thailand</option>
-              <option value="Turkey">Turkey</option>
-              <option value="Taiwan">Taiwan</option>
-              <option value="UAE">UAE</option>
-              <option value="Korea">Korea</option>
-              <option value="Singapore">Singapore</option>
+              {importCountries.map((country) => (
+                <option key={country} value={country}>{country}</option>
+              ))}
             </select>
           </div>
         </div>
@@ -358,14 +323,9 @@ const Add = ({ token }) => {
               onChange={(e) => setUnitSize(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="1L">1L</option>
-              <option value="3L">3L</option>
-              <option value="3.5L">3.5L</option>
-              <option value="4L">4L</option>
-              <option value="5L">5L</option>
-              <option value="20L">20L</option>
-              <option value="208L">208L</option>
+              {unitSizes.map((size) => (
+                <option key={size} value={size}>{size}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -378,16 +338,9 @@ const Add = ({ token }) => {
               onChange={(e) => setSae(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="0W-16">0W-16</option>
-              <option value="0W-20">0W-20</option>
-              <option value="5W-20">5W-20</option>
-              <option value="5W-30">5W-30</option>
-              <option value="5W-40">5W-40</option>
-              <option value="10W-30">10W-30</option>
-              <option value="10W-40">10W-40</option>
-              <option value="15W-40">15W-40</option>
-              <option value="20W-50">20W-50</option>
+              {saeViscosities.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -400,10 +353,9 @@ const Add = ({ token }) => {
               onChange={(e) => setOilType(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="Mineral">Mineral</option>
-              <option value="Semi Synthetic">Semi Synthetic</option>
-              <option value="Fully Synthetic">Fully Synthetic</option>
+              {oilTypes.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -416,13 +368,9 @@ const Add = ({ token }) => {
               onChange={(e) => setApi(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="SJ">SJ</option>
-              <option value="SL">SL</option>
-              <option value="SM">SM</option>
-              <option value="SN">SN</option>
-              <option value="SN Plus">SN Plus</option>
-              <option value="SP">SP</option>
+              {apiOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -433,17 +381,11 @@ const Add = ({ token }) => {
               id="acea"
               value={acea}
               onChange={(e) => setAcea(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
+              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none max-h-60 overflow-y-auto"
             >
-              <option value="N/A">Select</option>
-              <option value="A3/B3">A3/B3</option>
-              <option value="A3/B4">A3/B4</option>
-              <option value="A5/B5">A5/B5</option>
-              <option value="C2">C2</option>
-              <option value="C3">C3</option>
-              <option value="C5">C5</option>
-              <option value="E4">E4</option>
-              <option value="E7">E7</option>
+              {aceaOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-2">
@@ -459,11 +401,9 @@ const Add = ({ token }) => {
               onChange={(e) => setAppropriateUse(e.target.value)}
               className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
             >
-              <option value="N/A">Select</option>
-              <option value="Car">Car</option>
-              <option value="Motorcycle">Motorcycle</option>
-              <option value="Heavy Duty">Heavy Duty</option>
-              <option value="Industry">Industry</option>
+              {appropriateUseOptions.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
             </select>
           </div>
         </div>

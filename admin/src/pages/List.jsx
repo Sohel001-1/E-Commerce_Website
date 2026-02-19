@@ -3,6 +3,15 @@ import { backendUrl } from "../App";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDelete, MdEdit } from "react-icons/md";
+import { subCategories } from "../assets/subCategories";
+import { brands } from "../assets/brands";
+import { importCountries, originCountries } from "../assets/countries";
+import { unitSizes } from "../assets/unitSizes";
+import { saeViscosities } from "../assets/sae";
+import { oilTypes } from "../assets/oilTypes";
+import { apiOptions } from "../assets/apiOptions";
+import { aceaOptions } from "../assets/aceaOptions";
+import { appropriateUseOptions } from "../assets/appropriateUse";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
@@ -18,6 +27,7 @@ const List = ({ token }) => {
     description: "",
     price: "",
     category: "Autodetailing",
+    subCategory: "",
     brand: "3M",
     countryOfOrigin: "",
     countryOfImport: "",
@@ -76,6 +86,7 @@ const List = ({ token }) => {
       description: item.description || "",
       price: item.price ?? "",
       category: item.category || "Autodetailing",
+      subCategory: item.subCategory || "",
       brand: item.brand || "3M",
       countryOfOrigin: item.countryOfOrigin || "",
       countryOfImport: item.countryOfImport || "",
@@ -114,6 +125,7 @@ const List = ({ token }) => {
           description: editForm.description,
           price: Number(editForm.price),
           category: editForm.category,
+          subCategory: editForm.subCategory,
           brand: editForm.brand,
           countryOfOrigin: editForm.countryOfOrigin,
           countryOfImport: editForm.countryOfImport,
@@ -301,20 +313,27 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="Autodetailing">Autodetailing</option>
-                    <option value="Engine Oil">Engine Oil</option>
-                    <option value="Filters">Filters</option>
-                    <option value="Damping">Damping</option>
-                    <option value="Ignition">Ignition</option>
-                    <option value="Engine">Engine</option>
-                    <option value="Brake">Brake</option>
-                    <option value="Suspension">Suspension</option>
-                    <option value="Electrical">Electrical</option>
-                    <option value="Body">Body</option>
-                    <option value="Wheels">Wheels</option>
+                    {Object.keys(subCategories).map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
                   </select>
                 </div>
 
+                <div>
+                  <p className="text-sm font-medium mb-1">Sub Category</p>
+                  <select
+                    value={editForm.subCategory}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, subCategory: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                  >
+                    <option value="">Select</option>
+                    {subCategories[editForm.category] && subCategories[editForm.category].map((sub) => (
+                      <option key={sub} value={sub}>{sub}</option>
+                    ))}
+                  </select>
+                </div>
 
 
                 {/* Advanced Filters Dropdowns for Edit */}
@@ -327,18 +346,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="Japan">Japan</option>
-                    <option value="China">China</option>
-                    <option value="Germany">Germany</option>
-                    <option value="USA">USA</option>
-                    <option value="India">India</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Turkey">Turkey</option>
-                    <option value="Taiwan">Taiwan</option>
-                    <option value="UAE">UAE</option>
-                    <option value="Korea">Korea</option>
-                    <option value="Singapore">Singapore</option>
+                    {originCountries.map((country) => (
+                      <option key={country} value={country}>{country}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -351,18 +361,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="Japan">Japan</option>
-                    <option value="China">China</option>
-                    <option value="Germany">Germany</option>
-                    <option value="USA">USA</option>
-                    <option value="India">India</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Turkey">Turkey</option>
-                    <option value="Taiwan">Taiwan</option>
-                    <option value="UAE">UAE</option>
-                    <option value="Korea">Korea</option>
-                    <option value="Singapore">Singapore</option>
+                    {importCountries.map((country) => (
+                      <option key={country} value={country}>{country}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -375,14 +376,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="1L">1L</option>
-                    <option value="3L">3L</option>
-                    <option value="3.5L">3.5L</option>
-                    <option value="4L">4L</option>
-                    <option value="5L">5L</option>
-                    <option value="20L">20L</option>
-                    <option value="208L">208L</option>
+                    {unitSizes.map((size) => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -395,16 +391,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="0W-16">0W-16</option>
-                    <option value="0W-20">0W-20</option>
-                    <option value="5W-20">5W-20</option>
-                    <option value="5W-30">5W-30</option>
-                    <option value="5W-40">5W-40</option>
-                    <option value="10W-30">10W-30</option>
-                    <option value="10W-40">10W-40</option>
-                    <option value="15W-40">15W-40</option>
-                    <option value="20W-50">20W-50</option>
+                    {saeViscosities.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -417,10 +406,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="Mineral">Mineral</option>
-                    <option value="Semi Synthetic">Semi Synthetic</option>
-                    <option value="Fully Synthetic">Fully Synthetic</option>
+                    {oilTypes.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -433,13 +421,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="SJ">SJ</option>
-                    <option value="SL">SL</option>
-                    <option value="SM">SM</option>
-                    <option value="SN">SN</option>
-                    <option value="SN Plus">SN Plus</option>
-                    <option value="SP">SP</option>
+                    {apiOptions.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -450,17 +434,11 @@ const List = ({ token }) => {
                     onChange={(e) =>
                       setEditForm({ ...editForm, acea: e.target.value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600 max-h-60 overflow-y-auto"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="A3/B3">A3/B3</option>
-                    <option value="A3/B4">A3/B4</option>
-                    <option value="A5/B5">A5/B5</option>
-                    <option value="C2">C2</option>
-                    <option value="C3">C3</option>
-                    <option value="C5">C5</option>
-                    <option value="E4">E4</option>
-                    <option value="E7">E7</option>
+                    {aceaOptions.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -473,11 +451,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                   >
-                    <option value="N/A">Select</option>
-                    <option value="Car">Car</option>
-                    <option value="Motorcycle">Motorcycle</option>
-                    <option value="Heavy Duty">Heavy Duty</option>
-                    <option value="Industry">Industry</option>
+                    {appropriateUseOptions.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -490,18 +466,9 @@ const List = ({ token }) => {
                     }
                     className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
                   >
-                    <option value="General">General</option>
-                    <option value="3M">3M</option>
-                    <option value="555">555</option>
-                    <option value="AISIN">AISIN</option>
-                    <option value="Autolite">Autolite</option>
-                    <option value="AUTOPROFI">AUTOPROFI</option>
-                    <option value="bluechem">bluechem</option>
-                    <option value="BIZOL">BIZOL</option>
-                    <option value="AbBlue">AbBlue</option>
-                    <option value="AYTOGLYM">AYTOGLYM</option>
-                    <option value="BOSCH">BOSCH</option>
-                    <option value="CAT">CAT</option>
+                    {brands.map((b) => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
                   </select>
                 </div>
               </div>

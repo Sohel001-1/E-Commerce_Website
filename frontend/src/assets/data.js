@@ -34,17 +34,3 @@ export const CATEGORY_DATA = [
     { name: "Lighting", image: assets.lighting },
     { name: "Tuning", image: assets.tuning },
 ];
-
-export const BRAND_DATA = [
-    { name: "3M", image: assets.quality_icon },
-    { name: "555", image: assets.quality_icon },
-    { name: "AISIN", image: assets.quality_icon },
-    { name: "Autolite", image: assets.quality_icon },
-    { name: "AUTOPROFI", image: assets.quality_icon },
-    { name: "bluechem", image: assets.quality_icon },
-    { name: "BIZOL", image: assets.quality_icon },
-    { name: "AbBlue", image: assets.quality_icon },
-    { name: "AUTOGLYM", image: assets.quality_icon },
-    { name: "BOSCH", image: assets.quality_icon },
-    { name: "CAT", image: assets.quality_icon },
-];
