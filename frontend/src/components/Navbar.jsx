@@ -37,7 +37,7 @@ const Navbar = () => {
      ${isActive ? "after:origin-left after:scale-x-100" : "hover:after:origin-left hover:after:scale-x-100"}`;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-2xl border-b border-gray-100/50 shadow-sm">
+    <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-lg border-b border-gray-100/50 shadow-sm">
       <div className="mx-auto max-w-6xl px-4">
         <div className="flex items-center justify-between py-3">
           <Link to="/" className="flex items-center gap-2 group">
@@ -101,7 +101,7 @@ const Navbar = () => {
               <AnimatePresence>
                 {token && (showProfile || showProfileClick) && (
                   <motion.div
-                    className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-2xl border border-gray-100 p-2 shadow-glass-lg z-[100]"
+                    className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white/95 backdrop-blur-lg border border-gray-100 p-2 shadow-glass-lg z-[100]"
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
@@ -218,7 +218,7 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="absolute right-0 top-0 h-screen w-[85%] max-w-xs bg-white/95 backdrop-blur-2xl shadow-glass-lg flex flex-col"
+              className="absolute right-0 top-0 h-screen w-[85%] max-w-xs bg-white/95 backdrop-blur-lg shadow-glass-lg flex flex-col"
             >
               <div className="flex items-center justify-between px-6 py-6 border-b border-gray-100">
                 <span className="text-xl font-display font-bold tracking-tighter text-surface-900 uppercase">
