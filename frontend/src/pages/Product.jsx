@@ -181,6 +181,66 @@ const Product = () => {
 
           <hr className="mt-8 sm:w-4/5 border-surface-200" />
 
+          <div className="mt-8">
+            <h3 className="text-lg font-bold text-surface-900 mb-4">Specifications</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-sm sm:w-4/5">
+              {productData.brand && productData.brand !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Brand</span>
+                  <span className="font-medium text-surface-900">{productData.brand}</span>
+                </div>
+              )}
+              {productData.unitSize && productData.unitSize !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Unit Size</span>
+                  <span className="font-medium text-surface-900">{productData.unitSize}</span>
+                </div>
+              )}
+              {productData.sae && productData.sae !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">SAE Viscosity</span>
+                  <span className="font-medium text-surface-900">{productData.sae}</span>
+                </div>
+              )}
+              {productData.oilType && productData.oilType !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Oil Type</span>
+                  <span className="font-medium text-surface-900">{productData.oilType}</span>
+                </div>
+              )}
+              {productData.api && productData.api !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">API Standard</span>
+                  <span className="font-medium text-surface-900">{productData.api}</span>
+                </div>
+              )}
+              {productData.acea && productData.acea !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">ACEA Standard</span>
+                  <span className="font-medium text-surface-900">{productData.acea}</span>
+                </div>
+              )}
+              {productData.appropriateUse && productData.appropriateUse !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Appropriate Use</span>
+                  <span className="font-medium text-surface-900">{productData.appropriateUse}</span>
+                </div>
+              )}
+              {productData.countryOfOrigin && productData.countryOfOrigin !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Origin</span>
+                  <span className="font-medium text-surface-900">{productData.countryOfOrigin}</span>
+                </div>
+              )}
+              {productData.countryOfImport && productData.countryOfImport !== "N/A" && (
+                <div className="flex justify-between border-b border-surface-100 py-1">
+                  <span className="text-surface-500">Imported From</span>
+                  <span className="font-medium text-surface-900">{productData.countryOfImport}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="text-sm text-surface-400 mt-5 flex flex-col gap-2">
             <p className="flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
