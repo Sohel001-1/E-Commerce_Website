@@ -8,7 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { staggerContainer, fadeUp } from "../utils/animations";
 import { SkeletonGrid } from "../components/Skeleton";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
-import { CATEGORY_DATA, BRAND_DATA } from "../assets/data";
+import { CATEGORY_DATA } from "../assets/data";
 import { subCategories } from "../assets/subCategories";
 
 const Collection = () => {
@@ -411,7 +411,7 @@ const Collection = () => {
                   ))}
                 </FilterSection>
 
-                <FilterSection title="CATEGORY" defaultOpen={true} layout="grid">
+                <FilterSection title="CATEGORY" defaultOpen={false} layout="grid">
                   {CATEGORY_DATA.map((item) => (
                     <CategoryCard
                       key={item.name}
