@@ -79,6 +79,14 @@ const Orders = () => {
                       </p>
                       <span className="text-surface-300">|</span>
                       <p className="text-sm">Qty: {item.quantity}</p>
+                      {item.unitSize && item.unitSize !== "N/A" && (
+                        <>
+                          <span className="text-surface-300">|</span>
+                          <p className="text-sm px-2 py-0.5 bg-slate-100 rounded text-slate-600">
+                            {item.unitSize}
+                          </p>
+                        </>
+                      )}
                     </div>
                     <p className="mt-2 text-surface-400 text-xs">
                       {new Date(item.date).toDateString()} &middot;{" "}

@@ -117,6 +117,11 @@ const Cart = () => {
                               {productData?.name}
                             </p>
                             <div className="flex items-center gap-5 mt-2">
+                              {productData?.unitSize && productData?.unitSize !== "N/A" && (
+                                <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50 text-xs rounded-full">
+                                  {productData?.unitSize}
+                                </p>
+                              )}
                               <p className="text-brand-500 font-bold">
                                 {currency}
                                 {productData?.price}
