@@ -1,0 +1,38 @@
+export const unitSizes = [
+    "N/A",
+    // Milliliters (ML)
+    "100ML",
+    "200ML",
+    "300ML",
+    "400ML",
+    "500ML",
+    "800ML",
+    "946ML",
+    "1200ML",
+    // Liters (L)
+    "1L",
+    "1.5L",
+    "2L",
+    "3L",
+    "3.5L",
+    "4L",
+    "4.2L",
+    "4.73L",
+    "5L",
+    "6L",
+    "10L",
+    "18L",
+    "20L",
+    "60L",
+    "200L",
+    "205L",
+    "208L",
+    // Grams/Kilograms (GM/KG)
+    "400GM",
+    "1KG",
+    "5KG",
+    "10KG",
+    "15KG",
+    "25KG",
+    "180KG"
+];
