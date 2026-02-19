@@ -188,7 +188,53 @@ const Collection = () => {
 
   // Placeholder data for categories and brands with images
   // In a real app, these would likely come from an API or a separate data file with real image paths
+  const CATEGORY_DATA = [
+    { name: "Suspension", image: assets.suspension },
+    { name: "Fuel Supply System", image: assets.fuel_supply_system },
+    { name: "Filters", image: assets.filters },
+    { name: "Damping", image: assets.damping },
+    { name: "Wheels", image: assets.wheels },
+    { name: "Brakes", image: assets.brakes },
+    { name: "Ignition", image: assets.ignition },
+    { name: "Gasket and Sealing Rings", image: assets.gasket_and_sealing_rings },
+    { name: "Steering", image: assets.steering },
+    { name: "Belts, Chains and Rollers", image: assets.belts_chains_and_rollers },
+    { name: "Engine", image: assets.engine },
+    { name: "Interior", image: assets.interior },
+    { name: "Body", image: assets.body },
+    { name: "Electrics", image: assets.electrics },
+    { name: "Clutch", image: assets.clutch },
+    { name: "Oils and Fluids", image: assets.oils_and_fluids },
+    { name: "Engine Cooling System", image: assets.engine_cooling_system },
+    { name: "Wiper and Washer System", image: assets.wiper_and_washer_system },
+    { name: "Exhaust", image: assets.exhaust },
+    { name: "Heating and Ventilation", image: assets.heating_and_ventilation },
+    { name: "Transmission", image: assets.transmission },
+    { name: "Air Conditioning", image: assets.air_conditioning },
+    { name: "Bearing", image: assets.bearing },
+    { name: "Propshaft and Differentials", image: assets.propshaft_and_differentials },
+    { name: "Sensors, Relay and Control Units", image: assets.sensors_relay_and_control_units },
+    { name: "Car Accessories", image: assets.car_accessories },
+    { name: "Repair Kits", image: assets.repair_kits },
+    { name: "Tools and Equipment", image: assets.tools_and_equipment },
+    { name: "Pipes and Hoses", image: assets.pipes_and_hoses },
+    { name: "Auto Detailing and Care", image: assets.auto_detailing_and_care },
+    { name: "Lighting", image: assets.lighting },
+    { name: "Tuning", image: assets.tuning },
 
+  ];
+
+  const formatBrandLabel = (key) =>
+    key
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (char) => char.toUpperCase());
+
+  const BRAND_DATA = Object.entries(assets.brandAssets).map(
+    ([key, image]) => ({
+      name: formatBrandLabel(key),
+      image,
+    }),
+  );
 
   const FilterCheckbox = ({ value, onChange, label, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group py-0.5">
@@ -208,26 +254,27 @@ const Collection = () => {
   const FilterGridItem = ({ value, onChange, label, image, checked }) => (
     <div
       onClick={() => onChange({ target: { value } })}
-      className={`cursor-pointer group flex flex-col items-center gap-2 p-2 rounded-xl transition-all duration-200 border ${checked
-        ? "border-brand-500 bg-brand-50/50"
-        : "border-surface-200 hover:border-surface-300 hover:bg-surface-50"
+      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${checked
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
         }`}
     >
-      <div className="w-12 h-12 flex items-center justify-center bg-white rounded-lg p-2 shadow-sm group-hover:shadow-md transition-shadow">
+      <div className="w-24 h-24 mb-3 flex items-center justify-center">
         <img
           src={image}
           alt={label}
           loading="eager"
           decoding="sync"
-          className="w-full h-full object-contain opacity-80 group-hover:opacity-100 transition-opacity"
+          className="w-full h-full object-contain"
+          style={{ imageRendering: "-webkit-optimize-contrast" }}
         />
       </div>
-      <span
-        className={`text-xs text-center font-medium leading-tight ${checked ? "text-brand-700" : "text-surface-600 group-hover:text-surface-900"
+      <p
+        className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${checked ? "text-orange-700" : "text-gray-900"
           }`}
       >
         {label}
-      </span>
+      </p>
     </div>
   );
 
