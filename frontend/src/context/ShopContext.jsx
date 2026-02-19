@@ -12,6 +12,7 @@ const ShopContextProvider = (props) => {
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
@@ -269,6 +270,8 @@ const ShopContextProvider = (props) => {
     setWishlist,
     toggleWishlist,
     getWishlistData,
+    isCartOpen,
+    setIsCartOpen,
   };
 
   return (

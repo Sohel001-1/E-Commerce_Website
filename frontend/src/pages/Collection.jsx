@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { staggerContainer, fadeUp } from "../utils/animations";
 import { SkeletonGrid } from "../components/Skeleton";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
+import { CATEGORY_DATA, BRAND_DATA } from "../assets/data";
 
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
@@ -280,23 +281,21 @@ const Collection = () => {
   const CategoryCard = ({ category, isActive, onClick }) => (
     <div
       onClick={onClick}
-      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
-        isActive
-          ? "border-orange-500 bg-orange-50 shadow-lg"
-          : "border-gray-300 hover:border-gray-400 bg-white"
-      }`}
+      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${isActive
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
+        }`}
     >
       <div className="w-24 h-24 mb-3 flex items-center justify-center">
-        <img 
-          src={category.image} 
+        <img
+          src={category.image}
           alt={category.name}
           className="w-full h-full object-contain"
           style={{ imageRendering: '-webkit-optimize-contrast' }}
         />
       </div>
-      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${
-        isActive ? "text-orange-700" : "text-gray-900"
-      }`}>
+      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${isActive ? "text-orange-700" : "text-gray-900"
+        }`}>
         {category.name}
       </p>
     </div>
