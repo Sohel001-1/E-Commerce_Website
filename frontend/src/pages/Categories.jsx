@@ -36,7 +36,7 @@ const Categories = () => {
                             className="group"
                         >
                             <Link
-                                to={`/collection?category=${cat.name}`}
+                                to={`/category/${cat.name}`}
                                 // Added 'no-underline' to ensure no hidden lines appear
                                 className="flex flex-col-reverse sm:flex-row items-center justify-between p-3 sm:p-6 bg-white border border-gray-100 rounded-2xl transition-all duration-500 hover:shadow-lg hover:border-orange-200 h-full relative no-underline overflow-hidden group gap-3 sm:gap-0"
                             >

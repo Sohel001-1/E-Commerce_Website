@@ -3,8 +3,6 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { motion } from "framer-motion";
-import { staggerContainer, staggerItem, fadeUp } from "../utils/animations";
 
 const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -48,7 +46,7 @@ const Orders = () => {
 
       <div>
         {orderData.length === 0 ? (
-          <motion.div className="text-center py-20" {...fadeUp}>
+          <div className="text-center py-20">
             <p className="text-5xl mb-4">📦</p>
             <p className="text-surface-500 text-lg font-display font-semibold">
               No orders yet
@@ -56,17 +54,12 @@ const Orders = () => {
             <p className="text-surface-400 text-sm mt-2">
               Your order history will appear here
             </p>
-          </motion.div>
+          </div>
         ) : (
-          <motion.div
-            variants={staggerContainer}
-            initial="initial"
-            animate="animate"
-          >
+          <div>
             {orderData.map((item, index) => (
-              <motion.div
+              <div
                 key={index}
-                variants={staggerItem}
                 className="py-5 border-b border-surface-100 flex flex-col md:flex-row md:items-center md:justify-between gap-4 hover:bg-surface-50/50 px-4 -mx-4 rounded-2xl transition-colors"
               >
                 <div className="flex items-start gap-5 text-sm">
@@ -100,18 +93,16 @@ const Orders = () => {
                       {item.status}
                     </p>
                   </div>
-                  <motion.button
+                  <button
                     onClick={loadOrderData}
                     className="btn-secondary text-xs px-5 py-2"
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
                   >
                     Track Order
-                  </motion.button>
+                  </button>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )}
       </div>
     </div>

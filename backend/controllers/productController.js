@@ -10,6 +10,7 @@ const addProduct = async (req, res) => {
       name,
       description,
       category,
+      subCategory,
       price,
       brand,
       countryOfOrigin,
@@ -23,11 +24,11 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    if (!name || !description || !category || price === undefined || !brand) {
+    if (!name || !description || !category || !subCategory || price === undefined || !brand) {
       return res.status(400).json({
         success: false,
         message:
-          "Missing required fields: name, description, category, subCategory/subcategory, price",
+          "Missing required fields: name, description, category, subCategory, price, brand",
       });
     }
 
@@ -55,6 +56,7 @@ const addProduct = async (req, res) => {
       name: String(name).trim(),
       description: String(description).trim(),
       category: String(category).trim(),
+      subCategory: String(subCategory).trim(),
       brand: String(brand).trim(),
       countryOfOrigin: countryOfOrigin ? String(countryOfOrigin).trim() : "N/A",
       countryOfImport: countryOfImport ? String(countryOfImport).trim() : "N/A",
@@ -95,6 +97,7 @@ const updateProduct = async (req, res) => {
       name,
       description,
       category,
+      subCategory,
       price,
       brand,
       countryOfOrigin,
@@ -117,6 +120,7 @@ const updateProduct = async (req, res) => {
     if (name !== undefined) updateData.name = String(name).trim();
     if (description !== undefined) updateData.description = String(description).trim();
     if (category !== undefined) updateData.category = String(category).trim();
+    if (subCategory !== undefined) updateData.subCategory = String(subCategory).trim();
     if (brand !== undefined) updateData.brand = String(brand).trim();
     if (countryOfOrigin !== undefined) updateData.countryOfOrigin = String(countryOfOrigin).trim();
     if (countryOfImport !== undefined) updateData.countryOfImport = String(countryOfImport).trim();
