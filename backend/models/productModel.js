@@ -30,6 +30,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
     },
 
+    subCategory: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
     brand: {
       type: String,
       required: true,
