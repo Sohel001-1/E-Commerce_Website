@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import SearchableSelect from "../components/SearchableSelect";
 import { assets } from "../assets/assets";
 import { subCategories } from "../assets/subCategories";
 import { brands } from "../assets/brands";
@@ -216,54 +217,39 @@ const Add = ({ token }) => {
         <h2 className="text-base font-semibold text-gray-800">Classification</h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="category" className="text-sm font-medium text-gray-700">
-              Category
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Category</label>
+            <SearchableSelect
               id="category"
+              options={Object.keys(subCategories)}
               value={category}
-              onChange={(e) => {
-                setCategory(e.target.value);
-                setSubCategory(subCategories[e.target.value] ? subCategories[e.target.value][0] : "");
+              onChange={(val) => {
+                setCategory(val);
+                setSubCategory(subCategories[val] ? subCategories[val][0] : "");
               }}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {Object.keys(subCategories).map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
+              placeholder="Select Category"
+            />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="subCategory" className="text-sm font-medium text-gray-700">
-              Sub Category
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Sub Category</label>
+            <SearchableSelect
               id="subCategory"
+              options={subCategories[category] || []}
               value={subCategory}
-              onChange={(e) => setSubCategory(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {subCategories[category] && subCategories[category].map((sub) => (
-                <option key={sub} value={sub}>{sub}</option>
-              ))}
-            </select>
+              onChange={(val) => setSubCategory(val)}
+              placeholder="Select Sub Category"
+            />
           </div>
 
           <div className="flex flex-col gap-2">
-            <label htmlFor="brand" className="text-sm font-medium text-gray-700">
-              Brand
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Brand</label>
+            <SearchableSelect
               id="brand"
+              options={brands}
               value={brand}
-              onChange={(e) => setBrand(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {brands.map((b) => (
-                <option key={b} value={b}>{b}</option>
-              ))}
-            </select>
+              onChange={(val) => setBrand(val)}
+              placeholder="Select Brand"
+            />
           </div>
         </div>
       </section>
@@ -272,40 +258,24 @@ const Add = ({ token }) => {
         <h2 className="text-base font-semibold text-gray-800">Origin & Import</h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="countryOfOrigin"
-              className="text-sm font-medium text-gray-700"
-            >
-              Country of Origin
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Country of Origin</label>
+            <SearchableSelect
               id="countryOfOrigin"
+              options={originCountries}
               value={countryOfOrigin}
-              onChange={(e) => setCountryOfOrigin(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {originCountries.map((country) => (
-                <option key={country} value={country}>{country}</option>
-              ))}
-            </select>
+              onChange={(val) => setCountryOfOrigin(val)}
+              placeholder="Select Country of Origin"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="countryOfImport"
-              className="text-sm font-medium text-gray-700"
-            >
-              Country of Import
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Country of Import</label>
+            <SearchableSelect
               id="countryOfImport"
+              options={importCountries}
               value={countryOfImport}
-              onChange={(e) => setCountryOfImport(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {importCountries.map((country) => (
-                <option key={country} value={country}>{country}</option>
-              ))}
-            </select>
+              onChange={(val) => setCountryOfImport(val)}
+              placeholder="Select Country of Import"
+            />
           </div>
         </div>
       </section>
@@ -314,97 +284,64 @@ const Add = ({ token }) => {
         <h2 className="text-base font-semibold text-gray-800">Technical Specs</h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="unitSize" className="text-sm font-medium text-gray-700">
-              Unit Size
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Unit Size</label>
+            <SearchableSelect
               id="unitSize"
+              options={unitSizes}
               value={unitSize}
-              onChange={(e) => setUnitSize(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {unitSizes.map((size) => (
-                <option key={size} value={size}>{size}</option>
-              ))}
-            </select>
+              onChange={(val) => setUnitSize(val)}
+              placeholder="Select Unit Size"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="sae" className="text-sm font-medium text-gray-700">
-              SAE
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">SAE</label>
+            <SearchableSelect
               id="sae"
+              options={saeViscosities}
               value={sae}
-              onChange={(e) => setSae(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {saeViscosities.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
+              onChange={(val) => setSae(val)}
+              placeholder="Select SAE"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="oilType" className="text-sm font-medium text-gray-700">
-              Oil Type
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Oil Type</label>
+            <SearchableSelect
               id="oilType"
+              options={oilTypes}
               value={oilType}
-              onChange={(e) => setOilType(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {oilTypes.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
+              onChange={(val) => setOilType(val)}
+              placeholder="Select Oil Type"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="api" className="text-sm font-medium text-gray-700">
-              API
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">API</label>
+            <SearchableSelect
               id="api"
+              options={apiOptions}
               value={api}
-              onChange={(e) => setApi(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {apiOptions.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
+              onChange={(val) => setApi(val)}
+              placeholder="Select API"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="acea" className="text-sm font-medium text-gray-700">
-              ACEA
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">ACEA</label>
+            <SearchableSelect
               id="acea"
+              options={aceaOptions}
               value={acea}
-              onChange={(e) => setAcea(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none max-h-60 overflow-y-auto"
-            >
-              {aceaOptions.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
+              onChange={(val) => setAcea(val)}
+              placeholder="Select ACEA"
+            />
           </div>
           <div className="flex flex-col gap-2">
-            <label
-              htmlFor="appropriateUse"
-              className="text-sm font-medium text-gray-700"
-            >
-              Appropriate Use
-            </label>
-            <select
+            <label className="text-sm font-medium text-gray-700">Appropriate Use</label>
+            <SearchableSelect
               id="appropriateUse"
+              options={appropriateUseOptions}
               value={appropriateUse}
-              onChange={(e) => setAppropriateUse(e.target.value)}
-              className="w-full rounded border border-gray-300 bg-white px-3 py-2 focus:border-gray-600 focus:outline-none"
-            >
-              {appropriateUseOptions.map((item) => (
-                <option key={item} value={item}>{item}</option>
-              ))}
-            </select>
+              onChange={(val) => setAppropriateUse(val)}
+              placeholder="Select Appropriate Use"
+            />
           </div>
         </div>
       </section>
