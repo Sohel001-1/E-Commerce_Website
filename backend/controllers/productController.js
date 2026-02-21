@@ -12,15 +12,17 @@ const addProduct = async (req, res) => {
       category,
       subCategory,
       price,
+      salePrice,
       brand,
       countryOfOrigin,
       countryOfImport,
       unitSize,
       sae,
       oilType,
-      api,
       acea,
       appropriateUse,
+      stock,
+      api,
       bestseller,
     } = req.body;
 
@@ -67,6 +69,8 @@ const addProduct = async (req, res) => {
       acea: acea ? String(acea).trim() : "N/A",
       appropriateUse: appropriateUse ? String(appropriateUse).trim() : "N/A",
       price: Number(price),
+      salePrice: salePrice ? Number(salePrice) : 0,
+      stock: stock ? Number(stock) : 0,
       bestseller: parseBoolean(bestseller),
       image: imagesUrl,
       date: Date.now(),
@@ -99,15 +103,17 @@ const updateProduct = async (req, res) => {
       category,
       subCategory,
       price,
+      salePrice,
       brand,
       countryOfOrigin,
       countryOfImport,
       unitSize,
       sae,
       oilType,
-      api,
       acea,
       appropriateUse,
+      stock,
+      api,
       bestseller,
     } = req.body;
 
@@ -131,6 +137,8 @@ const updateProduct = async (req, res) => {
     if (acea !== undefined) updateData.acea = String(acea).trim();
     if (appropriateUse !== undefined) updateData.appropriateUse = String(appropriateUse).trim();
     if (price !== undefined) updateData.price = Number(price);
+    if (salePrice !== undefined) updateData.salePrice = Number(salePrice);
+    if (stock !== undefined) updateData.stock = Number(stock);
     if (bestseller !== undefined) updateData.bestseller = parseBoolean(bestseller);
 
     if ("price" in updateData && Number.isNaN(updateData.price)) {
