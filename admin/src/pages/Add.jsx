@@ -23,6 +23,7 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [salePrice, setSalePrice] = useState("");
   // Updated initial categories to match your requested sections
   const [category, setCategory] = useState("Suspension");
   const [subCategory, setSubCategory] = useState("Shock Absorber");
@@ -36,6 +37,7 @@ const Add = ({ token }) => {
   const [api, setApi] = useState("");
   const [acea, setAcea] = useState("");
   const [appropriateUse, setAppropriateUse] = useState("");
+  const [stock, setStock] = useState("");
 
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,6 +90,7 @@ const Add = ({ token }) => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
+      if (salePrice) formData.append("salePrice", salePrice);
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       // 2. Append Brand and Advanced Filters to FormData
@@ -100,6 +103,7 @@ const Add = ({ token }) => {
       formData.append("api", api);
       formData.append("acea", acea);
       formData.append("appropriateUse", appropriateUse);
+      formData.append("stock", stock);
       formData.append("bestseller", bestseller);
 
       if (image1) formData.append("image1", image1);
@@ -118,6 +122,7 @@ const Add = ({ token }) => {
         setName("");
         setDescription("");
         setPrice("");
+        setSalePrice("");
         setCategory("Suspension");
         setSubCategory("Shock Absorber");
         setBrand(""); // Reset Brand
@@ -129,6 +134,7 @@ const Add = ({ token }) => {
         setApi("");
         setAcea("");
         setAppropriateUse("");
+        setStock("");
         setImage1(false);
         setImage2(false);
         setImage3(false);
@@ -351,14 +357,41 @@ const Add = ({ token }) => {
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
             <label htmlFor="price" className="text-sm font-medium text-gray-700">
-              Product Price (৳)
+              Regular Price (৳)
             </label>
             <input
               id="price"
               type="number"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="25"
+              placeholder="0.00"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="salePrice" className="text-sm font-medium text-gray-700">
+              Sale Price (৳) - Optional
+            </label>
+            <input
+              id="salePrice"
+              type="number"
+              value={salePrice}
+              onChange={(e) => setSalePrice(e.target.value)}
+              placeholder="0.00"
+              className="w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="stock" className="text-sm font-medium text-gray-700">
+              Initial Stock Count
+            </label>
+            <input
+              id="stock"
+              type="number"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              placeholder="100"
               className="w-full rounded border border-gray-300 px-3 py-2 focus:border-gray-600 focus:outline-none"
               required
             />

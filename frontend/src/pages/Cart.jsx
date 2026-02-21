@@ -122,10 +122,20 @@ const Cart = () => {
                                   {productData?.unitSize}
                                 </p>
                               )}
-                              <p className="text-brand-500 font-bold">
-                                {currency}
-                                {productData?.price}
-                              </p>
+                              {productData?.salePrice > 0 ? (
+                                <>
+                                  <p className="text-gray-400 line-through text-xs sm:text-sm">
+                                    {currency}{productData?.price}
+                                  </p>
+                                  <p className="text-red-600 font-bold">
+                                    {currency}{productData?.salePrice}
+                                  </p>
+                                </>
+                              ) : (
+                                <p className="text-brand-500 font-bold">
+                                  {currency}{productData?.price}
+                                </p>
+                              )}
                             </div>
                           </div>
                         </>
