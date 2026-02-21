@@ -18,14 +18,11 @@ const Home = () => {
           Ensure the 'categoryName' matches the 'category' string 
           saved via your productController exactly.
       */}
-      <CategorySection categoryName="Suspension" sectionTitle="Suspension" />
-      <CategorySection categoryName="Fuel Supply System" sectionTitle="Fuel Supply System" />
       <CategorySection categoryName="Filters" sectionTitle="Filters" />
-      <CategorySection categoryName="Brakes" sectionTitle="Brakes" />
-      <CategorySection categoryName="Damping" sectionTitle="Damping" />
-      <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
+      <CategorySection categoryName="Oils and Fluids" sectionTitle="Oils and Fluids" />
       <CategorySection categoryName="Wheels" sectionTitle="Wheels" />
-      <CategorySection categoryName="Engine" sectionTitle="Engine" />
+      <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
+      <CategorySection categoryName="Body" sectionTitle="Body" />
 
       {/* Footer / Utility Sections */}
       <OurPolicy />

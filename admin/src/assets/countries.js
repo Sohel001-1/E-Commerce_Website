@@ -23,7 +23,9 @@ export const importCountries = [
     "POLAND",
     "ITALY",
     "CZECH REPUBLIC",
-    "TURKEY"
+    "TURKEY",
+    "CHINA"
+
 ];
 
 export const originCountries = [
@@ -46,5 +48,6 @@ export const originCountries = [
     "POLAND",
     "INDIA",
     "SINGAPORE",
-    "BANGLADESH"
+    "BANGLADESH",
+    "CHINA"
 ];
