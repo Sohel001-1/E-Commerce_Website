@@ -263,7 +263,7 @@ const productSchema = new mongoose.Schema(
     appropriateUse: {
       type: String,
       default: "N/A",
-      enum: ["N/A", "FOR CAR", "FOR BIKE", "FOR COMMERCIAL", "FOR INDUSTRIAL"],
+      enum: ["N/A", "FOR CAR", "FOR BIKE", "FOR CAR & BIKE", "FOR COMMERCIAL", "FOR INDUSTRIAL"],
     },
 
     stock: {

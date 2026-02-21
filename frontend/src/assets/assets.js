@@ -145,7 +145,7 @@ import brand_crc from './brand/crc.jpg'
 import brand_cusco from './brand/cusco.jpg'
 import brand_cyclo from './brand/cyclo.jpg'
 import brand_denckermann from './brand/denckermann.jpg'
-import brand_denco from './brand/denco.jpg'
+import brand_denso from './brand/denco.jpg'
 import brand_dnl_diamond_nanotube from './brand/dnl_diamond_nanotube.jpg'
 import brand_donaldson from './brand/donaldson.png'
 import brand_dunlop_tires from './brand/dunlop_tires.jpg'
@@ -321,7 +321,7 @@ export const brandAssets = {
     cusco: brand_cusco,
     cyclo: brand_cyclo,
     denckermann: brand_denckermann,
-    denco: brand_denco,
+    denso: brand_denso,
     dnl_diamond_nanotube: brand_dnl_diamond_nanotube,
     donaldson: brand_donaldson,
     dunlop_tires: brand_dunlop_tires,
