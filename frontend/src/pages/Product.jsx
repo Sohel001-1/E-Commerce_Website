@@ -124,10 +124,28 @@ const Product = () => {
             {productData.name}
           </h1>
 
-          <p className="mt-5 text-3xl font-bold text-surface-900">
-            {currency}
-            {productData.price}
-          </p>
+          <div className="mt-5 flex flex-col gap-3">
+            <div className="flex items-center gap-4 flex-wrap">
+              {productData.salePrice > 0 ? (
+                <>
+                  <span className="text-4xl font-bold text-red-600">{currency}{productData.salePrice}</span>
+                  <span className="text-2xl font-bold text-gray-400 line-through flex items-center">{currency}{productData.price}</span>
+                  <span className="bg-purple-700 text-white text-sm font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap">Save: {productData.price - productData.salePrice}{currency}</span>
+                </>
+              ) : (
+                <span className="text-4xl font-bold text-surface-900">{currency}{productData.price}</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {productData.stock <= 0 ? (
+                <span className="text-sm bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold border border-red-200">Out of Stock</span>
+              ) : productData.stock <= 5 ? (
+                <span className="text-sm bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full font-bold border border-yellow-300">Low Stock: {productData.stock} left</span>
+              ) : (
+                <span className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold border border-green-200">In Stock</span>
+              )}
+            </div>
+          </div>
 
           <p className="mt-5 text-surface-500 md:w-4/5 leading-relaxed">
             {productData.description}
@@ -136,11 +154,12 @@ const Product = () => {
           <div className="flex gap-3 mt-8">
             <motion.button
               onClick={handleAddToCart}
-              className="btn-primary btn-shimmer text-sm tracking-wider uppercase flex-1"
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+              disabled={productData.stock <= 0}
+              className={`btn-primary btn-shimmer text-sm tracking-wider uppercase flex-1 ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+              whileHover={productData.stock > 0 ? { scale: 1.03 } : {}}
+              whileTap={productData.stock > 0 ? { scale: 0.97 } : {}}
             >
-              ADD TO CART
+              {productData.stock <= 0 ? "OUT OF STOCK" : "ADD TO CART"}
             </motion.button>
 
             <motion.button
@@ -172,11 +191,12 @@ const Product = () => {
 
           <motion.button
             onClick={handleOrderNow}
-            className="w-full mt-3 bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase rounded-lg hover:from-green-600 hover:to-green-700 transition-all shadow-lg hover:shadow-xl"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            disabled={productData.stock <= 0}
+            className={`w-full mt-3 bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:from-green-600 hover:to-green-700 hover:shadow-xl transition-all'}`}
+            whileHover={productData.stock > 0 ? { scale: 1.02 } : {}}
+            whileTap={productData.stock > 0 ? { scale: 0.98 } : {}}
           >
-            🚀 ORDER NOW
+            {productData.stock <= 0 ? "UNAVAILABLE" : "🚀 ORDER NOW"}
           </motion.button>
 
           <hr className="mt-8 sm:w-4/5 border-surface-200" />

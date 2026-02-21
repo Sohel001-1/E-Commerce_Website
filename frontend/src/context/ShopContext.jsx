@@ -21,6 +21,19 @@ const ShopContextProvider = (props) => {
   const cartModificationRef = useRef(0); // Track local modifications to prevent stale server updates
 
   const addToCart = async (itemId) => {
+    const product = products.find(p => p._id === itemId);
+    if (!product) return;
+
+    // Check stock
+    let currentQty = cartItems[itemId] || 0;
+    if (typeof currentQty === "object") {
+      currentQty = Object.values(currentQty).reduce((a, b) => a + b, 0); // fallback if they used size objects
+    }
+
+    if (currentQty + 1 > product.stock) {
+      return toast.error(product.stock <= 0 ? "This item is out of stock." : `Only ${product.stock} items available in stock.`);
+    }
+
     toast.success("Product Added to cart.");
 
     // Update modification timestamp
@@ -146,6 +159,11 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, quantity) => {
+    const product = products.find(p => p._id === itemId);
+    if (product && quantity > product.stock) {
+      return toast.error(`Only ${product.stock} items available in stock.`);
+    }
+
     // Update modification timestamp
     cartModificationRef.current = Date.now();
 
@@ -188,7 +206,8 @@ const ShopContextProvider = (props) => {
             ? Object.values(qty).reduce((a, b) => a + b, 0)
             : 0;
 
-      totalAmount += product.price * count;
+      const activePrice = product.salePrice > 0 ? product.salePrice : product.price;
+      totalAmount += activePrice * count;
     }
 
     return totalAmount;
