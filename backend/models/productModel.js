@@ -19,6 +19,12 @@ const productSchema = new mongoose.Schema(
       required: true,
     },
 
+    salePrice: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+
     image: {
       type: [String], // array of image URLs
       default: [],
@@ -258,6 +264,12 @@ const productSchema = new mongoose.Schema(
       type: String,
       default: "N/A",
       enum: ["N/A", "FOR CAR", "FOR BIKE", "FOR COMMERCIAL", "FOR INDUSTRIAL"],
+    },
+
+    stock: {
+      type: Number,
+      required: true,
+      default: 0,
     },
 
     bestseller: {

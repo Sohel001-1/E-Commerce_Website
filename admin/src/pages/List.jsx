@@ -26,6 +26,7 @@ const List = ({ token }) => {
     name: "",
     description: "",
     price: "",
+    salePrice: "",
     category: "Autodetailing",
     subCategory: "",
     brand: "3M",
@@ -37,6 +38,7 @@ const List = ({ token }) => {
     api: "",
     acea: "",
     appropriateUse: "",
+    stock: "",
     bestseller: false,
   });
 
@@ -85,6 +87,7 @@ const List = ({ token }) => {
       name: item.name || "",
       description: item.description || "",
       price: item.price ?? "",
+      salePrice: item.salePrice ?? "",
       category: item.category || "Autodetailing",
       subCategory: item.subCategory || "",
       brand: item.brand || "3M",
@@ -96,6 +99,7 @@ const List = ({ token }) => {
       api: item.api || "",
       acea: item.acea || "",
       appropriateUse: item.appropriateUse || "",
+      stock: item.stock ?? "",
       bestseller: !!item.bestseller,
     });
     setIsEditOpen(true);
@@ -124,6 +128,7 @@ const List = ({ token }) => {
           name: editForm.name,
           description: editForm.description,
           price: Number(editForm.price),
+          salePrice: editForm.salePrice ? Number(editForm.salePrice) : null,
           category: editForm.category,
           subCategory: editForm.subCategory,
           brand: editForm.brand,
@@ -135,6 +140,7 @@ const List = ({ token }) => {
           api: editForm.api,
           acea: editForm.acea,
           appropriateUse: editForm.appropriateUse,
+          stock: Number(editForm.stock),
           bestseller: editForm.bestseller,
         },
         { headers: { token } },
@@ -188,11 +194,12 @@ const List = ({ token }) => {
       ) : (
         <div className="flex flex-col gap-2">
           {/* Table header */}
-          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border bg-gray-100 text-sm">
+          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border bg-gray-100 text-sm">
             <b>Image</b>
             <b>Name & Brand</b>
             <b>Category</b>
             <b>Price</b>
+            <b>Stock</b>
             <b className="text-center">Actions</b>
           </div>
 
@@ -200,7 +207,7 @@ const List = ({ token }) => {
             filteredList.map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border text-sm hover:bg-gray-50 transition-colors"
+                className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border text-sm hover:bg-gray-50 transition-colors"
               >
                 <img
                   src={item.image?.[0]}
@@ -219,7 +226,17 @@ const List = ({ token }) => {
                 </div>
 
                 <p>{item.category}</p>
-                <p>৳{item.price}</p>
+                <div>
+                  {item.salePrice > 0 ? (
+                    <div className="flex flex-col">
+                      <span className="text-red-500 font-bold">৳{item.salePrice}</span>
+                      <span className="text-gray-400 line-through text-xs">৳{item.price}</span>
+                    </div>
+                  ) : (
+                    <span>৳{item.price}</span>
+                  )}
+                </div>
+                <p className={`${item.stock <= 5 ? "text-red-600 font-bold" : "text-green-600 font-medium"}`}>{item.stock}</p>
 
                 <div className="flex items-center justify-center gap-4">
                   <MdEdit
@@ -263,7 +280,7 @@ const List = ({ token }) => {
             </div>
 
             <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <p className="text-sm font-medium mb-1">Product Name</p>
                   <input
@@ -277,7 +294,7 @@ const List = ({ token }) => {
                   />
                 </div>
                 <div>
-                  <p className="text-sm font-medium mb-1">Price</p>
+                  <p className="text-sm font-medium mb-1">Regular Price</p>
                   <input
                     value={editForm.price}
                     onChange={(e) =>
@@ -286,6 +303,30 @@ const List = ({ token }) => {
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
                     type="number"
                     step="0.01"
+                    required
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">Sale Price</p>
+                  <input
+                    value={editForm.salePrice}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, salePrice: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                    type="number"
+                    step="0.01"
+                  />
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">Stock</p>
+                  <input
+                    value={editForm.stock}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, stock: e.target.value })
+                    }
+                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
+                    type="number"
                     required
                   />
                 </div>

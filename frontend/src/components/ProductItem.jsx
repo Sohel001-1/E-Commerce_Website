@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const ProductItem = ({ id, image, name, price, index = 0 }) => {
-  const { currency, wishlist, toggleWishlist } = useContext(ShopContext);
+  const { currency, wishlist, toggleWishlist, products } = useContext(ShopContext);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+
+  const stock = products?.find((p) => p._id === id)?.stock || 0;
+  const salePrice = products?.find((p) => p._id === id)?.salePrice || 0;
 
   useEffect(() => {
     // Check if this product is in wishlist
@@ -34,6 +37,13 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
             onLoad={() => setImgLoaded(true)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+          {/* Sale Badge */}
+          {salePrice > 0 && (
+            <div className="absolute top-0 left-0 bg-purple-700 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10 shadow-md">
+              Save: {price - salePrice}{currency}
+            </div>
+          )}
 
           {/* Wishlist Heart Button */}
           <motion.button
@@ -70,15 +80,32 @@ const ProductItem = ({ id, image, name, price, index = 0 }) => {
             </div>
           </div>
         </div>
-        <div className="pt-3 pb-1">
-          <p className="text-sm font-medium text-gray-900 group-hover:text-surface-900 transition-colors line-clamp-2">
+        <div className="pt-3 pb-1 flex justify-between items-start">
+          <p className="text-sm font-medium text-gray-900 group-hover:text-surface-900 transition-colors line-clamp-2 pr-2">
             {name}
           </p>
+          {stock <= 0 ? (
+            <span className="text-[10px] bg-red-100 text-red-600 border border-red-200 px-2 py-0.5 rounded whitespace-nowrap font-bold">Out of Stock</span>
+          ) : stock <= 5 ? (
+            <span className="text-[10px] bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded whitespace-nowrap font-bold">Low Stock</span>
+          ) : null}
         </div>
-        <p className="text-sm font-bold text-black line-clamp-2">
-          {currency}
-          {price}
-        </p>
+        <div className="mt-1 flex items-center gap-2">
+          {salePrice > 0 ? (
+            <>
+              <p className="text-sm font-bold text-red-600">
+                {currency}{salePrice}
+              </p>
+              <p className="text-xs text-gray-400 line-through">
+                {currency}{price}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-bold text-black">
+              {currency}{price}
+            </p>
+          )}
+        </div>
       </Link>
     </div>
   );

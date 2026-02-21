@@ -5,6 +5,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
+import Pos from "./pages/Pos";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,7 +23,7 @@ const App = () => {
   return (
     <div className="bg-gray-50 min-h-screen">
       <ToastContainer position="bottom-right" autoClose={2000} />
-      
+
       {token === "" ? (
         <Login setToken={setToken} />
       ) : (
@@ -37,6 +38,7 @@ const App = () => {
                 <Route path="/add" element={<Add token={token} />} />
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
+                <Route path="/pos" element={<Pos token={token} />} />
                 <Route path="*" element={<Navigate to="/add" replace />} />
               </Routes>
             </div>
