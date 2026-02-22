@@ -15,7 +15,7 @@ export const subCategories = {
     "Body": ["Bumper", "Fender", "Door", "Mirror"],
     "Electrics": ["Battery", "Alternator", "Starter Motor"],
     "Clutch": ["Clutch Disc", "Pressure Plate", "Release Bearing"],
-    "Oils and Fluids": ["Engine Oil", "Gear Oil", "Brake Fluid", "Fuel Additives"],
+    "Oils and Fluids": ["Engine Oil", "Gear Oil", "Brake Fluid", "Fuel Additives", "Car Oil"],
     "Engine Cooling System": ["Radiator", "Water Pump", "Thermostat", "Cooling System Fluids"],
     "Wiper and Washer System": ["Wiper Blade", "Wiper Motor"],
     "Exhaust": ["Muffler", "Catalytic Converter", "Exhaust Pipe"],

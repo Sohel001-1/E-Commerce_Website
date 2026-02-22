@@ -12,6 +12,7 @@ import { oilTypes } from "../assets/oilTypes";
 import { apiOptions } from "../assets/apiOptions";
 import { aceaOptions } from "../assets/aceaOptions";
 import { appropriateUseOptions } from "../assets/appropriateUse";
+import { assets } from "../assets/assets";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
@@ -41,6 +42,41 @@ const List = ({ token }) => {
     stock: "",
     bestseller: false,
   });
+
+  const [image1, setImage1] = useState(false);
+  const [image2, setImage2] = useState(false);
+  const [image3, setImage3] = useState(false);
+  const [image4, setImage4] = useState(false);
+  const [existingImages, setExistingImages] = useState([]);
+
+  const ImageUploadSlot = ({ id, image, setImage, existingImage, onRemoveExisting }) => (
+    <div className="relative">
+      <label htmlFor={id}>
+        <img
+          className="w-16 h-16 md:w-20 md:h-20 object-cover cursor-pointer border border-dashed border-gray-400 p-1"
+          src={!image ? (existingImage ? existingImage : assets.upload_area) : URL.createObjectURL(image)}
+          alt=""
+        />
+        <input
+          onChange={(e) => setImage(e.target.files[0])}
+          type="file"
+          id={id}
+          hidden
+        />
+      </label>
+      {(image || existingImage) && (
+        <div
+          onClick={() => {
+            if (image) setImage(false);
+            if (existingImage && onRemoveExisting) onRemoveExisting();
+          }}
+          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer"
+        >
+          ✕
+        </div>
+      )}
+    </div>
+  );
 
   const fetchList = async () => {
     try {
@@ -102,6 +138,11 @@ const List = ({ token }) => {
       stock: item.stock ?? "",
       bestseller: !!item.bestseller,
     });
+    setImage1(false);
+    setImage2(false);
+    setImage3(false);
+    setImage4(false);
+    setExistingImages(item.image || []);
     setIsEditOpen(true);
   };
 
@@ -121,28 +162,36 @@ const List = ({ token }) => {
 
     try {
       setSaving(true);
+
+      const formData = new FormData();
+      formData.append("id", editForm.id);
+      formData.append("name", editForm.name);
+      formData.append("description", editForm.description);
+      formData.append("price", Number(editForm.price));
+      if (editForm.salePrice) formData.append("salePrice", Number(editForm.salePrice));
+      formData.append("category", editForm.category);
+      formData.append("subCategory", editForm.subCategory);
+      formData.append("brand", editForm.brand);
+      formData.append("countryOfOrigin", editForm.countryOfOrigin);
+      formData.append("countryOfImport", editForm.countryOfImport);
+      formData.append("unitSize", editForm.unitSize);
+      formData.append("sae", editForm.sae);
+      formData.append("oilType", editForm.oilType);
+      formData.append("api", editForm.api);
+      formData.append("acea", editForm.acea);
+      formData.append("appropriateUse", editForm.appropriateUse);
+      formData.append("stock", Number(editForm.stock));
+      formData.append("bestseller", editForm.bestseller);
+      formData.append("existingImages", JSON.stringify(existingImages));
+
+      if (image1) formData.append("image1", image1);
+      if (image2) formData.append("image2", image2);
+      if (image3) formData.append("image3", image3);
+      if (image4) formData.append("image4", image4);
+
       const response = await axios.post(
         backendUrl + "/api/product/update",
-        {
-          id: editForm.id,
-          name: editForm.name,
-          description: editForm.description,
-          price: Number(editForm.price),
-          salePrice: editForm.salePrice ? Number(editForm.salePrice) : null,
-          category: editForm.category,
-          subCategory: editForm.subCategory,
-          brand: editForm.brand,
-          countryOfOrigin: editForm.countryOfOrigin,
-          countryOfImport: editForm.countryOfImport,
-          unitSize: editForm.unitSize,
-          sae: editForm.sae,
-          oilType: editForm.oilType,
-          api: editForm.api,
-          acea: editForm.acea,
-          appropriateUse: editForm.appropriateUse,
-          stock: Number(editForm.stock),
-          bestseller: editForm.bestseller,
-        },
+        formData,
         { headers: { token } },
       );
 
@@ -268,7 +317,7 @@ const List = ({ token }) => {
             onClick={closeEdit}
           />
 
-          <div className="relative w-full max-w-2xl rounded-xl bg-white shadow-2xl border p-6">
+          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl bg-white shadow-2xl border p-6">
             <div className="flex items-center justify-between mb-5">
               <h2 className="font-bold text-xl text-gray-800">Edit Product</h2>
               <button
@@ -280,6 +329,18 @@ const List = ({ token }) => {
             </div>
 
             <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center">
+                  <p className="text-sm font-medium">Update Images <span className="text-xs text-gray-500 font-normal">(Uploading new images will replace existing ones)</span></p>
+                </div>
+                <div className="flex gap-3">
+                  <ImageUploadSlot id="edit_image1" image={image1} setImage={setImage1} existingImage={existingImages[0]} onRemoveExisting={() => setExistingImages(prev => { const arr = [...prev]; arr[0] = null; return arr; })} />
+                  <ImageUploadSlot id="edit_image2" image={image2} setImage={setImage2} existingImage={existingImages[1]} onRemoveExisting={() => setExistingImages(prev => { const arr = [...prev]; arr[1] = null; return arr; })} />
+                  <ImageUploadSlot id="edit_image3" image={image3} setImage={setImage3} existingImage={existingImages[2]} onRemoveExisting={() => setExistingImages(prev => { const arr = [...prev]; arr[2] = null; return arr; })} />
+                  <ImageUploadSlot id="edit_image4" image={image4} setImage={setImage4} existingImage={existingImages[3]} onRemoveExisting={() => setExistingImages(prev => { const arr = [...prev]; arr[3] = null; return arr; })} />
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <p className="text-sm font-medium mb-1">Product Name</p>
