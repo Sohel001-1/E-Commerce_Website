@@ -1,0 +1,27 @@
+services:
+  api:
+    build: ./backend
+    container_name: japanautos-api
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    ports:
+      - "127.0.0.1:5000:5000"
+
+  web:
+    build: ./frontend
+    container_name: japanautos-web
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:80"
+    depends_on:
+      - api
+
+  admin:
+    build: ./admin
+    container_name: japanautos-admin
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3001:80"
+    depends_on:
+      - api

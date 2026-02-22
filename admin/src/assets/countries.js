@@ -9,6 +9,7 @@ export const importCountries = [
     "MALAYSIA",
     "FRANCE",
     "UAE",
+    "KOREA & UAE",
     "JAPAN",
     "SPAIN",
     "BANGLADESH",
@@ -35,6 +36,8 @@ export const importCountries = [
     "SWITZERLAND",
     "SAUDI ARABIA",
     "QATAR"
+    "KOREA & UAE"
+
 ];
 
 export const originCountries = [
@@ -48,6 +51,7 @@ export const originCountries = [
     "MALAYSIA",
     "USA",
     "UAE",
+    "KOREA & UAE",
     "UK",
     "THAILAND",
     "SRI LANKA",
@@ -71,4 +75,5 @@ export const originCountries = [
     "CZECH REPUBLIC",
     "TURKEY",
     "BELGIUM"
+    "KOREA & UAE"
 ];
