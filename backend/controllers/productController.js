@@ -145,7 +145,20 @@ const updateProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: "Price must be a number" });
     }
 
-    // Optional: allow updating images too (if you later add it in edit modal)
+    // Determine preserved existing images (sent as array from frontend)
+    let preservedImages = [];
+    if (req.body.existingImages) {
+      try {
+        preservedImages = JSON.parse(req.body.existingImages);
+      } catch (e) {
+        // handle string single values if not json array 
+        preservedImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
+      }
+    }
+    // Filter out null/empty values
+    preservedImages = preservedImages.filter(img => img && typeof img === 'string');
+
+    // Handle new image uploads
     const files = req.files || {};
     const image1 = files.image1?.[0];
     const image2 = files.image2?.[0];
@@ -154,8 +167,9 @@ const updateProduct = async (req, res) => {
 
     const images = [image1, image2, image3, image4].filter(Boolean);
 
+    let newlyUploadedUrls = [];
     if (images.length > 0) {
-      const imagesUrl = await Promise.all(
+      newlyUploadedUrls = await Promise.all(
         images.map(async (item) => {
           const result = await cloudinary.uploader.upload(item.path, {
             resource_type: "image",
@@ -163,7 +177,14 @@ const updateProduct = async (req, res) => {
           return result.secure_url;
         })
       );
-      updateData.image = imagesUrl; // replaces images (simple & clean)
+    }
+
+    // update to the combined pool of old retained images + new images
+    // Note: If no new images and no existing images provided, we don't wipe out the images unless strictly told to 
+    // BUT since we are building an edit UI where removing all existing images + no new images = empty array, we will update it if expected.
+    // If the frontend explicitly sends `existingImages`, we assume they intend to update the image list.
+    if (req.body.existingImages !== undefined || images.length > 0) {
+      updateData.image = [...preservedImages, ...newlyUploadedUrls];
     }
 
     const updated = await productModel.findByIdAndUpdate(id, updateData, {
