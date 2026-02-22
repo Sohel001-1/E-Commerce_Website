@@ -35,7 +35,7 @@ export const importCountries = [
     "NETHERLANDS",
     "SWITZERLAND",
     "SAUDI ARABIA",
-    "QATAR"
+    "QATAR",
     "KOREA & UAE"
 
 ];
@@ -74,6 +74,6 @@ export const originCountries = [
     "RUSSIA",
     "CZECH REPUBLIC",
     "TURKEY",
-    "BELGIUM"
+    "BELGIUM",
     "KOREA & UAE"
 ];
