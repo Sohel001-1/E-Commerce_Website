@@ -131,10 +131,10 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Select...",
                                     key={opt}
                                     onClick={() => selectOption(opt)}
                                     className={`cursor-pointer px-3 py-1.5 text-sm transition-colors ${opt === value
-                                            ? "bg-blue-50 font-medium text-blue-700"
-                                            : i === highlightIndex
-                                                ? "bg-gray-100 text-gray-900"
-                                                : "text-gray-700 hover:bg-gray-50"
+                                        ? "bg-blue-50 font-medium text-blue-700"
+                                        : i === highlightIndex
+                                            ? "bg-gray-100 text-gray-900"
+                                            : "text-gray-700 hover:bg-gray-50"
                                         }`}
                                 >
                                     {opt}

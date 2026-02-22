@@ -1,4 +1,3 @@
-
 export const importCountries = [
     "N/A",
     "INDIA",
@@ -24,8 +23,18 @@ export const importCountries = [
     "ITALY",
     "CZECH REPUBLIC",
     "TURKEY",
-    "CHINA"
-
+    "CHINA",
+    "TAIWAN",
+    "MEXICO",
+    "CANADA",
+    "AUSTRALIA",
+    "SWEDEN",
+    "SOUTH AFRICA",
+    "BRAZIL",
+    "NETHERLANDS",
+    "SWITZERLAND",
+    "SAUDI ARABIA",
+    "QATAR"
 ];
 
 export const originCountries = [
@@ -49,5 +58,17 @@ export const originCountries = [
     "INDIA",
     "SINGAPORE",
     "BANGLADESH",
-    "CHINA"
+    "CHINA",
+    "TAIWAN",
+    "MEXICO",
+    "CANADA",
+    "AUSTRALIA",
+    "SWEDEN",
+    "SOUTH AFRICA",
+    "BRAZIL",
+    "NETHERLANDS",
+    "RUSSIA",
+    "CZECH REPUBLIC",
+    "TURKEY",
+    "BELGIUM"
 ];
