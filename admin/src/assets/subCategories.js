@@ -1,34 +1,155 @@
 export const subCategories = {
-    "Suspension": ["Shock Absorber", "Control arm", "Strut Mount", "Ball joint", "Stabilizer Link", "Coil Spring", "Leaf Spring", "Air Suspension", "Link rod", "Insulator"],
-    "Fuel Supply System": ["Fuel Pump", "Fuel Filter", "Injector", "Fuel Tank", "Fuel Lines", "Carburetor"],
-    "Filters": ["Oil Filter", "Air Filter", "Cabin Filter", "Fuel Filter", "Transmission Filter", "Water filter", "Diesel filter"],
-    "Damping": ["Shock absorber", "Strut", "Coilover", "Strut mount and bearing", "Shock mounting", "Coil springs", "Shock boot cover"],
-    "Wheels": ["Alloy Wheel", "Steel Wheel", "Wheel Cap", "Lug Nuts", "Wheel Spacers", "Tyres"],
-    "Brakes": ["Brake Pad", "Brake Disc", "Brake Caliper", "Brake Shoe", "Brake Drum", "Brake Lines", "Brake Master Cylinder", "Brake Booster", "Brake pipes", "Master cylinder", "Caliper repair kit"],
-    "Ignition": ["Spark Plug", "Glow Plug", "Ignition Coil", "Distributor", "Ignition Wire Set", "Ignition Switch", "Ignition cable"],
-    "Gasket and Sealing Rings": ["Head Gasket", "Valve Cover Gasket", "Oil Pan Gasket", "Intake Manifold Gasket", "Exhaust Manifold Gasket", "O-Rings", "Oil Seals"],
-    "Steering": ["Steering Rack", "Tie Rod End", "Power Steering Pump", "Steering Column", "Power Steering Fluid Reservoir", "Steering Rack Boot"],
-    "Belts, Chains and Rollers": ["Timing Belt", "V-Belt", "Serpentine Belt", "Tensioner", "Idler Pulley", "Timing chain", "Timing Belt Kit", "Fan and alternator belts"],
-    "Engine": ["Piston", "Ring", "Valve", "Crankshaft", "Camshaft", "Engine Mount", "Oil Pump", "Water Pump", "Cylinder Head", "Engine Block", "Bush", "Head gasket", "Thermostat"],
-    "Interior": ["Floor Mat", "Seat Cover", "Dashboard", "Steering Wheel Cover", "Sun Visor", "Interior Lighting", "Console", "Steering column"],
-    "Body": ["Bumper", "Fender", "Door", "Mirror", "Hood", "Grille", "Tailgate", "Spoiler", "Window Regulators", "Windshield", "Radiator mounting", "Rear lights"],
-    "Electrics": ["Battery", "Alternator", "Starter Motor", "Fuses", "Relays", "Wiring Harness", "Horn", "Switches"],
-    "Clutch": ["Clutch Disc", "Pressure Plate", "Release Bearing", "Clutch Master Cylinder", "Clutch Slave Cylinder", "Clutch Kit", "Flywheel"],
-    "Oils and Fluids": ["Engine Oil", "Gear Oil", "Brake Fluid", "Fuel Additives", "Power Steering Fluid", "Car Oil", "Motorbike/Bike Oil", "Car Grease", "Bike Grease", "Car Coolant", "Bike Coolant", "Transmission Fluid", "Hydraulic Fluid", "Windshield Washer Fluid", "Antifreeze", "Commercial Oil", "Industrial Oil", "Coolant", "Automatic Transmission Fluid", "Manual Transmission Fluid", "CVT Fluid", "Differential Fluid", "Suspension Fluid", "Fork Fluid"],
-    "Engine Cooling System": ["Radiator", "Water Pump", "Thermostat", "Cooling System Fluids", "Cooling Fan", "Radiator cap", "Radiator Hose", "Expansion Tank"],
-    "Wiper and Washer System": ["Wiper blades", "Wiper Motor", "Washer Pump", "Washer Fluid Reservoir", "Wiper Arm", "Wiper Linkage"],
-    "Exhaust": ["Muffler", "Catalytic Converter", "Exhaust Pipe", "Exhaust Manifold", "Oxygen sensor", "Exhaust Tips", "DPF Filter", "EGR Valve"],
-    "Heating and Ventilation": ["Heater Core", "Blower Motor", "Cabin Air Filter", "A/C Compressor", "Heater Control Valve", "Evaporator", "Condenser"],
-    "Transmission": ["Gearbox", "Transmission Fluid", "Transmission Filter", "Torque Converter", "Transmission Mount", "CVT Components", "Gear Shift Knob", "Gear mounting", "Automatic transmission filter", "Transmission Mounting"],
-    "Air Conditioning": ["Compressor", "Condensor", "Evaporator", "A/C Hose", "Expansion Valve", "Receiver Drier", "A/C Refrigerant", "Cabin Filter"],
-    "Bearing": ["Wheel Bearing", "Release Bearing", "Pilot Bearing", "Center Bearing", "Alternator Bearing", "Compressor Bearing"],
-    "Propshaft and Differentials": ["Drive Shaft", "Cv joint", "Universal Joint", "Differential Assembly", "Propeller Shaft", "Axle Shaft", "Differential Bearings", "Intermediate bearing"],
-    "Sensors, Relay and Control Units": ["Oxygen Sensor", "ABS Sensor", "ECU", "MAF Sensor", "MAP Sensor", "Crankshaft Position Sensor", "Camshaft Position Sensor", "Throttle Position Sensor", "Knock Sensor", "Temperature Sensor", "Relays"],
-    "Car Accessories": ["Air Freshener", "Phone Holder", "Dash Cam", "Car Cover", "Sun Shade", "Jump Starter", "Air Compressor", "First Aid Kit", "Fire Extinguisher", "Car Vacuum", "Battery", "Electronics", "Helmet"],
-    "Repair Kits": ["Brake Repair Kit", "Carburetor Kit", "CV Joint Boot Kit", "Steering Rack Repair Kit", "Master Cylinder Repair Kit", "Clutch Repair Kit", "Engine Gasket Kit"],
-    "Tools and Equipment": ["Jack", "Wrench", "Scanner", "Socket Set", "Screwdriver Set", "Pliers", "Diagnostic Tools", "OBD2 Scanner", "Multimeter", "Air Tools", "Torque Wrench", "Fire extinguisher", "Air tools", "Clamps and wires", "Testing and inspection equipment", "Spanners and wrenches", "Chargers", "Clamping tools", "Storage"],
-    "Pipes and Hoses": ["Radiator Hose", "Brake Hose", "Fuel Line", "Power Steering Hose", "A/C Hose", "Vacuum Hose", "Heater Hose"],
-    "Auto Detailing and Care": ["Polish", "Wax", "Cleaner", "Car Wash Shampoo", "Clay Bar", "Microfiber Towel", "Tire Shine", "Glass Cleaner", "Leather Conditioner", "Interior Detailer", "Grease", "Car perfume", "Hand cleaners", "Wash cleaners", "Air freshener", "Clutch and brake cleaner", "Interior cleaners", "Wheel cleaners", "Sponges, wipes & brushes", "Rust treatment", "Electrical contact cleaners", "Window cleaner", "Glass care", "Cleaners and care products"],
-    "Lighting": ["Headlight", "Taillight", "Fog Light", "Turn Signal Light", "Interior Light", "License Plate Light", "LED Strip", "HID Bulb", "Halogen Bulb", "LED Headlight Bulb"],
-    "Tuning": ["Performance Chip", "Exhaust Tip", "Cold Air Intake", "Turbocharger", "Intercooler", "Performance Suspension", "Performance Brakes", "Blow Off Valve", "Catch Can"]
+    "Suspension": [
+        "Shock Absorber",
+        "Control arm",
+        "Ball joint",
+        "Coil Spring",
+        "Link rod",
+        "Insulator"
+    ],
+    "Fuel Supply System": [
+        "Mass air flow"
+    ],
+    "Filters": [
+        "Oil filter",
+        "Air filter",
+        "Cabin filter",
+        "Fuel filter",
+        "Water filter",
+        "Diesel filter"
+    ],
+    "Damping": [
+        "Shock absorber",
+        "Strut mount and bearing",
+        "Shock mounting",
+        "Coil springs",
+        "Shock boot cover"
+    ],
+    "Wheels": [
+        "Tyres"
+    ],
+    "Brakes": [
+        "Brake pads",
+        "Master cylinder",
+        "Brake pipes",
+        "Caliper repair kit"
+    ],
+    "Ignition": [
+        "Spark Plug",
+        "Ignition Coil",
+        "Ignition cable"
+    ],
+    "Gasket and Sealing Rings": [
+        "Head Gasket"
+    ],
+    "Steering": [
+        "Tie rod",
+        "Rack end"
+    ],
+    "Belts, Chains and Rollers": [
+        "Timing chain",
+        "Fan and alternator belts"
+    ],
+    "Engine": [
+        "Engine mount",
+        "Bush",
+        "Head gasket",
+        "Thermostat"
+    ],
+    "Interior": [
+        "Steering column"
+    ],
+    "Body": [
+        "Mirror",
+        "Radiator mounting",
+        "Rear lights"
+    ],
+    "Electrics": [
+        "Battery",
+        "Horn"
+    ],
+    "Clutch": [],
+    "Oils and Fluids": [
+        "Motorbike oil",
+        "Car oil",
+        "Commercial oil",
+        "Industrial oil",
+        "Brake fluid",
+        "Power steering fluid",
+        "Coolant",
+        "Fuel additives",
+        "Automatic transmission fluid",
+        "Manual transmission fluid",
+        "CVT fluid",
+        "Differential fluid",
+        "Suspension fluid",
+        "Fork fluid"
+    ],
+    "Engine Cooling System": [
+        "Radiator cap"
+    ],
+    "Wiper and Washer System": [
+        "Wiper blades"
+    ],
+    "Exhaust": [
+        "Oxygen sensor"
+    ],
+    "Heating and Ventilation": [],
+    "Transmission": [
+        "Gear mounting",
+        "Automatic transmission filter",
+        "Transmission Mounting"
+    ],
+    "Air Conditioning": [
+        "Condensor"
+    ],
+    "Bearing": [],
+    "Drive shaft and cv joint": [
+        "Cv joint",
+        "Intermediate bearing"
+    ],
+    "Sensors, Relay and Control Units": [
+        "Oxygen Sensor"
+    ],
+    "Car Accessories": [
+        "Air Freshener",
+        "Fire Extinguisher",
+        "Battery",
+        "Electronics",
+        "Helmet"
+    ],
+    "Repair Kits": [],
+    "Tools and Equipment": [
+        "Air tools",
+        "Fire extinguisher",
+        "Clamps and wires",
+        "Testing and inspection equipment",
+        "Spanners and wrenches",
+        "Chargers",
+        "Clamping tools",
+        "Storage"
+    ],
+    "Pipes and Hoses": [],
+    "Auto Detailing and Care": [
+        "Grease",
+        "Car perfume",
+        "Hand cleaners",
+        "Wash cleaners",
+        "Air freshener",
+        "Clutch and brake cleaner",
+        "Interior cleaners",
+        "Wheel cleaners",
+        "Sponges, wipes & brushes",
+        "Rust treatment",
+        "Electrical contact cleaners",
+        "Window cleaner",
+        "Glass care",
+        "Cleaners and care products"
+    ],
+    "Lighting": [
+        "Headlight bulb",
+        "Indicator bulb",
+        "Fog light bulb"
+    ],
+    "Tuning": []
 };

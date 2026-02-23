@@ -24,7 +24,7 @@ export const CATEGORY_DATA = [
     { name: "Transmission", image: assets.transmission },
     { name: "Air Conditioning", image: assets.air_conditioning },
     { name: "Bearing", image: assets.bearing },
-    { name: "Propshaft and Differentials", image: assets.propshaft_and_differentials },
+    { name: "Drive shaft and cv joint", image: assets.propshaft_and_differentials },
     { name: "Sensors, Relay and Control Units", image: assets.sensors_relay_and_control_units },
     { name: "Car Accessories", image: assets.car_accessories },
     { name: "Repair Kits", image: assets.repair_kits },
