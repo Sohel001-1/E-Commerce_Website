@@ -471,17 +471,21 @@ const List = ({ token }) => {
 
                 <div>
                   <p className="text-sm font-medium mb-1">Unit Size</p>
-                  <select
+                  <input
+                    type="text"
+                    list="edit-unit-size-options"
                     value={editForm.unitSize}
                     onChange={(e) =>
                       setEditForm({ ...editForm, unitSize: e.target.value })
                     }
+                    placeholder="e.g. 5L, 1 Gallon"
                     className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
+                  />
+                  <datalist id="edit-unit-size-options">
                     {unitSizes.map((size) => (
-                      <option key={size} value={size}>{size}</option>
+                      <option key={size} value={size} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
 
                 <div>
