@@ -11,6 +11,102 @@ import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-rea
 import { CATEGORY_DATA } from "../assets/data";
 import { subCategories } from "../assets/subCategories";
 
+// Move child components outside to prevent remounting/focus loss on parent re-render
+const FilterCheckbox = ({ value, onChange, label, checked }) => (
+  <label className="flex items-center gap-3 cursor-pointer group py-0.5">
+    <input
+      className="w-4 h-4 rounded border-surface-300 text-brand-500 focus:ring-brand-500 focus:ring-offset-0 transition-colors cursor-pointer"
+      type="checkbox"
+      value={value}
+      onChange={onChange}
+      checked={checked}
+    />
+    <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">
+      {label}
+    </span>
+  </label>
+);
+
+const FilterGridItem = ({ value, onChange, label, image, checked }) => (
+  <div
+    onClick={() => onChange({ target: { value } })}
+    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${checked
+      ? "border-orange-500 bg-orange-50 shadow-lg"
+      : "border-gray-300 hover:border-gray-400 bg-white"
+      }`}
+  >
+    <div className="w-24 h-24 mb-3 flex items-center justify-center">
+      <img
+        src={image}
+        alt={label}
+        loading="eager"
+        decoding="sync"
+        className="w-full h-full object-contain"
+        style={{ imageRendering: "-webkit-optimize-contrast" }}
+      />
+    </div>
+    <p
+      className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${checked ? "text-orange-700" : "text-gray-900"
+        }`}
+    >
+      {label}
+    </p>
+  </div>
+);
+
+const CategoryCard = ({ category, isActive, onClick }) => (
+  <div
+    onClick={onClick}
+    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${isActive
+      ? "border-orange-500 bg-orange-50 shadow-lg"
+      : "border-gray-300 hover:border-gray-400 bg-white"
+      }`}
+  >
+    <div className="w-24 h-24 mb-3 flex items-center justify-center">
+      <img
+        src={category.image}
+        alt={category.name}
+        className="w-full h-full object-contain"
+        style={{ imageRendering: '-webkit-optimize-contrast' }}
+      />
+    </div>
+    <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${isActive ? "text-orange-700" : "text-gray-900"
+      }`}>
+      {category.name}
+    </p>
+  </div>
+);
+
+const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+
+  return (
+    <div className="border-b border-surface-200 py-4 last:border-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full group mb-2"
+      >
+        <span className="text-sm font-bold tracking-wider text-surface-500 uppercase group-hover:text-surface-800 transition-colors">
+          {title}
+        </span>
+        {isOpen ? (
+          <Minus className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors" />
+        ) : (
+          <Plus className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors" />
+        )}
+      </button>
+      <div
+        className={`grid transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+          }`}
+      >
+        <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Collection = () => {
   const { products, search, showSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
@@ -28,6 +124,7 @@ const Collection = () => {
   const [appropriateUse, setAppropriateUse] = useState([]);
   const [sortType, setSortType] = useState("relavent");
   const [loading, setLoading] = useState(true);
+  const [unitSizeSearch, setUnitSizeSearch] = useState("");
   const [searchParams] = useSearchParams();
 
   const toggleCategory = (e) => {
@@ -255,100 +352,7 @@ const Collection = () => {
     }),
   );
 
-  const FilterCheckbox = ({ value, onChange, label, checked }) => (
-    <label className="flex items-center gap-3 cursor-pointer group py-0.5">
-      <input
-        className="w-4 h-4 rounded border-surface-300 text-brand-500 focus:ring-brand-500 focus:ring-offset-0 transition-colors cursor-pointer"
-        type="checkbox"
-        value={value}
-        onChange={onChange}
-        checked={checked}
-      />
-      <span className="text-sm text-surface-600 group-hover:text-surface-800 transition-colors">
-        {label}
-      </span>
-    </label>
-  );
 
-  const FilterGridItem = ({ value, onChange, label, image, checked }) => (
-    <div
-      onClick={() => onChange({ target: { value } })}
-      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${checked
-        ? "border-orange-500 bg-orange-50 shadow-lg"
-        : "border-gray-300 hover:border-gray-400 bg-white"
-        }`}
-    >
-      <div className="w-24 h-24 mb-3 flex items-center justify-center">
-        <img
-          src={image}
-          alt={label}
-          loading="eager"
-          decoding="sync"
-          className="w-full h-full object-contain"
-          style={{ imageRendering: "-webkit-optimize-contrast" }}
-        />
-      </div>
-      <p
-        className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${checked ? "text-orange-700" : "text-gray-900"
-          }`}
-      >
-        {label}
-      </p>
-    </div>
-  );
-
-  const CategoryCard = ({ category, isActive, onClick }) => (
-    <div
-      onClick={onClick}
-      className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${isActive
-        ? "border-orange-500 bg-orange-50 shadow-lg"
-        : "border-gray-300 hover:border-gray-400 bg-white"
-        }`}
-    >
-      <div className="w-24 h-24 mb-3 flex items-center justify-center">
-        <img
-          src={category.image}
-          alt={category.name}
-          className="w-full h-full object-contain"
-          style={{ imageRendering: '-webkit-optimize-contrast' }}
-        />
-      </div>
-      <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${isActive ? "text-orange-700" : "text-gray-900"
-        }`}>
-        {category.name}
-      </p>
-    </div>
-  );
-
-  const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }) => {
-    const [isOpen, setIsOpen] = useState(defaultOpen);
-
-    return (
-      <div className="border-b border-surface-200 py-4 last:border-0">
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center justify-between w-full group mb-2"
-        >
-          <span className="text-sm font-bold tracking-wider text-surface-500 uppercase group-hover:text-surface-800 transition-colors">
-            {title}
-          </span>
-          {isOpen ? (
-            <Minus className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors" />
-          ) : (
-            <Plus className="w-4 h-4 text-surface-400 group-hover:text-surface-600 transition-colors" />
-          )}
-        </button>
-        <div
-          className={`grid transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-            }`}
-        >
-          <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
-            {children}
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   return (
     <div className="pt-10">
@@ -472,15 +476,31 @@ const Collection = () => {
                 {/* 5. Unit Size */}
                 {getFilterOptions("unitSize").length > 0 && (
                   <FilterSection title="UNIT SIZE" defaultOpen={false}>
-                    {getFilterOptions("unitSize").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, unitSize, setUnitSize)}
-                        label={item}
-                        checked={unitSize.includes(item)}
+                    <div className="px-2 pb-2">
+                      <input
+                        type="text"
+                        placeholder="Search size..."
+                        value={unitSizeSearch}
+                        onChange={(e) => setUnitSizeSearch(e.target.value)}
+                        className="w-full border border-surface-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-1 focus:ring-brand-500 transition-shadow"
                       />
-                    ))}
+                    </div>
+                    <div className="max-h-48 overflow-y-auto w-full px-2 scrollbar-thin scrollbar-thumb-surface-300">
+                      {getFilterOptions("unitSize")
+                        .filter(item => item.toLowerCase().includes(unitSizeSearch.toLowerCase()))
+                        .map((item) => (
+                          <FilterCheckbox
+                            key={item}
+                            value={item}
+                            onChange={() => toggleFilter(item, unitSize, setUnitSize)}
+                            label={item}
+                            checked={unitSize.includes(item)}
+                          />
+                        ))}
+                      {getFilterOptions("unitSize").filter(item => item.toLowerCase().includes(unitSizeSearch.toLowerCase())).length === 0 && (
+                        <p className="text-xs text-surface-500 py-2 text-center italic">No sizes found</p>
+                      )}
+                    </div>
                   </FilterSection>
                 )}
 

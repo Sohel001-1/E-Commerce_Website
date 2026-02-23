@@ -63,6 +63,8 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Select...",
                 e.preventDefault();
                 if (highlightIndex >= 0 && filtered[highlightIndex]) {
                     selectOption(filtered[highlightIndex]);
+                } else if (search.trim() !== "" && !options.some(opt => opt.toLowerCase() === search.trim().toLowerCase())) {
+                    selectOption(search.trim());
                 }
                 break;
             case "Escape":
@@ -125,7 +127,7 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Select...",
                         ref={listRef}
                         className="max-h-48 overflow-y-auto py-1"
                     >
-                        {filtered.length > 0 ? (
+                        {filtered.length > 0 && (
                             filtered.map((opt, i) => (
                                 <li
                                     key={opt}
@@ -140,7 +142,16 @@ const SearchableSelect = ({ options, value, onChange, placeholder = "Select...",
                                     {opt}
                                 </li>
                             ))
-                        ) : (
+                        )}
+                        {search.trim() !== "" && !options.some(opt => opt.toLowerCase() === search.trim().toLowerCase()) && (
+                            <li
+                                onClick={() => selectOption(search.trim())}
+                                className="cursor-pointer px-3 py-1.5 text-sm transition-colors text-brand-600 hover:bg-brand-50"
+                            >
+                                Add "{search.trim()}"
+                            </li>
+                        )}
+                        {filtered.length === 0 && search.trim() === "" && (
                             <li className="px-3 py-2 text-sm text-gray-400 italic">
                                 No results found
                             </li>
