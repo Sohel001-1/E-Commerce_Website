@@ -80,6 +80,21 @@ const addProduct = async (req, res) => {
       return res.status(400).json({ success: false, message: "Price must be a number" });
     }
 
+    // Check for duplicate product (same name + brand + category + subCategory)
+    const existing = await productModel.findOne({
+      name: productData.name,
+      brand: productData.brand,
+      category: productData.category,
+      subCategory: productData.subCategory,
+    });
+
+    if (existing) {
+      return res.status(409).json({
+        success: false,
+        message: `Product "${productData.name}" by ${productData.brand} already exists in ${productData.category} > ${productData.subCategory}`,
+      });
+    }
+
     const product = await productModel.create(productData);
 
     return res.status(201).json({

@@ -7,6 +7,7 @@ import Title from '../components/Title';
 import { CATEGORY_DATA } from '../assets/data';
 import { subCategories } from '../assets/subCategories';
 import { assets } from '../assets/assets';
+import { subCategoryAssets } from '../assets/subCategoryAssets';
 
 const SubCategories = () => {
     const { categoryName } = useParams();
@@ -58,14 +59,23 @@ const SubCategories = () => {
                                         <div className="w-6 sm:w-8 h-1 bg-orange-500 mt-2 rounded-full transform origin-center sm:origin-left group-hover:scale-x-150 transition-transform duration-300 mx-auto sm:mx-0" />
                                     </div>
 
-                                    {/* Image Container - Reusing parent category image as visual anchor since we don't have individual subcat images */}
+                                    {/* Image Container */}
                                     <div className="w-16 h-16 sm:w-24 sm:h-24 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded-2xl p-2 group-hover:bg-orange-50/50 transition-colors duration-500">
-                                        <img
-                                            src={categoryImage}
-                                            alt={sub}
-                                            className="w-full h-full object-contain transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500"
-                                            style={{ imageRendering: '-webkit-optimize-contrast' }}
-                                        />
+                                        {(() => {
+                                            const formattedSub1 = sub.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                                            const formattedSub2 = sub.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+                                            const keys = Object.keys(subCategoryAssets);
+                                            const matchKey = keys.find(k => k === formattedSub1 || k === formattedSub2 || k.replace(/s_|_s_/g, '_') === formattedSub2.replace(/s_|_s_/g, '_') || k.replace(/s$/, '') === formattedSub2.replace(/s$/, ''));
+                                            const finalImage = matchKey ? subCategoryAssets[matchKey] : categoryImage;
+                                            return (
+                                                <img
+                                                    src={finalImage}
+                                                    alt={sub}
+                                                    className="w-full h-full object-contain transform group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-500"
+                                                    style={{ imageRendering: '-webkit-optimize-contrast' }}
+                                                />
+                                            );
+                                        })()}
                                     </div>
                                 </Link>
                             </motion.div>
