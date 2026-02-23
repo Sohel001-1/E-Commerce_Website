@@ -1,10 +1,9 @@
-
 export const subCategories = {
     "Suspension": ["Shock Absorber", "Control Arm", "Strut Mount", "Ball Joint", "Stabilizer Link", "Coil Spring", "Leaf Spring", "Air Suspension"],
     "Fuel Supply System": ["Fuel Pump", "Fuel Filter", "Injector", "Fuel Tank", "Fuel Lines", "Carburetor"],
     "Filters": ["Oil Filter", "Air Filter", "Cabin Filter", "Fuel Filter", "Transmission Filter"],
     "Damping": ["Shock Absorber", "Strut", "Coilover"],
-    "Wheels": ["Alloy Wheel", "Steel Wheel", "Wheel Cap", "Lug Nuts", "Wheel Spacers", "Tires"],
+    "Wheels": ["Alloy Wheel", "Steel Wheel", "Wheel Cap", "Lug Nuts", "Wheel Spacers", "Tyres"],
     "Brakes": ["Brake Pad", "Brake Disc", "Brake Caliper", "Brake Shoe", "Brake Drum", "Brake Lines", "Brake Master Cylinder", "Brake Booster"],
     "Ignition": ["Spark Plug", "Glow Plug", "Ignition Coil", "Distributor", "Ignition Wire Set", "Ignition Switch"],
     "Gasket and Sealing Rings": ["Head Gasket", "Valve Cover Gasket", "Oil Pan Gasket", "Intake Manifold Gasket", "Exhaust Manifold Gasket", "O-Rings", "Oil Seals"],
@@ -29,7 +28,7 @@ export const subCategories = {
     "Repair Kits": ["Brake Repair Kit", "Carburetor Kit", "CV Joint Boot Kit", "Steering Rack Repair Kit", "Master Cylinder Repair Kit", "Clutch Repair Kit", "Engine Gasket Kit"],
     "Tools and Equipment": ["Jack", "Wrench", "Scanner", "Socket Set", "Screwdriver Set", "Pliers", "Diagnostic Tools", "OBD2 Scanner", "Multimeter", "Air Tools", "Torque Wrench"],
     "Pipes and Hoses": ["Radiator Hose", "Brake Hose", "Fuel Line", "Power Steering Hose", "A/C Hose", "Vacuum Hose", "Heater Hose"],
-    "Auto Detailing and Care": ["Polish", "Wax", "Cleaner", "Car Wash Shampoo", "Clay Bar", "Microfiber Towel", "Tire Shine", "Glass Cleaner", "Leather Conditioner", "Interior Detailer"],
+    "Auto Detailing and Care": ["Polish", "Wax", "Cleaner", "Car Wash Shampoo", "Clay Bar", "Microfiber Towel", "Tyre Shine", "Glass Cleaner", "Leather Conditioner", "Interior Detailer", "Car Perfume"],
     "Lighting": ["Headlight", "Taillight", "Fog Light", "Turn Signal Light", "Interior Light", "License Plate Light", "LED Strip", "HID Bulb", "Halogen Bulb", "LED Headlight Bulb"],
     "Tuning": ["Performance Chip", "Exhaust Tip", "Cold Air Intake", "Turbocharger", "Intercooler", "Performance Suspension", "Performance Brakes", "Blow Off Valve", "Catch Can"]
 };
