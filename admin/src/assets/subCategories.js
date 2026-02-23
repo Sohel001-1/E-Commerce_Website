@@ -1,10 +1,9 @@
-
 export const subCategories = {
     "Suspension": ["Shock Absorber", "Control arm", "Strut Mount", "Ball joint", "Stabilizer Link", "Coil Spring", "Leaf Spring", "Air Suspension", "Link rod", "Insulator"],
     "Fuel Supply System": ["Fuel Pump", "Fuel Filter", "Injector", "Fuel Tank", "Fuel Lines", "Carburetor"],
     "Filters": ["Oil Filter", "Air Filter", "Cabin Filter", "Fuel Filter", "Transmission Filter", "Water filter", "Diesel filter"],
     "Damping": ["Shock absorber", "Strut", "Coilover", "Strut mount and bearing", "Shock mounting", "Coil springs", "Shock boot cover"],
-    "Wheels": ["Alloy Wheel", "Steel Wheel", "Wheel Cap", "Lug Nuts", "Wheel Spacers", "Tires"],
+    "Wheels": ["Alloy Wheel", "Steel Wheel", "Wheel Cap", "Lug Nuts", "Wheel Spacers", "Tyres"],
     "Brakes": ["Brake Pad", "Brake Disc", "Brake Caliper", "Brake Shoe", "Brake Drum", "Brake Lines", "Brake Master Cylinder", "Brake Booster", "Brake pipes", "Master cylinder", "Caliper repair kit"],
     "Ignition": ["Spark Plug", "Glow Plug", "Ignition Coil", "Distributor", "Ignition Wire Set", "Ignition Switch", "Ignition cable"],
     "Gasket and Sealing Rings": ["Head Gasket", "Valve Cover Gasket", "Oil Pan Gasket", "Intake Manifold Gasket", "Exhaust Manifold Gasket", "O-Rings", "Oil Seals"],
