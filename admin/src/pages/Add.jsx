@@ -291,13 +291,20 @@ const Add = ({ token }) => {
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">Unit Size</label>
-            <SearchableSelect
+            <input
+              type="text"
+              list="unit-sizes-datalist"
               id="unitSize"
-              options={unitSizes}
               value={unitSize}
-              onChange={(val) => setUnitSize(val)}
-              placeholder="Select Unit Size"
+              onChange={(e) => setUnitSize(e.target.value)}
+              placeholder="e.g. 5L, 1 Gallon"
+              className="w-full rounded border border-gray-300 px-3 py-2 bg-white focus:border-gray-600 focus:outline-none"
             />
+            <datalist id="unit-sizes-datalist">
+              {unitSizes.map((size) => (
+                <option key={size} value={size} />
+              ))}
+            </datalist>
           </div>
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-gray-700">SAE</label>
