@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import applyWatermark from "../middleware/watermarkImage.js";
 
 // Helper: parse boolean safely (true/false OR "true"/"false")
 const parseBoolean = (val) => val === true || val === "true";
@@ -42,11 +43,18 @@ const addProduct = async (req, res) => {
 
     const images = [image1, image2, image3, image4].filter(Boolean);
 
+    // Apply logo watermarks and get new file paths
+    const watermarkedPaths = [];
+    for (const img of images) {
+      const wmPath = await applyWatermark(img.path);
+      watermarkedPaths.push(wmPath);
+    }
+
     let imagesUrl = [];
-    if (images.length > 0) {
+    if (watermarkedPaths.length > 0) {
       imagesUrl = await Promise.all(
-        images.map(async (item) => {
-          const result = await cloudinary.uploader.upload(item.path, {
+        watermarkedPaths.map(async (filePath) => {
+          const result = await cloudinary.uploader.upload(filePath, {
             resource_type: "image",
           });
           return result.secure_url;
@@ -182,11 +190,18 @@ const updateProduct = async (req, res) => {
 
     const images = [image1, image2, image3, image4].filter(Boolean);
 
+    // Apply logo watermarks and get new file paths
+    const watermarkedPaths = [];
+    for (const img of images) {
+      const wmPath = await applyWatermark(img.path);
+      watermarkedPaths.push(wmPath);
+    }
+
     let newlyUploadedUrls = [];
-    if (images.length > 0) {
+    if (watermarkedPaths.length > 0) {
       newlyUploadedUrls = await Promise.all(
-        images.map(async (item) => {
-          const result = await cloudinary.uploader.upload(item.path, {
+        watermarkedPaths.map(async (filePath) => {
+          const result = await cloudinary.uploader.upload(filePath, {
             resource_type: "image",
           });
           return result.secure_url;
