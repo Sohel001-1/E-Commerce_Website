@@ -7,23 +7,16 @@ import { motion } from "framer-motion";
 import { heroTextVariants } from "../utils/animations";
 
 // 1. Video served from public folder
-import engineVideo from "../assets/engine_video.mp4";
+import { assets } from "../assets/assets";
 
 const slides = [
-  {
-    type: "video",
-    videoSource: engineVideo,
-    title: "Precision Engineering",
-    subtitle: "Experience the power of genuine Japanese components",
-    cta: "Explore Parts",
-  },
-
   {
     type: "image",
     image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
+    category: "Oils and Fluids"
   },
   {
     type: "image",
@@ -31,6 +24,7 @@ const slides = [
     title: "Genuine Engine Parts",
     subtitle: "OEM quality components for peak performance",
     cta: "Shop Engine Parts",
+    category: "Engine"
   },
   {
     type: "image",
@@ -38,7 +32,48 @@ const slides = [
     title: "Premium Brake Systems",
     subtitle: "Safety first with authentic components",
     cta: "Browse Brakes",
+    category: "Brakes"
   },
+  {
+    type: "icon",
+    image: assets.suspension,
+    title: "Suspension Components",
+    subtitle: "Ensure a smooth and stable ride",
+    cta: "View Suspension",
+    category: "Suspension"
+  },
+  {
+    type: "icon",
+    image: assets.transmission,
+    title: "Transmission Systems",
+    subtitle: "Power the roads seamlessly",
+    cta: "View Transmission",
+    category: "Transmission"
+  },
+  {
+    type: "icon",
+    image: assets.filters,
+    title: "Filters",
+    subtitle: "Clean engine operations",
+    cta: "Shop Filters",
+    category: "Filters"
+  },
+  {
+    type: "icon",
+    image: assets.lighting,
+    title: "Lighting",
+    subtitle: "Illuminate your journey",
+    cta: "View Lighting",
+    category: "Lighting"
+  },
+  {
+    type: "icon",
+    image: assets.auto_detailing_and_care,
+    title: "Auto Detailing",
+    subtitle: "Keep your car looking brand new",
+    cta: "View Detailing",
+    category: "Auto Detailing and Care"
+  }
 ];
 
 export default function HeroSlider() {
@@ -101,6 +136,18 @@ export default function HeroSlider() {
                       transition: "transform 0.3s ease-out",
                     }}
                   />
+                ) : slide.type === "icon" ? (
+                  <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-8 text-[#E85D04]">
+                    <motion.img
+                      src={slide.image}
+                      alt={slide.title}
+                      className="w-1/2 h-1/2 object-contain drop-shadow-2xl opacity-50 contrast-125 saturate-200"
+                      style={{
+                        transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
+                        transition: "transform 0.3s ease-out",
+                      }}
+                    />
+                  </div>
                 ) : (
                   <motion.img
                     src={slide.image}
@@ -147,7 +194,7 @@ export default function HeroSlider() {
                           animate="visible"
                           variants={heroTextVariants}
                         >
-                          <Link to="/collection">
+                          <Link to={`/collection?category=${encodeURIComponent(slide.category)}`}>
                             <button className="btn-primary btn-shimmer text-lg">
                               <span className="relative z-10">{slide.cta}</span>
                             </button>
