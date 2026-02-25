@@ -99,7 +99,7 @@ const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }
         className={`grid transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
           }`}
       >
-        <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
+        <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
           {children}
         </div>
       </div>
@@ -375,7 +375,7 @@ const Collection = () => {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 left-0 w-[820px] bg-white z-50 shadow-2xl flex flex-col"
+              className="fixed inset-y-0 left-0 w-full max-w-[820px] bg-white z-50 shadow-2xl flex flex-col"
             >
               {/* Sidebar Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
