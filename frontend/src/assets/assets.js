@@ -104,6 +104,11 @@ import pipes_and_hoses from "./pipes_and_hoses.png";
 import auto_detailing_and_care from "./auto_detailing_and_care.png";
 import lighting from "./lighting.png";
 import tuning from "./tuning.png";
+import hero_detailing from "./hero_detailing.jpg";
+import hero_suspension from "./hero_suspension.jpg";
+import hero_filter from "./hero_filter.jpg";
+import hero_lighting from "./hero_lighting.jpg";
+import hero_transmission from "./hero_transmission.png";
 import brand_3m from "./brand/3m.png";
 import brand_555 from "./brand/555.jpg";
 import brand_70mai from "./brand/70mai.jpg";
@@ -508,5 +513,10 @@ export const assets = {
   auto_detailing_and_care,
   lighting,
   tuning,
+  hero_detailing,
+  hero_suspension,
+  hero_filter,
+  hero_lighting,
+  hero_transmission,
   brandAssets,
 };
