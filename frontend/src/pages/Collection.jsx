@@ -124,6 +124,7 @@ const Collection = () => {
   const [appropriateUse, setAppropriateUse] = useState([]);
   const [sortType, setSortType] = useState("relavent");
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(24);
   const [unitSizeSearch, setUnitSizeSearch] = useState("");
   const [searchParams] = useSearchParams();
 
@@ -214,6 +215,7 @@ const Collection = () => {
     }
 
     setFilterProducts(productsCopy);
+    setVisibleCount(24);
     setLoading(false);
   };
 
@@ -353,6 +355,33 @@ const Collection = () => {
   );
 
 
+
+  // Infinite Scroll logic
+  const loaderRef = React.useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const target = entries[0];
+      if (target.isIntersecting && visibleCount < filterProducts.length) {
+        // Use a small delay for smoother UX if desired, or execute immediately
+        setVisibleCount((prev) => prev + 24);
+      }
+    }, {
+      root: null,
+      rootMargin: "200px", // Trigger slightly before reaching the bottom
+      threshold: 0.1
+    });
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => {
+      if (loaderRef.current) {
+        observer.unobserve(loaderRef.current);
+      }
+    };
+  }, [loaderRef, visibleCount, filterProducts.length]);
 
   return (
     <div className="pt-10">
@@ -631,20 +660,34 @@ const Collection = () => {
             </p>
           </div>
         ) : (
-          <div
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
-          >
-            {filterProducts.map((items, index) => (
-              <ProductItem
-                key={items._id}
-                name={items.name}
-                id={items._id}
-                price={items.price}
-                image={items.image}
-                index={index}
-              />
-            ))}
-          </div>
+          <>
+            <div
+              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
+            >
+              {filterProducts.slice(0, visibleCount).map((items, index) => (
+                <ProductItem
+                  key={items._id}
+                  name={items.name}
+                  id={items._id}
+                  price={items.price}
+                  image={items.image}
+                  stock={items.stock}
+                  salePrice={items.salePrice}
+                  index={index}
+                />
+              ))}
+            </div>
+
+            {/* Infinite Scroll Loader Target */}
+            {visibleCount < filterProducts.length && (
+              <div
+                ref={loaderRef}
+                className="flex justify-center mt-10 mb-8 py-4"
+              >
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
