@@ -40,3 +40,5 @@ Use clean, meaningful commit messages
 Keep components modular
 Do not commit node_modules
 Run project before pushing
+
+test_deploy
