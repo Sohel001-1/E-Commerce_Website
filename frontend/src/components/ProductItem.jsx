@@ -3,13 +3,13 @@ import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const ProductItem = ({ id, image, name, price, index = 0 }) => {
+const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: propSalePrice, index = 0 }) => {
   const { currency, wishlist, toggleWishlist, products } = useContext(ShopContext);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
-  const stock = products?.find((p) => p._id === id)?.stock || 0;
-  const salePrice = products?.find((p) => p._id === id)?.salePrice || 0;
+  const stock = propStock !== undefined ? propStock : (products?.find((p) => p._id === id)?.stock || 0);
+  const salePrice = propSalePrice !== undefined ? propSalePrice : (products?.find((p) => p._id === id)?.salePrice || 0);
 
   useEffect(() => {
     // Check if this product is in wishlist
