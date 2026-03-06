@@ -10,19 +10,22 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    # Change this to use your new local runner
+    runs-on: self-hosted 
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          script: |
-            set -e
-            cd /opt/mern
-            git fetch origin main
-            git reset --hard origin/main
-            docker compose pull || true
-            docker compose up -d --build --remove-orphans
-            docker image prune -f
+      - name: Execute Deployment Commands
+        run: |
+          set -e
+          # Move to your project directory
+          cd /opt/mern
+          
+          # Sync with GitHub
+          git fetch origin main
+          git reset --hard origin/main
+          
+          # Restart the JAPAN AUTOS stack
+          docker compose pull || true
+          docker compose up -d --build --remove-orphans
+          
+          # Clean up old images to save space
+          docker image prune -f
