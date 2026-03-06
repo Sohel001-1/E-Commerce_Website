@@ -35,40 +35,40 @@ const slides = [
     category: "Brakes"
   },
   {
-    type: "icon",
-    image: assets.suspension,
+    type: "image",
+    image: assets.hero_suspension,
     title: "Suspension Components",
     subtitle: "Ensure a smooth and stable ride",
     cta: "View Suspension",
     category: "Suspension"
   },
   {
-    type: "icon",
-    image: assets.transmission,
+    type: "image",
+    image: assets.hero_transmission,
     title: "Transmission Systems",
     subtitle: "Power the roads seamlessly",
     cta: "View Transmission",
     category: "Transmission"
   },
   {
-    type: "icon",
-    image: assets.filters,
+    type: "image",
+    image: assets.hero_filter,
     title: "Filters",
     subtitle: "Clean engine operations",
     cta: "Shop Filters",
     category: "Filters"
   },
   {
-    type: "icon",
-    image: assets.lighting,
+    type: "image",
+    image: assets.hero_lighting,
     title: "Lighting",
     subtitle: "Illuminate your journey",
     cta: "View Lighting",
     category: "Lighting"
   },
   {
-    type: "icon",
-    image: assets.auto_detailing_and_care,
+    type: "image",
+    image: assets.hero_detailing,
     title: "Auto Detailing",
     subtitle: "Keep your car looking brand new",
     cta: "View Detailing",
@@ -152,7 +152,7 @@ export default function HeroSlider() {
                   <motion.img
                     src={slide.image}
                     alt={slide.title}
-                    className="w-full h-full object-cover"
+                    className={`w-full h-full ${slide.category === 'Transmission' ? 'object-cover bg-black' : 'object-cover'}`}
                     style={{
                       transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
                       transition: "transform 0.3s ease-out",
