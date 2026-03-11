@@ -1,17 +1,78 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { SlidersHorizontal, Plus, Minus, X, RotateCcw } from "lucide-react";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
-import { AnimatePresence, motion } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
-// staggerContainer and fadeUp removed to fix sub-pixel blur on refresh
 import { SkeletonGrid } from "../components/Skeleton";
-import { SlidersHorizontal, Plus, Minus, X, RotateCcw, Filter } from "lucide-react";
 import { CATEGORY_DATA } from "../assets/data";
 import { subCategories } from "../assets/subCategories";
 
-// Move child components outside to prevent remounting/focus loss on parent re-render
+const collectionResponseCache = new Map();
+const collectionPageStateCache = new Map();
+const COLLECTION_RESTORE_STORAGE_KEY = "collection-return-state";
+
+const arraysEqual = (left, right) =>
+  left.length === right.length && left.every((value, index) => value === right[index]);
+const normalizeValue = (value) => String(value || "").trim().toLowerCase();
+
+const createInitialCollectionState = (searchParams, cachedState) => {
+  if (cachedState) {
+    return cachedState;
+  }
+
+  const categoryParam = searchParams.get("category");
+  const subCategoryParam = searchParams.get("subCategory");
+
+  return {
+    showFilter: false,
+    filterProducts: [],
+    category: categoryParam ? [categoryParam] : [],
+    subCategory: subCategoryParam ? [subCategoryParam] : [],
+    brand: [],
+    countryOfOrigin: [],
+    countryOfImport: [],
+    unitSize: [],
+    sae: [],
+    oilType: [],
+    api: [],
+    acea: [],
+    appropriateUse: [],
+    sortType: "relavent",
+    loading: true,
+    loadingMore: false,
+    page: 1,
+    hasMore: false,
+    totalProducts: 0,
+    unitSizeSearch: "",
+    brandData: [],
+    debouncedSearch: "",
+  };
+};
+
+const matchesSelectedValues = (itemValue, selectedValues) => {
+  if (selectedValues.length === 0) {
+    return true;
+  }
+
+  const normalizedItemValue = normalizeValue(itemValue);
+  return selectedValues.some((selectedValue) => normalizeValue(selectedValue) === normalizedItemValue);
+};
+
+const FILTER_KEYS = [
+  "brand",
+  "countryOfOrigin",
+  "countryOfImport",
+  "unitSize",
+  "sae",
+  "oilType",
+  "api",
+  "acea",
+  "appropriateUse",
+];
+
 const FilterCheckbox = ({ value, onChange, label, checked }) => (
   <label className="flex items-center gap-3 cursor-pointer group py-0.5">
     <input
@@ -30,10 +91,11 @@ const FilterCheckbox = ({ value, onChange, label, checked }) => (
 const FilterGridItem = ({ value, onChange, label, image, checked }) => (
   <div
     onClick={() => onChange({ target: { value } })}
-    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${checked
-      ? "border-orange-500 bg-orange-50 shadow-lg"
-      : "border-gray-300 hover:border-gray-400 bg-white"
-      }`}
+    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
+      checked
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
+    }`}
   >
     <div className="w-24 h-24 mb-3 flex items-center justify-center">
       <img
@@ -46,8 +108,9 @@ const FilterGridItem = ({ value, onChange, label, image, checked }) => (
       />
     </div>
     <p
-      className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${checked ? "text-orange-700" : "text-gray-900"
-        }`}
+      className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${
+        checked ? "text-orange-700" : "text-gray-900"
+      }`}
     >
       {label}
     </p>
@@ -57,21 +120,25 @@ const FilterGridItem = ({ value, onChange, label, image, checked }) => (
 const CategoryCard = ({ category, isActive, onClick }) => (
   <div
     onClick={onClick}
-    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${isActive
-      ? "border-orange-500 bg-orange-50 shadow-lg"
-      : "border-gray-300 hover:border-gray-400 bg-white"
-      }`}
+    className={`flex flex-col items-center justify-start p-4 border-2 rounded-xl cursor-pointer transition-all hover:shadow-lg ${
+      isActive
+        ? "border-orange-500 bg-orange-50 shadow-lg"
+        : "border-gray-300 hover:border-gray-400 bg-white"
+    }`}
   >
     <div className="w-24 h-24 mb-3 flex items-center justify-center">
       <img
         src={category.image}
         alt={category.name}
         className="w-full h-full object-contain"
-        style={{ imageRendering: '-webkit-optimize-contrast' }}
+        style={{ imageRendering: "-webkit-optimize-contrast" }}
       />
     </div>
-    <p className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${isActive ? "text-orange-700" : "text-gray-900"
-      }`}>
+    <p
+      className={`text-xs font-semibold text-center leading-tight uppercase tracking-wide ${
+        isActive ? "text-orange-700" : "text-gray-900"
+      }`}
+    >
       {category.name}
     </p>
   </div>
@@ -83,7 +150,7 @@ const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }
   return (
     <div className="border-b border-surface-200 py-4 last:border-0">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
         className="flex items-center justify-between w-full group mb-2"
       >
         <span className="text-sm font-bold tracking-wider text-surface-500 uppercase group-hover:text-surface-800 transition-colors">
@@ -96,10 +163,17 @@ const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }
         )}
       </button>
       <div
-        className={`grid transition-all duration-300 ease-in-out overflow-hidden ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-          }`}
+        className={`grid transition-all duration-300 ease-in-out overflow-hidden ${
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
       >
-        <div className={`min-h-0 ${layout === "grid" ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2" : "flex flex-col gap-2 pt-1"}`}>
+        <div
+          className={`min-h-0 ${
+            layout === "grid"
+              ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2"
+              : "flex flex-col gap-2 pt-1"
+          }`}
+        >
           {children}
         </div>
       </div>
@@ -108,140 +182,131 @@ const FilterSection = ({ title, children, defaultOpen = false, layout = "list" }
 };
 
 const Collection = () => {
-  const { products, search, showSearch } = useContext(ShopContext);
-  const [showFilter, setShowFilter] = useState(false);
-  const [filterProducts, setFilterProducts] = useState([]);
-  const [category, setCategory] = useState([]);
-  const [subCategory, setSubCategory] = useState([]);
-  const [brand, setBrand] = useState([]);
-  const [countryOfOrigin, setCountryOfOrigin] = useState([]);
-  const [countryOfImport, setCountryOfImport] = useState([]);
-  const [unitSize, setUnitSize] = useState([]);
-  const [sae, setSae] = useState([]);
-  const [oilType, setOilType] = useState([]);
-  const [api, setApi] = useState([]);
-  const [acea, setAcea] = useState([]);
-  const [appropriateUse, setAppropriateUse] = useState([]);
-  const [sortType, setSortType] = useState("relavent");
-  const [loading, setLoading] = useState(true);
-  const [visibleCount, setVisibleCount] = useState(24);
-  const [unitSizeSearch, setUnitSizeSearch] = useState("");
+  const { backendUrl, search, setSearch, showSearch, products } = useContext(ShopContext);
+  const location = useLocation();
   const [searchParams] = useSearchParams();
+  const stateCacheKey = `${location.pathname}${location.search}`;
+  const restorePayloadRef = useRef(null);
+  const initialStateRef = useRef(null);
 
-  const toggleCategory = (e) => {
-    if (category.includes(e.target.value)) {
-      setCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setCategory((prev) => [...prev, e.target.value]);
+  if (restorePayloadRef.current === null) {
+    try {
+      const rawRestorePayload = sessionStorage.getItem(COLLECTION_RESTORE_STORAGE_KEY);
+      restorePayloadRef.current = rawRestorePayload ? JSON.parse(rawRestorePayload) : false;
+    } catch {
+      restorePayloadRef.current = false;
     }
-    // Optional: Reset subCategory when category changes? 
-    // Usually better to keep selected subcategories if they still apply, 
-    // or reset if they don't. For now, let's keep it simple.
-  };
+  }
 
-  const toggleSubCategory = (e) => {
-    if (subCategory.includes(e.target.value)) {
-      setSubCategory((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setSubCategory((prev) => [...prev, e.target.value]);
-    }
-  };
+  const shouldRestore =
+    restorePayloadRef.current &&
+    restorePayloadRef.current.path === stateCacheKey;
 
-  const toggleBrand = (e) => {
-    if (brand.includes(e.target.value)) {
-      setBrand((prev) => prev.filter((item) => item !== e.target.value));
-    } else {
-      setBrand((prev) => [...prev, e.target.value]);
-    }
-  };
+  if (!initialStateRef.current) {
+    const cachedState = shouldRestore ? collectionPageStateCache.get(stateCacheKey) : null;
+    initialStateRef.current = createInitialCollectionState(searchParams, cachedState);
+  }
 
-  const toggleFilter = (value, state, setState) => {
-    if (state.includes(value)) {
-      setState((prev) => prev.filter((item) => item !== value));
-    } else {
-      setState((prev) => [...prev, value]);
-    }
-  };
-
-  const applyFilter = () => {
-    let productsCopy = products.slice();
-
-    if (showSearch && search) {
-      const searchTerms = search.toLowerCase().trim().split(/\s+/);
-      productsCopy = productsCopy.filter((item) => {
-        const itemName = item.name.toLowerCase();
-        return searchTerms.every((term) => itemName.includes(term));
-      });
-    }
-
-    if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category),
-      );
-    }
-
-    if (subCategory.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory),
-      );
-    }
-
-
-    if (brand.length > 0) {
-      productsCopy = productsCopy.filter((item) => brand.includes(item.brand));
-    }
-
-    if (countryOfOrigin.length > 0) {
-      productsCopy = productsCopy.filter((item) => countryOfOrigin.includes(item.countryOfOrigin));
-    }
-    if (countryOfImport.length > 0) {
-      productsCopy = productsCopy.filter((item) => countryOfImport.includes(item.countryOfImport));
-    }
-    if (unitSize.length > 0) {
-      productsCopy = productsCopy.filter((item) => unitSize.includes(item.unitSize));
-    }
-    if (sae.length > 0) {
-      productsCopy = productsCopy.filter((item) => sae.includes(item.sae));
-    }
-    if (oilType.length > 0) {
-      productsCopy = productsCopy.filter((item) => oilType.includes(item.oilType));
-    }
-    if (api.length > 0) {
-      productsCopy = productsCopy.filter((item) => api.includes(item.api));
-    }
-    if (acea.length > 0) {
-      productsCopy = productsCopy.filter((item) => acea.includes(item.acea));
-    }
-    if (appropriateUse.length > 0) {
-      productsCopy = productsCopy.filter((item) => appropriateUse.includes(item.appropriateUse));
-    }
-
-    setFilterProducts(productsCopy);
-    setVisibleCount(24);
-    setLoading(false);
-  };
-
-  const sortProduct = () => {
-    let fpCopy = filterProducts.slice();
-    switch (sortType) {
-      case "low-high":
-        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
-        break;
-      case "high-low":
-        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
-        break;
-      default:
-        applyFilter();
-        break;
-    }
-  };
+  const initialState = initialStateRef.current;
+  const [showFilter, setShowFilter] = useState(initialState.showFilter);
+  const [filterProducts, setFilterProducts] = useState(initialState.filterProducts);
+  const [category, setCategory] = useState(initialState.category);
+  const [subCategory, setSubCategory] = useState(initialState.subCategory);
+  const [brand, setBrand] = useState(initialState.brand);
+  const [countryOfOrigin, setCountryOfOrigin] = useState(initialState.countryOfOrigin);
+  const [countryOfImport, setCountryOfImport] = useState(initialState.countryOfImport);
+  const [unitSize, setUnitSize] = useState(initialState.unitSize);
+  const [sae, setSae] = useState(initialState.sae);
+  const [oilType, setOilType] = useState(initialState.oilType);
+  const [api, setApi] = useState(initialState.api);
+  const [acea, setAcea] = useState(initialState.acea);
+  const [appropriateUse, setAppropriateUse] = useState(initialState.appropriateUse);
+  const [sortType, setSortType] = useState(initialState.sortType);
+  const [loading, setLoading] = useState(initialState.loading);
+  const [loadingMore, setLoadingMore] = useState(initialState.loadingMore);
+  const [page, setPage] = useState(initialState.page);
+  const [hasMore, setHasMore] = useState(initialState.hasMore);
+  const [totalProducts, setTotalProducts] = useState(initialState.totalProducts);
+  const [unitSizeSearch, setUnitSizeSearch] = useState(initialState.unitSizeSearch);
+  const [brandData, setBrandData] = useState(initialState.brandData);
+  const [debouncedSearch, setDebouncedSearch] = useState(initialState.debouncedSearch);
+  const loaderRef = useRef(null);
+  const requestIdRef = useRef(0);
+  const isRestoringRef = useRef(Boolean(shouldRestore));
+  const categoryParam = searchParams.get("category") || "";
+  const subCategoryParam = searchParams.get("subCategory") || "";
+  const searchParam = searchParams.get("search") || "";
 
   useEffect(() => {
-    applyFilter();
+    if (!shouldRestore) {
+      const frameId = window.requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
+
+      sessionStorage.removeItem(COLLECTION_RESTORE_STORAGE_KEY);
+
+      return () => {
+        window.cancelAnimationFrame(frameId);
+      };
+    }
+
+    const savedScrollY = restorePayloadRef.current?.scrollY ?? 0;
+    let attempts = 0;
+    let frameId = 0;
+
+    const restoreScroll = () => {
+      const maxScrollY = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight
+      ) - window.innerHeight;
+
+      window.scrollTo(0, Math.min(savedScrollY, Math.max(0, maxScrollY)));
+
+      if (savedScrollY > maxScrollY && attempts < 20) {
+        attempts += 1;
+        frameId = window.requestAnimationFrame(restoreScroll);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(restoreScroll);
+    sessionStorage.removeItem(COLLECTION_RESTORE_STORAGE_KEY);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [shouldRestore]);
+
+  useEffect(() => {
+    collectionPageStateCache.set(stateCacheKey, {
+      showFilter,
+      filterProducts,
+      category,
+      subCategory,
+      brand,
+      countryOfOrigin,
+      countryOfImport,
+      unitSize,
+      sae,
+      oilType,
+      api,
+      acea,
+      appropriateUse,
+      sortType,
+      loading,
+      loadingMore,
+      page,
+      hasMore,
+      totalProducts,
+      unitSizeSearch,
+      brandData,
+      debouncedSearch,
+    });
   }, [
+    stateCacheKey,
+    showFilter,
+    filterProducts,
     category,
     subCategory,
-    brand,
     brand,
     countryOfOrigin,
     countryOfImport,
@@ -251,26 +316,252 @@ const Collection = () => {
     api,
     acea,
     appropriateUse,
-    search,
-    showSearch,
-    products,
+    sortType,
+    loading,
+    loadingMore,
+    page,
+    hasMore,
+    totalProducts,
+    unitSizeSearch,
+    brandData,
+    debouncedSearch,
   ]);
 
   useEffect(() => {
-    sortProduct();
-  }, [sortType]);
+    if (searchParam !== search) {
+      setSearch(searchParam);
+    }
+
+    if (!searchParam && search && !showSearch) {
+      setSearch("");
+    }
+  }, [searchParam, search, setSearch, showSearch]);
 
   useEffect(() => {
-    const categoryParam = searchParams.get("category");
-    const subCategoryParam = searchParams.get("subCategory");
+    const timeoutId = window.setTimeout(() => {
+      setDebouncedSearch(searchParam.trim() || (showSearch ? search.trim() : ""));
+    }, 250);
 
-    if (categoryParam) {
-      setCategory([categoryParam]);
+    return () => window.clearTimeout(timeoutId);
+  }, [search, showSearch, searchParam]);
+
+  useEffect(() => {
+    if (isRestoringRef.current) {
+      return;
     }
-    if (subCategoryParam) {
-      setSubCategory([subCategoryParam]);
+
+    const nextCategory = categoryParam ? [categoryParam] : [];
+    const nextSubCategory = subCategoryParam ? [subCategoryParam] : [];
+
+    setCategory((prev) => (arraysEqual(prev, nextCategory) ? prev : nextCategory));
+    setSubCategory((prev) =>
+      arraysEqual(prev, nextSubCategory) ? prev : nextSubCategory
+    );
+  }, [categoryParam, subCategoryParam]);
+
+  useEffect(() => {
+    if (!showFilter || brandData.length > 0) {
+      return;
     }
-  }, [searchParams]);
+
+    let isMounted = true;
+
+    import("../assets/assets").then(({ brandAssets }) => {
+      if (!isMounted) {
+        return;
+      }
+
+      const nextBrandData = Object.entries(brandAssets).map(([key, image]) => ({
+        name: key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()),
+        image,
+      }));
+
+      setBrandData(nextBrandData);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [showFilter, brandData.length]);
+
+  const toggleArrayValue = (value, state, setState) => {
+    if (state.includes(value)) {
+      setState((prev) => prev.filter((item) => item !== value));
+      return;
+    }
+
+    setState((prev) => [...prev, value]);
+  };
+
+  const toggleCategory = (e) => {
+    toggleArrayValue(e.target.value, category, setCategory);
+  };
+
+  const toggleSubCategory = (e) => {
+    toggleArrayValue(e.target.value, subCategory, setSubCategory);
+  };
+
+  const toggleBrand = (e) => {
+    toggleArrayValue(e.target.value, brand, setBrand);
+  };
+
+  const buildCollectionParams = (pageToLoad) => {
+    const params = {
+      page: pageToLoad,
+      limit: 24,
+    };
+
+    if (category.length > 0) params.category = category.join(",");
+    if (subCategory.length > 0) params.subCategory = subCategory.join(",");
+    if (brand.length > 0) params.brand = brand.join(",");
+    if (countryOfOrigin.length > 0) params.countryOfOrigin = countryOfOrigin.join(",");
+    if (countryOfImport.length > 0) params.countryOfImport = countryOfImport.join(",");
+    if (unitSize.length > 0) params.unitSize = unitSize.join(",");
+    if (sae.length > 0) params.sae = sae.join(",");
+    if (oilType.length > 0) params.oilType = oilType.join(",");
+    if (api.length > 0) params.api = api.join(",");
+    if (acea.length > 0) params.acea = acea.join(",");
+    if (appropriateUse.length > 0) params.appropriateUse = appropriateUse.join(",");
+    if (debouncedSearch) params.search = debouncedSearch;
+    if (sortType !== "relavent") params.sort = sortType;
+
+    return params;
+  };
+
+  const getCollectionCacheKey = (pageToLoad) =>
+    JSON.stringify(buildCollectionParams(pageToLoad));
+
+  const fetchCollectionPage = async (pageToLoad, replaceResults) => {
+    const requestId = ++requestIdRef.current;
+    const cacheKey = getCollectionCacheKey(pageToLoad);
+
+    if (replaceResults && collectionResponseCache.has(cacheKey)) {
+      const cached = collectionResponseCache.get(cacheKey);
+      setFilterProducts(cached.products);
+      setTotalProducts(cached.totalProducts);
+      setHasMore(cached.hasMore);
+      setLoading(false);
+    }
+
+    if (replaceResults) {
+      if (!collectionResponseCache.has(cacheKey)) {
+        setLoading(true);
+      }
+    } else {
+      setLoadingMore(true);
+    }
+
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/product/collection`, {
+        params: buildCollectionParams(pageToLoad),
+      });
+
+      if (!data.success || requestId !== requestIdRef.current) {
+        return;
+      }
+
+      collectionResponseCache.set(cacheKey, {
+        products: data.products,
+        totalProducts: data.pagination?.totalProducts || 0,
+        hasMore: Boolean(data.pagination?.hasMore),
+      });
+
+      setFilterProducts((prev) =>
+        replaceResults ? data.products : [...prev, ...data.products]
+      );
+      setTotalProducts(data.pagination?.totalProducts || 0);
+      setHasMore(Boolean(data.pagination?.hasMore));
+    } catch (error) {
+      if (requestId === requestIdRef.current) {
+        const fallbackProducts = applyClientFallbackFilters();
+        setFilterProducts(fallbackProducts);
+        setTotalProducts(fallbackProducts.length);
+        setHasMore(false);
+      }
+      console.error("Failed to load collection products", error);
+    } finally {
+      if (requestId === requestIdRef.current) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isRestoringRef.current) {
+      return;
+    }
+
+    setFilterProducts([]);
+    setHasMore(false);
+    setTotalProducts(0);
+    const fallbackProducts = applyClientFallbackFilters();
+    setFilterProducts(fallbackProducts);
+    setTotalProducts(fallbackProducts.length);
+    setLoading(fallbackProducts.length === 0);
+
+    if (page !== 1) {
+      setPage(1);
+    }
+
+    fetchCollectionPage(1, true);
+  }, [
+    backendUrl,
+    debouncedSearch,
+    sortType,
+    category,
+    subCategory,
+    brand,
+    countryOfOrigin,
+    countryOfImport,
+    unitSize,
+    sae,
+    oilType,
+    api,
+    acea,
+    appropriateUse,
+  ]);
+
+  useEffect(() => {
+    if (isRestoringRef.current) {
+      isRestoringRef.current = false;
+      return;
+    }
+
+    if (page === 1) {
+      return;
+    }
+
+    fetchCollectionPage(page, false);
+  }, [page]);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [target] = entries;
+        if (target.isIntersecting && hasMore && !loading && !loadingMore) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      {
+        root: null,
+        rootMargin: "200px",
+        threshold: 0.1,
+      }
+    );
+
+    const currentLoader = loaderRef.current;
+    if (currentLoader) {
+      observer.observe(currentLoader);
+    }
+
+    return () => {
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
+      }
+      observer.disconnect();
+    };
+  }, [hasMore, loading, loadingMore]);
 
   const resetFilters = () => {
     setCategory([]);
@@ -288,109 +579,106 @@ const Collection = () => {
     setShowFilter(false);
   };
 
-  // Helper to extract unique values from products for a given key
-  const getUniqueData = (data, property) => {
-    let newVal = data.map((curElem) => curElem[property]);
-    return (newVal = ["All", ...new Set(newVal)]);
+  const applyClientFallbackFilters = () => {
+    let productsCopy = products.slice();
+
+    if (debouncedSearch) {
+      const searchTerms = debouncedSearch.toLowerCase().split(/\s+/).filter(Boolean);
+      productsCopy = productsCopy.filter((item) => {
+        const itemName = String(item.name || "").toLowerCase();
+        return searchTerms.every((term) => itemName.includes(term));
+      });
+    }
+
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.category, category));
+    }
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        matchesSelectedValues(item.subCategory, subCategory)
+      );
+    }
+    if (brand.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.brand, brand));
+    }
+    if (countryOfOrigin.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        matchesSelectedValues(item.countryOfOrigin, countryOfOrigin)
+      );
+    }
+    if (countryOfImport.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        matchesSelectedValues(item.countryOfImport, countryOfImport)
+      );
+    }
+    if (unitSize.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.unitSize, unitSize));
+    }
+    if (sae.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.sae, sae));
+    }
+    if (oilType.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.oilType, oilType));
+    }
+    if (api.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.api, api));
+    }
+    if (acea.length > 0) {
+      productsCopy = productsCopy.filter((item) => matchesSelectedValues(item.acea, acea));
+    }
+    if (appropriateUse.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        matchesSelectedValues(item.appropriateUse, appropriateUse)
+      );
+    }
+
+    if (sortType === "low-high") {
+      productsCopy.sort((a, b) => a.price - b.price);
+    } else if (sortType === "high-low") {
+      productsCopy.sort((a, b) => b.price - a.price);
+    }
+
+    return productsCopy.slice(0, 24);
   };
 
-  // We only want unique non-empty, non-N/A values
   const getFilterOptions = (key) => {
     const options = [
       ...new Set(
         products
           .map((item) => item[key])
-          .filter((val) => val && val !== "N/A" && val !== "")
+          .filter((value) => value && value !== "N/A" && value !== "")
       ),
     ];
-    return options;
+
+    return options.sort((a, b) => String(a).localeCompare(String(b)));
   };
 
-  // Placeholder data for categories and brands with images
-  // In a real app, these would likely come from an API or a separate data file with real image paths
-  const CATEGORY_DATA = [
-    { name: "Suspension", image: assets.suspension },
-    { name: "Fuel Supply System", image: assets.fuel_supply_system },
-    { name: "Filters", image: assets.filters },
-    { name: "Damping", image: assets.damping },
-    { name: "Wheels", image: assets.wheels },
-    { name: "Brakes", image: assets.brakes },
-    { name: "Ignition", image: assets.ignition },
-    { name: "Gasket and Sealing Rings", image: assets.gasket_and_sealing_rings },
-    { name: "Steering", image: assets.steering },
-    { name: "Belts, Chains and Rollers", image: assets.belts_chains_and_rollers },
-    { name: "Engine", image: assets.engine },
-    { name: "Interior", image: assets.interior },
-    { name: "Body", image: assets.body },
-    { name: "Electrics", image: assets.electrics },
-    { name: "Clutch", image: assets.clutch },
-    { name: "Oils and Fluids", image: assets.oils_and_fluids },
-    { name: "Engine Cooling System", image: assets.engine_cooling_system },
-    { name: "Wiper and Washer System", image: assets.wiper_and_washer_system },
-    { name: "Exhaust", image: assets.exhaust },
-    { name: "Heating and Ventilation", image: assets.heating_and_ventilation },
-    { name: "Transmission", image: assets.transmission },
-    { name: "Air Conditioning", image: assets.air_conditioning },
-    { name: "Bearing", image: assets.bearing },
-    { name: "Drive shaft and cv joint", image: assets.propshaft_and_differentials },
-    { name: "Sensors, Relay and Control Units", image: assets.sensors_relay_and_control_units },
-    { name: "Car Accessories", image: assets.car_accessories },
-    { name: "Repair Kits", image: assets.repair_kits },
-    { name: "Tools and Equipment", image: assets.tools_and_equipment },
-    { name: "Pipes and Hoses", image: assets.pipes_and_hoses },
-    { name: "Auto Detailing and Care", image: assets.auto_detailing_and_care },
-    { name: "Lighting", image: assets.lighting },
-    { name: "Tuning", image: assets.tuning },
-
-  ];
-
-  const formatBrandLabel = (key) =>
-    key
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, (char) => char.toUpperCase());
-
-  const BRAND_DATA = Object.entries(assets.brandAssets).map(
-    ([key, image]) => ({
-      name: formatBrandLabel(key),
-      image,
-    }),
-  );
-
-
-
-  // Infinite Scroll logic
-  const loaderRef = React.useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      const target = entries[0];
-      if (target.isIntersecting && visibleCount < filterProducts.length) {
-        // Use a small delay for smoother UX if desired, or execute immediately
-        setVisibleCount((prev) => prev + 24);
-      }
-    }, {
-      root: null,
-      rootMargin: "200px", // Trigger slightly before reaching the bottom
-      threshold: 0.1
-    });
-
-    if (loaderRef.current) {
-      observer.observe(loaderRef.current);
+  const getSubCategoryOptions = () => {
+    if (category.length === 0) {
+      return [];
     }
 
-    return () => {
-      if (loaderRef.current) {
-        observer.unobserve(loaderRef.current);
-      }
-    };
-  }, [loaderRef, visibleCount, filterProducts.length]);
+    const dynamicOptions = [
+      ...new Set(
+        products
+          .filter((item) => matchesSelectedValues(item.category, category))
+          .map((item) => String(item.subCategory || "").trim())
+          .filter(Boolean)
+      ),
+    ].sort((left, right) => left.localeCompare(right));
+
+    if (dynamicOptions.length > 0) {
+      return dynamicOptions;
+    }
+
+    return category.flatMap((cat) => subCategories[cat] || []);
+  };
 
   return (
     <div className="pt-10">
       <AnimatePresence>
         {showFilter && (
           <>
-            {/* Sidebar Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -400,7 +688,6 @@ const Collection = () => {
               onClick={() => setShowFilter(false)}
             />
 
-            {/* Sidebar Panel */}
             <motion.div
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
@@ -408,7 +695,6 @@ const Collection = () => {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="fixed inset-y-0 left-0 w-full max-w-[820px] bg-white z-50 shadow-2xl flex flex-col"
             >
-              {/* Sidebar Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-surface-200">
                 <div className="flex items-center gap-4">
                   <h2 className="text-xl font-display font-medium text-surface-900">
@@ -430,20 +716,32 @@ const Collection = () => {
                 </button>
               </div>
 
-              {/* Sidebar Content */}
               <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-surface-300 scrollbar-track-transparent">
-
                 <FilterSection title="BRANDS" defaultOpen={false} layout="grid">
-                  {BRAND_DATA.map((item) => (
-                    <FilterGridItem
-                      key={item.name}
-                      value={item.name}
-                      onChange={toggleBrand}
-                      label={item.name}
-                      image={item.image}
-                      checked={brand.includes(item.name)}
-                    />
-                  ))}
+                  {brandData.length > 0 ? (
+                    brandData
+                      .filter((item) => getFilterOptions("brand").includes(item.name))
+                      .map((item) => (
+                        <FilterGridItem
+                          key={item.name}
+                          value={item.name}
+                          onChange={toggleBrand}
+                          label={item.name}
+                          image={item.image}
+                          checked={brand.includes(item.name)}
+                        />
+                      ))
+                  ) : (
+                    getFilterOptions("brand").map((item) => (
+                      <FilterCheckbox
+                        key={item}
+                        value={item}
+                        onChange={() => toggleArrayValue(item, brand, setBrand)}
+                        label={item}
+                        checked={brand.includes(item)}
+                      />
+                    ))
+                  )}
                 </FilterSection>
 
                 <FilterSection title="CATEGORY" defaultOpen={false} layout="grid">
@@ -457,10 +755,9 @@ const Collection = () => {
                   ))}
                 </FilterSection>
 
-                {/* Sub Category Filter - Only show if categories are selected */}
                 {category.length > 0 && (
                   <FilterSection title="SUB CATEGORY" defaultOpen={true}>
-                    {category.flatMap(cat => subCategories[cat] || []).map((sub, index) => (
+                    {getSubCategoryOptions().map((sub, index) => (
                       <FilterCheckbox
                         key={`${sub}-${index}`}
                         value={sub}
@@ -472,16 +769,15 @@ const Collection = () => {
                   </FilterSection>
                 )}
 
-                {/* New Advanced Filters */}
-
-                {/* 3. Country of Import */}
                 {getFilterOptions("countryOfImport").length > 0 && (
                   <FilterSection title="COUNTRY OF IMPORT" defaultOpen={false}>
                     {getFilterOptions("countryOfImport").map((item) => (
                       <FilterCheckbox
                         key={item}
                         value={item}
-                        onChange={() => toggleFilter(item, countryOfImport, setCountryOfImport)}
+                        onChange={() =>
+                          toggleArrayValue(item, countryOfImport, setCountryOfImport)
+                        }
                         label={item}
                         checked={countryOfImport.includes(item)}
                       />
@@ -489,14 +785,15 @@ const Collection = () => {
                   </FilterSection>
                 )}
 
-                {/* 4. Country of Origin */}
                 {getFilterOptions("countryOfOrigin").length > 0 && (
                   <FilterSection title="COUNTRY OF ORIGIN" defaultOpen={false}>
                     {getFilterOptions("countryOfOrigin").map((item) => (
                       <FilterCheckbox
                         key={item}
                         value={item}
-                        onChange={() => toggleFilter(item, countryOfOrigin, setCountryOfOrigin)}
+                        onChange={() =>
+                          toggleArrayValue(item, countryOfOrigin, setCountryOfOrigin)
+                        }
                         label={item}
                         checked={countryOfOrigin.includes(item)}
                       />
@@ -504,7 +801,6 @@ const Collection = () => {
                   </FilterSection>
                 )}
 
-                {/* 5. Unit Size */}
                 {getFilterOptions("unitSize").length > 0 && (
                   <FilterSection title="UNIT SIZE" defaultOpen={false}>
                     <div className="px-2 pb-2">
@@ -518,125 +814,90 @@ const Collection = () => {
                     </div>
                     <div className="max-h-48 overflow-y-auto w-full px-2 scrollbar-thin scrollbar-thumb-surface-300">
                       {getFilterOptions("unitSize")
-                        .filter(item => item.toLowerCase().includes(unitSizeSearch.toLowerCase()))
+                        .filter((item) =>
+                          item.toLowerCase().includes(unitSizeSearch.toLowerCase())
+                        )
                         .map((item) => (
                           <FilterCheckbox
                             key={item}
                             value={item}
-                            onChange={() => toggleFilter(item, unitSize, setUnitSize)}
+                            onChange={() => toggleArrayValue(item, unitSize, setUnitSize)}
                             label={item}
                             checked={unitSize.includes(item)}
                           />
                         ))}
-                      {getFilterOptions("unitSize").filter(item => item.toLowerCase().includes(unitSizeSearch.toLowerCase())).length === 0 && (
-                        <p className="text-xs text-surface-500 py-2 text-center italic">No sizes found</p>
-                      )}
                     </div>
                   </FilterSection>
                 )}
 
-                {/* 6. SAE */}
-                {getFilterOptions("sae").length > 0 && (
-                  <FilterSection title="SAE" defaultOpen={false}>
-                    {getFilterOptions("sae").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, sae, setSae)}
-                        label={item}
-                        checked={sae.includes(item)}
-                      />
-                    ))}
-                  </FilterSection>
-                )}
-
-                {/* 7. Oil Type */}
-                {getFilterOptions("oilType").length > 0 && (
-                  <FilterSection title="OIL TYPE" defaultOpen={false}>
-                    {getFilterOptions("oilType").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, oilType, setOilType)}
-                        label={item}
-                        checked={oilType.includes(item)}
-                      />
-                    ))}
-                  </FilterSection>
-                )}
-
-                {/* 8. API */}
-                {getFilterOptions("api").length > 0 && (
-                  <FilterSection title="API" defaultOpen={false}>
-                    {getFilterOptions("api").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, api, setApi)}
-                        label={item}
-                        checked={api.includes(item)}
-                      />
-                    ))}
-                  </FilterSection>
-                )}
-
-                {/* 9. ACEA */}
-                {getFilterOptions("acea").length > 0 && (
-                  <FilterSection title="ACEA" defaultOpen={false}>
-                    {getFilterOptions("acea").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, acea, setAcea)}
-                        label={item}
-                        checked={acea.includes(item)}
-                      />
-                    ))}
-                  </FilterSection>
-                )}
-
-                {/* 10. Appropriate Use */}
-                {getFilterOptions("appropriateUse").length > 0 && (
-                  <FilterSection title="APPROPRIATE USE" defaultOpen={false}>
-                    {getFilterOptions("appropriateUse").map((item) => (
-                      <FilterCheckbox
-                        key={item}
-                        value={item}
-                        onChange={() => toggleFilter(item, appropriateUse, setAppropriateUse)}
-                        label={item}
-                        checked={appropriateUse.includes(item)}
-                      />
-                    ))}
-                  </FilterSection>
-                )}
+                {FILTER_KEYS.filter((key) => !["brand", "countryOfOrigin", "countryOfImport", "unitSize"].includes(key))
+                  .map((key) => ({
+                    key,
+                    label: key.replace(/([A-Z])/g, " $1").toUpperCase(),
+                    state:
+                      key === "sae"
+                        ? sae
+                        : key === "oilType"
+                        ? oilType
+                        : key === "api"
+                        ? api
+                        : key === "acea"
+                        ? acea
+                        : appropriateUse,
+                    setState:
+                      key === "sae"
+                        ? setSae
+                        : key === "oilType"
+                        ? setOilType
+                        : key === "api"
+                        ? setApi
+                        : key === "acea"
+                        ? setAcea
+                        : setAppropriateUse,
+                  }))
+                  .filter(({ key }) => getFilterOptions(key).length > 0)
+                  .map(({ key, label, state, setState }) => (
+                    <FilterSection key={key} title={label} defaultOpen={false}>
+                      {getFilterOptions(key).map((item) => (
+                        <FilterCheckbox
+                          key={item}
+                          value={item}
+                          onChange={() => toggleArrayValue(item, state, setState)}
+                          label={item}
+                          checked={state.includes(item)}
+                        />
+                      ))}
+                    </FilterSection>
+                  ))}
               </div>
             </motion.div>
           </>
         )}
       </AnimatePresence>
 
-      {/* Main Content */}
       <div className="flex-1 w-full">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          {/* Left Side: Filter Button + Title + Count */}
           <div className="flex items-center gap-6">
             <button
               onClick={() => setShowFilter(true)}
               className="group flex items-center gap-2.5 px-5 py-2.5 bg-white border border-brand-500 rounded text-brand-600 hover:bg-brand-50 transition-all shadow-sm active:scale-95"
             >
               <SlidersHorizontal className="w-4 h-4" />
-              <span className="text-sm font-bold tracking-wider uppercase text-surface-900 group-hover:text-brand-700">Filters</span>
+              <span className="text-sm font-bold tracking-wider uppercase text-surface-900 group-hover:text-brand-700">
+                Filters
+              </span>
             </button>
 
             <div className="flex items-baseline gap-2">
               <Title text1={"ALL"} text2={"COLLECTIONS"} />
               <span className="text-surface-500 text-sm font-medium">
-                {filterProducts.length} Displaying
+                {totalProducts} Displaying
               </span>
             </div>
           </div>
 
           <select
+            value={sortType}
             onChange={(e) => setSortType(e.target.value)}
             className="input-glass text-sm px-4 py-2.5 w-full sm:w-auto cursor-pointer"
           >
@@ -647,45 +908,39 @@ const Collection = () => {
         </div>
 
         {loading ? (
-          <SkeletonGrid
-            count={8}
-            cols="grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-          />
+          <SkeletonGrid count={8} cols="grid-cols-2 md:grid-cols-3 lg:grid-cols-4" />
         ) : filterProducts.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-5xl mb-4">🔍</p>
-            <p className="text-surface-500 text-lg font-medium">
-              No products found
-            </p>
+            <p className="text-surface-500 text-lg font-medium">No products found</p>
             <p className="text-surface-400 text-sm mt-2">
               Try adjusting your filters or search terms
             </p>
           </div>
         ) : (
           <>
-            <div
-              className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
-            >
-              {filterProducts.slice(0, visibleCount).map((items, index) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+              {filterProducts.map((item, index) => (
                 <ProductItem
-                  key={items._id}
-                  name={items.name}
-                  id={items._id}
-                  price={items.price}
-                  image={items.image}
-                  stock={items.stock}
-                  salePrice={items.salePrice}
+                  key={`${item._id}-${index}`}
+                  id={item._id}
+                  name={item.name}
+                  price={item.price}
+                  image={item.image}
+                  stock={item.stock}
+                  salePrice={item.salePrice}
                   index={index}
                 />
               ))}
             </div>
 
-            {/* Infinite Scroll Loader Target */}
-            {visibleCount < filterProducts.length && (
-              <div
-                ref={loaderRef}
-                className="flex justify-center mt-10 mb-8 py-4"
-              >
+            {hasMore && (
+              <div ref={loaderRef} className="flex justify-center mt-10 mb-8 py-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
+              </div>
+            )}
+
+            {!hasMore && loadingMore && (
+              <div className="flex justify-center mt-10 mb-8 py-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-500"></div>
               </div>
             )}
