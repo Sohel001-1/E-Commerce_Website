@@ -167,9 +167,11 @@ const Collection = () => {
     let productsCopy = products.slice();
 
     if (showSearch && search) {
-      productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase()),
-      );
+      const searchTerms = search.toLowerCase().trim().split(/\s+/);
+      productsCopy = productsCopy.filter((item) => {
+        const itemName = item.name.toLowerCase();
+        return searchTerms.every((term) => itemName.includes(term));
+      });
     }
 
     if (category.length > 0) {

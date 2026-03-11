@@ -108,7 +108,9 @@ import hero_detailing from "./hero_detailing.jpg";
 import hero_suspension from "./hero_suspension.jpg";
 import hero_filter from "./hero_filter.jpg";
 import hero_lighting from "./hero_lighting.jpg";
+import lighting_components_3d from "./lighting-components-3d.png";
 import hero_transmission from "./hero_transmission.png";
+import motor_oil_bottles from "./motor_oil_bottles.png";
 import brand_3m from "./brand/3m.png";
 import brand_555 from "./brand/555.jpg";
 import brand_70mai from "./brand/70mai.jpg";
@@ -517,6 +519,8 @@ export const assets = {
   hero_suspension,
   hero_filter,
   hero_lighting,
+  lighting_components_3d,
   hero_transmission,
+  motor_oil_bottles,
   brandAssets,
 };
