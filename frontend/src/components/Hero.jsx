@@ -13,6 +13,7 @@ const slides = [
   {
     type: "image",
     image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
+    overlayImage: assets.motor_oil_bottles,
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
@@ -61,6 +62,7 @@ const slides = [
   {
     type: "image",
     image: assets.hero_lighting,
+    overlayImage: assets.lighting_components_3d,
     title: "Lighting",
     subtitle: "Illuminate your journey",
     cta: "View Lighting",
@@ -118,9 +120,9 @@ export default function HeroSlider() {
           {slides.map((slide, idx) => (
             <div
               key={idx}
-              className="flex-[0_0_85%] sm:flex-[0_0_90%] min-w-0 px-2 relative"
+              className="flex-[0_0_95%] sm:flex-[0_0_75%] md:flex-[0_0_70%] lg:flex-[0_0_65%] min-w-0 px-2 relative"
             >
-              <div className="relative h-[400px] md:h-[550px] overflow-hidden rounded-3xl shadow-glass-lg group">
+              <div className="relative h-[450px] md:h-[550px] overflow-hidden rounded-3xl shadow-glass-lg group">
 
                 {/* 2. Conditional Rendering for Video or Image */}
                 {slide.type === "video" ? (
@@ -163,8 +165,24 @@ export default function HeroSlider() {
                 {/* Dark Overlay to make text readable */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 
+                {/* 3D Overlay Image */}
+                {slide.overlayImage && idx === selectedIndex && (
+                  <motion.img
+                    src={slide.overlayImage}
+                    alt={`${slide.title} 3D`}
+                    drag="x"
+                    dragConstraints={{ left: -100, right: 100 }}
+                    dragSnapToOrigin={true}
+                    dragElastic={0.2}
+                    className="absolute right-0 md:right-12 bottom-0 h-[80%] md:h-[110%] object-contain cursor-grab active:cursor-grabbing drop-shadow-[0_15px_35px_rgba(0,0,0,0.6)] z-10"
+                    initial={{ x: 100, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                  />
+                )}
+
                 <div className="absolute inset-0 flex items-center px-8 md:px-16">
-                  <div className="max-w-xl text-white">
+                  <div className="max-w-xl text-white relative z-20">
                     {idx === selectedIndex && (
                       <>
                         <motion.h2
