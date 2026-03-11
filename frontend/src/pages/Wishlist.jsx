@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 
@@ -9,15 +9,7 @@ const Wishlist = () => {
     toggleWishlist,
     navigate,
     currency,
-    getWishlistData,
   } = useContext(ShopContext);
-
-  // Fetch wishlist on mount and when token changes
-  useEffect(() => {
-    if (token) {
-      getWishlistData();
-    }
-  }, [token]);
 
   if (!token) {
     return (
