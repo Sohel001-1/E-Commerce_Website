@@ -1,10 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+
+const COLLECTION_RESTORE_STORAGE_KEY = "collection-return-state";
 
 const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: propSalePrice, index = 0 }) => {
   const { currency, wishlist, toggleWishlist, products } = useContext(ShopContext);
+  const location = useLocation();
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
 
@@ -25,15 +28,45 @@ const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: prop
     toggleWishlist(id);
   };
 
+  const handleProductOpen = () => {
+    const currentPath = `${location.pathname}${location.search}`;
+
+    if (!location.pathname.startsWith("/collection")) {
+      sessionStorage.removeItem(COLLECTION_RESTORE_STORAGE_KEY);
+      return;
+    }
+
+    sessionStorage.setItem(
+      COLLECTION_RESTORE_STORAGE_KEY,
+      JSON.stringify({
+        path: currentPath,
+        scrollY: window.scrollY,
+      })
+    );
+  };
+
   return (
     <div>
-      <Link className="group block" to={`/product/${id}`}>
+      <Link
+        className="group block"
+        to={`/product/${id}`}
+        onClick={handleProductOpen}
+        state={{
+          returnTo: {
+            pathname: location.pathname,
+            search: location.search,
+            scrollY: window.scrollY,
+          },
+        }}
+      >
         <div className="relative overflow-hidden aspect-square rounded-2xl bg-surface-100 shadow-card hover:shadow-card-hover transition-all duration-500">
           {!imgLoaded && <div className="absolute inset-0 skeleton-pulse" />}
           <img
             className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out ${imgLoaded ? "opacity-100" : "opacity-0"}`}
             src={image[0]}
             alt={name}
+            loading="lazy"
+            decoding="async"
             onLoad={() => setImgLoaded(true)}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />

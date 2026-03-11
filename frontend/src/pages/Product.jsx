@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import RelatedProducts from "../components/RelatedProducts";
 import { SkeletonProductDetail } from "../components/Skeleton";
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 
 const Product = () => {
   const { productId } = useParams();
+  const location = useLocation();
   const {
     products,
     currency,
@@ -24,6 +25,7 @@ const Product = () => {
   const [image, setImage] = useState("");
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
+  const returnTo = location.state?.returnTo;
 
   const fetchProductData = () => {
     const found = products.find((item) => item._id === productId);
@@ -70,6 +72,15 @@ const Product = () => {
     setTimeout(() => {
       navigate("/place-order");
     }, 300);
+  };
+
+  const handleBackToResults = () => {
+    if (returnTo?.pathname) {
+      navigate(`${returnTo.pathname}${returnTo.search || ""}`);
+      return;
+    }
+
+    navigate(-1);
   };
 
   if (!productData) return <SkeletonProductDetail />;
@@ -120,6 +131,13 @@ const Product = () => {
         </motion.div>
 
         <motion.div className="flex-1" {...slideRight}>
+          <button
+            onClick={handleBackToResults}
+            className="mb-4 text-sm font-semibold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
+          >
+            Back to Results
+          </button>
+
           <h1 className="font-display font-bold text-2xl lg:text-3xl mt-2 text-surface-900">
             {productData.name}
           </h1>

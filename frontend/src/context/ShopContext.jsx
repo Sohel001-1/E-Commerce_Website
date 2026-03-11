@@ -92,10 +92,6 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  useEffect(() => {
-    console.log("Wishlist Data:", wishlist);
-  }, [wishlist]);
-
   const toggleWishlist = async (productId) => {
     if (!token) {
       toast.error("Please login to add to wishlist");
