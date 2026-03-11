@@ -112,6 +112,13 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+productSchema.index({ category: 1, subCategory: 1, brand: 1, date: -1 });
+productSchema.index({ category: 1, date: -1 });
+productSchema.index({ subCategory: 1, date: -1 });
+productSchema.index({ brand: 1, date: -1 });
+productSchema.index({ bestseller: 1, date: -1 });
+productSchema.index({ name: "text", brand: "text" });
+
 const productModel =
   mongoose.models.Product || mongoose.model("Product", productSchema);
 

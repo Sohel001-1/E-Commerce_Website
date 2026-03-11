@@ -1,18 +1,18 @@
 import express from "express";
 import {
   addProduct,
-  updateProduct,   // ✅ add this
+  updateProduct,
   listProduct,
+  listCollectionProducts,
+  getCollectionFilters,
   removeProduct,
   singleProduct,
 } from "../controllers/productController.js";
-
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
 
 const productRouter = express.Router();
 
-// ✅ route for adding product
 productRouter.post(
   "/add",
   adminAuth,
@@ -25,7 +25,6 @@ productRouter.post(
   addProduct
 );
 
-// ✅ route for updating product (EDIT FEATURE)
 productRouter.post(
   "/update",
   adminAuth,
@@ -38,15 +37,14 @@ productRouter.post(
   updateProduct
 );
 
-// ✅ route for listing products
 productRouter.get("/list", listProduct);
+productRouter.get("/collection", listCollectionProducts);
+productRouter.get("/filters", getCollectionFilters);
 
-// ✅ route for removing product
-productRouter.delete("/remove/:id", adminAuth, removeProduct); // protect delete
-productRouter.post("/remove", adminAuth, removeProduct);       // protect post remove
+productRouter.delete("/remove/:id", adminAuth, removeProduct);
+productRouter.post("/remove", adminAuth, removeProduct);
 
-// ✅ route for single product info
-productRouter.get("/single/:id", singleProduct); // better REST style
-productRouter.post("/single", singleProduct);    // keep if your frontend uses it
+productRouter.get("/single/:id", singleProduct);
+productRouter.post("/single", singleProduct);
 
 export default productRouter;

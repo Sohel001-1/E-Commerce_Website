@@ -70,20 +70,22 @@ export const subCategories = {
     ],
     "Clutch": [],
     "Oils and Fluids": [
-        "Motorbike oil",
+        "Automatic transmission fluid",
+        "Brake fluid",
         "Car oil",
         "Commercial oil",
-        "Industrial oil",
-        "Brake fluid",
-        "Power steering fluid",
         "Coolant",
-        "Fuel additives",
-        "Automatic transmission fluid",
-        "Manual transmission fluid",
         "CVT fluid",
         "Differential fluid",
-        "Suspension fluid",
-        "Fork fluid"
+        "Electrical contact cleaners",
+        "Fork fluid",
+        "Fuel additives",
+        "Fuel filter",
+        "Manual transmission fluid",
+        "Motorbike oil",
+        "Oil Pump",
+        "Power steering fluid",
+        "Suspension fluid"
     ],
     "Engine Cooling System": [
         "Radiator cap"

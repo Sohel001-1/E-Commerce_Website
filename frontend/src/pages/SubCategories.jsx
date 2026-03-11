@@ -1,22 +1,41 @@
 
-import React from 'react';
+import React, { useContext, useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { fadeUp, staggerContainer } from '../utils/animations';
 import Title from '../components/Title';
+import { ShopContext } from '../context/ShopContext';
 import { CATEGORY_DATA } from '../assets/data';
 import { subCategories } from '../assets/subCategories';
-import { assets } from '../assets/assets';
+import { categoryAssets } from '../assets/categoryAssets';
 import { subCategoryAssets } from '../assets/subCategoryAssets';
+
+const normalizeValue = (value) => String(value || "").trim().toLowerCase();
 
 const SubCategories = () => {
     const { categoryName } = useParams();
+    const { products } = useContext(ShopContext);
 
     // Find the parent category to get its image (as fallback/theme)
     const parentCategory = CATEGORY_DATA.find(cat => cat.name === categoryName);
-    const categoryImage = parentCategory ? parentCategory.image : assets.logo; // Fallback
+    const categoryImage = parentCategory ? parentCategory.image : categoryAssets.logo; // Fallback
 
-    const currentSubCategories = subCategories[categoryName] || [];
+    const currentSubCategories = useMemo(() => {
+        const dynamicSubCategories = [
+            ...new Set(
+                products
+                    .filter((product) => normalizeValue(product.category) === normalizeValue(categoryName))
+                    .map((product) => String(product.subCategory || "").trim())
+                    .filter(Boolean)
+            ),
+        ].sort((left, right) => left.localeCompare(right));
+
+        if (dynamicSubCategories.length > 0) {
+            return dynamicSubCategories;
+        }
+
+        return subCategories[categoryName] || [];
+    }, [categoryName, products]);
 
     return (
         <div className="py-12 bg-[#F9FAFB]">

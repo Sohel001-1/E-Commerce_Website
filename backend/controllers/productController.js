@@ -4,6 +4,87 @@ import applyWatermark from "../middleware/watermarkImage.js";
 
 // Helper: parse boolean safely (true/false OR "true"/"false")
 const parseBoolean = (val) => val === true || val === "true";
+const FILTERABLE_FIELDS = [
+  "category",
+  "subCategory",
+  "brand",
+  "countryOfOrigin",
+  "countryOfImport",
+  "unitSize",
+  "sae",
+  "oilType",
+  "api",
+  "acea",
+  "appropriateUse",
+];
+
+const COLLECTION_CARD_PROJECTION = {
+  name: 1,
+  price: 1,
+  salePrice: 1,
+  image: { $slice: 1 },
+  stock: 1,
+  brand: 1,
+  category: 1,
+  subCategory: 1,
+  date: 1,
+};
+
+const parseMultiValueParam = (value) => {
+  if (!value) return [];
+
+  const values = Array.isArray(value) ? value : String(value).split(",");
+  return values
+    .flatMap((entry) => String(entry).split(","))
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+};
+
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const buildExactCaseInsensitiveRegex = (value) =>
+  new RegExp(`^${escapeRegex(String(value).trim())}$`, "i");
+
+const buildCollectionQuery = (queryParams = {}) => {
+  const query = {};
+
+  FILTERABLE_FIELDS.forEach((field) => {
+    const values = parseMultiValueParam(queryParams[field]);
+    if (values.length === 1) {
+      query[field] = buildExactCaseInsensitiveRegex(values[0]);
+    } else if (values.length > 1) {
+      query[field] = {
+        $in: values.map((value) => buildExactCaseInsensitiveRegex(value)),
+      };
+    }
+  });
+
+  const rawSearch = String(queryParams.search || "").trim();
+  if (rawSearch) {
+    const searchTerms = rawSearch
+      .split(/\s+/)
+      .map((term) => escapeRegex(term))
+      .filter(Boolean);
+
+    if (searchTerms.length > 0) {
+      query.$and = searchTerms.map((term) => ({
+        name: { $regex: term, $options: "i" },
+      }));
+    }
+  }
+
+  return query;
+};
+
+const getSortSpec = (sortType) => {
+  switch (sortType) {
+    case "low-high":
+      return { price: 1, _id: 1 };
+    case "high-low":
+      return { price: -1, _id: 1 };
+    default:
+      return { date: -1, _id: -1 };
+  }
+};
 
 const addProduct = async (req, res) => {
   try {
@@ -247,6 +328,88 @@ const listProduct = async (req, res) => {
   }
 };
 
+const listCollectionProducts = async (req, res) => {
+  const requestStartedAt = Date.now();
+  try {
+    const queryBuiltAt = Date.now();
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 24, 1), 60);
+    const skip = (page - 1) * limit;
+    const query = buildCollectionQuery(req.query);
+    const sort = getSortSpec(req.query.sort);
+    const dbStartedAt = Date.now();
+
+    const [products, totalProducts] = await Promise.all([
+      productModel
+        .find(query, COLLECTION_CARD_PROJECTION)
+        .sort(sort)
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      productModel.countDocuments(query),
+    ]);
+    const dbFinishedAt = Date.now();
+
+    const totalPages = Math.max(Math.ceil(totalProducts / limit), 1);
+    const responseReadyAt = Date.now();
+
+    console.log(
+      `[collection] page=${page} limit=${limit} total=${totalProducts} ` +
+        `build=${dbStartedAt - queryBuiltAt}ms db=${dbFinishedAt - dbStartedAt}ms ` +
+        `serialize=${responseReadyAt - dbFinishedAt}ms total=${responseReadyAt - requestStartedAt}ms ` +
+        `query=${JSON.stringify(query)} sort=${JSON.stringify(sort)}`
+    );
+
+    res.json({
+      success: true,
+      products,
+      pagination: {
+        page,
+        limit,
+        totalProducts,
+        totalPages,
+        hasMore: page < totalPages,
+      },
+      timings:
+        process.env.NODE_ENV !== "production"
+          ? {
+              totalMs: responseReadyAt - requestStartedAt,
+              buildMs: dbStartedAt - queryBuiltAt,
+              dbMs: dbFinishedAt - dbStartedAt,
+              serializeMs: responseReadyAt - dbFinishedAt,
+            }
+          : undefined,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const getCollectionFilters = async (_req, res) => {
+  try {
+    const distinctFields = FILTERABLE_FIELDS.filter(
+      (field) => field !== "category" && field !== "subCategory"
+    );
+
+    const results = await Promise.all(
+      distinctFields.map((field) =>
+        productModel.distinct(field, { [field]: { $nin: ["", "N/A", null] } })
+      )
+    );
+
+    const filters = distinctFields.reduce((acc, field, index) => {
+      acc[field] = results[index].sort((a, b) => a.localeCompare(b));
+      return acc;
+    }, {});
+
+    res.json({ success: true, filters });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 const removeProduct = async (req, res) => {
   try {
     const id = req.params?.id || req.body?.id;
@@ -277,4 +440,12 @@ const singleProduct = async (req, res) => {
   }
 };
 
-export { addProduct, updateProduct, listProduct, removeProduct, singleProduct };
+export {
+  addProduct,
+  updateProduct,
+  listProduct,
+  listCollectionProducts,
+  getCollectionFilters,
+  removeProduct,
+  singleProduct,
+};
