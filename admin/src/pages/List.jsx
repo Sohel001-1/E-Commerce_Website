@@ -49,34 +49,62 @@ const List = ({ token }) => {
   const [image4, setImage4] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
 
-  const ImageUploadSlot = ({ id, image, setImage, existingImage, onRemoveExisting }) => (
-    <div className="relative">
-      <label htmlFor={id}>
-        <img
-          className="w-16 h-16 md:w-20 md:h-20 object-cover cursor-pointer border border-dashed border-gray-400 p-1"
-          src={!image ? (existingImage ? existingImage : assets.upload_area) : URL.createObjectURL(image)}
-          alt=""
-        />
-        <input
-          onChange={(e) => setImage(e.target.files[0])}
-          type="file"
-          id={id}
-          hidden
-        />
-      </label>
-      {(image || existingImage) && (
-        <div
-          onClick={() => {
-            if (image) setImage(false);
-            if (existingImage && onRemoveExisting) onRemoveExisting();
-          }}
-          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer"
-        >
-          ✕
-        </div>
-      )}
-    </div>
-  );
+  const ImageUploadSlot = ({ id, image, setImage, existingImage, onRemoveExisting }) => {
+    const [isDragging, setIsDragging] = useState(false);
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+      setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+      e.preventDefault();
+      setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+      e.preventDefault();
+      setIsDragging(false);
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        setImage(e.dataTransfer.files[0]);
+        e.dataTransfer.clearData();
+      }
+    };
+
+    return (
+      <div
+        className={`relative transition-all duration-200 ${isDragging ? "bg-orange-50 scale-105" : ""}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <label htmlFor={id}>
+          <img
+            className={`w-16 h-16 md:w-20 md:h-20 object-cover cursor-pointer border border-dashed p-1 ${isDragging ? "border-orange-500 shadow-glow" : "border-gray-400"}`}
+            src={!image ? (existingImage ? existingImage : assets.upload_area) : URL.createObjectURL(image)}
+            alt=""
+          />
+          <input
+            onChange={(e) => setImage(e.target.files[0])}
+            type="file"
+            id={id}
+            hidden
+          />
+        </label>
+        {(image || existingImage) && (
+          <div
+            onClick={() => {
+              if (image) setImage(false);
+              if (existingImage && onRemoveExisting) onRemoveExisting();
+            }}
+            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] cursor-pointer hover:bg-red-600 hover:scale-110 transition-all z-10"
+          >
+            ✕
+          </div>
+        )}
+      </div>
+    );
+  };
 
   const fetchList = async () => {
     try {
