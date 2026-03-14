@@ -877,7 +877,7 @@ const Collection = () => {
 
       <div className="flex-1 w-full">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6">
             <button
               onClick={() => setShowFilter(true)}
               className="group flex items-center gap-2.5 px-5 py-2.5 bg-white border border-brand-500 rounded text-brand-600 hover:bg-brand-50 transition-all shadow-sm active:scale-95"
@@ -888,7 +888,7 @@ const Collection = () => {
               </span>
             </button>
 
-            <div className="flex items-baseline gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <Title text1={"ALL"} text2={"COLLECTIONS"} />
               <span className="text-surface-500 text-sm font-medium">
                 {totalProducts} Displaying
