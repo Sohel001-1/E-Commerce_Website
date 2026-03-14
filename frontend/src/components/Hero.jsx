@@ -13,7 +13,6 @@ const slides = [
   {
     type: "image",
     image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
-    overlayImage: assets.motor_oil_bottles,
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
@@ -62,7 +61,6 @@ const slides = [
   {
     type: "image",
     image: assets.hero_lighting,
-    overlayImage: assets.lighting_components_3d,
     title: "Lighting",
     subtitle: "Illuminate your journey",
     cta: "View Lighting",
@@ -86,7 +84,6 @@ export default function HeroSlider() {
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const heroRef = useRef(null);
-  const [parallaxStyle, setParallaxStyle] = useState({ x: 0, y: 0 });
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
@@ -101,18 +98,9 @@ export default function HeroSlider() {
     };
   }, [emblaApi]);
 
-  const handleMouseMove = useCallback((e) => {
-    if (!heroRef.current) return;
-    const rect = heroRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-    setParallaxStyle({ x: x * 15, y: y * 10 });
-  }, []);
-
   return (
     <section
       ref={heroRef}
-      onMouseMove={handleMouseMove}
       className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4"
     >
       <div className="overflow-visible" ref={emblaRef}>
@@ -133,10 +121,6 @@ export default function HeroSlider() {
                     muted
                     playsInline
                     className="w-full h-full object-cover"
-                    style={{
-                      transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.15)`,
-                      transition: "transform 0.3s ease-out",
-                    }}
                   />
                 ) : slide.type === "icon" ? (
                   <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-8 text-[#E85D04]">
@@ -144,10 +128,6 @@ export default function HeroSlider() {
                       src={slide.image}
                       alt={slide.title}
                       className="w-1/2 h-1/2 object-contain drop-shadow-2xl opacity-50 contrast-125 saturate-200"
-                      style={{
-                        transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
-                        transition: "transform 0.3s ease-out",
-                      }}
                     />
                   </div>
                 ) : (
@@ -155,31 +135,12 @@ export default function HeroSlider() {
                     src={slide.image}
                     alt={slide.title}
                     className={`w-full h-full ${slide.category === 'Transmission' ? 'object-cover bg-black' : 'object-cover'}`}
-                    style={{
-                      transform: `translate(${parallaxStyle.x}px, ${parallaxStyle.y}px) scale(1.08)`,
-                      transition: "transform 0.3s ease-out",
-                    }}
                   />
                 )}
 
                 {/* Dark Overlay to make text readable */}
                 <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
 
-                {/* 3D Overlay Image */}
-                {slide.overlayImage && idx === selectedIndex && (
-                  <motion.img
-                    src={slide.overlayImage}
-                    alt={`${slide.title} 3D`}
-                    drag="x"
-                    dragConstraints={{ left: -100, right: 100 }}
-                    dragSnapToOrigin={true}
-                    dragElastic={0.2}
-                    className="absolute right-0 md:right-12 bottom-0 h-[80%] md:h-[110%] object-contain cursor-grab active:cursor-grabbing drop-shadow-[0_15px_35px_rgba(0,0,0,0.6)] z-10"
-                    initial={{ x: 100, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
-                  />
-                )}
 
                 <div className="absolute inset-0 flex items-center px-8 md:px-16">
                   <div className="max-w-xl text-white relative z-20">
