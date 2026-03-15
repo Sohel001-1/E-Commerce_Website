@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 const COLLECTION_RESTORE_STORAGE_KEY = "collection-return-state";
 
 const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: propSalePrice, index = 0 }) => {
-  const { currency, wishlist, toggleWishlist, products } = useContext(ShopContext);
+  const { currency, wishlist, toggleWishlist, products, addToCart, setIsCartOpen } = useContext(ShopContext);
   const location = useLocation();
   const [imgLoaded, setImgLoaded] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
@@ -43,6 +43,18 @@ const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: prop
         scrollY: window.scrollY,
       })
     );
+  };
+
+  const handleAddToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (stock <= 0) {
+      return; 
+    }
+
+    addToCart(id);
+    setIsCartOpen(true);
   };
 
   return (
@@ -106,22 +118,21 @@ const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: prop
           </motion.button>
 
           <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500">
-            <div className="glass rounded-xl px-3 py-2.5 text-center">
+            <button 
+              onClick={handleAddToCart}
+              disabled={stock <= 0}
+              className={`w-full glass rounded-xl px-3 py-2.5 text-center transition-transform hover:scale-105 active:scale-95 ${stock <= 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+            >
               <span className="text-xs font-bold text-brand-500 tracking-wider uppercase">
-                Add to Cart
+                {stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
               </span>
-            </div>
+            </button>
           </div>
         </div>
         <div className="pt-3 pb-1 flex justify-between items-start">
           <p className="text-sm font-medium text-gray-900 group-hover:text-surface-900 transition-colors line-clamp-2 pr-2">
             {name}
           </p>
-          {stock <= 0 ? (
-            <span className="text-[10px] bg-red-100 text-red-600 border border-red-200 px-2 py-0.5 rounded whitespace-nowrap font-bold">Out of Stock</span>
-          ) : stock <= 5 ? (
-            <span className="text-[10px] bg-yellow-100 text-yellow-700 border border-yellow-300 px-2 py-0.5 rounded whitespace-nowrap font-bold">Low Stock</span>
-          ) : null}
         </div>
         <div className="mt-1 flex items-center gap-2">
           {salePrice > 0 ? (
