@@ -170,12 +170,6 @@ const Product = () => {
             <h1 className="font-display font-bold text-2xl lg:text-3xl text-surface-900">
               {productData.name}
             </h1>
-            <button
-              onClick={handleBackToResults}
-              className="hidden sm:block text-xs font-semibold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
-            >
-              Back to Results
-            </button>
           </div>
 
           <div className="mt-5 flex flex-col gap-3">
@@ -207,13 +201,13 @@ const Product = () => {
 
           <div className="flex gap-3 mt-8">
             <motion.button
-              onClick={handleAddToCart}
+              onClick={handleOrderNow}
               disabled={productData.stock <= 0}
-              className={`btn-primary btn-shimmer text-sm tracking-wider uppercase flex-1 ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-              whileHover={productData.stock > 0 ? { scale: 1.03 } : {}}
-              whileTap={productData.stock > 0 ? { scale: 0.97 } : {}}
+              className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:from-green-600 hover:to-green-700 hover:shadow-xl transition-all'}`}
+              whileHover={productData.stock > 0 ? { scale: 1.02 } : {}}
+              whileTap={productData.stock > 0 ? { scale: 0.98 } : {}}
             >
-              {productData.stock <= 0 ? "OUT OF STOCK" : "ADD TO CART"}
+              {productData.stock <= 0 ? "UNAVAILABLE" : "🚀 ORDER NOW"}
             </motion.button>
 
             <motion.button
@@ -243,15 +237,7 @@ const Product = () => {
             </motion.button>
           </div>
 
-          <motion.button
-            onClick={handleOrderNow}
-            disabled={productData.stock <= 0}
-            className={`w-full mt-3 bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:from-green-600 hover:to-green-700 hover:shadow-xl transition-all'}`}
-            whileHover={productData.stock > 0 ? { scale: 1.02 } : {}}
-            whileTap={productData.stock > 0 ? { scale: 0.98 } : {}}
-          >
-            {productData.stock <= 0 ? "UNAVAILABLE" : "🚀 ORDER NOW"}
-          </motion.button>
+
 
           <hr className="mt-8 sm:w-4/5 border-surface-200" />
 

@@ -73,11 +73,25 @@ const InquiryBanner = () => {
   };
 
   return (
-    <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-16 bg-gradient-to-r from-gray-900 to-gray-800 my-10 border-y border-gray-700">
+    <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-16 my-10 border-y border-gray-700">
       
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 z-0" 
+        style={{
+          backgroundImage: `url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000")`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      ></div>
+
+      {/* Dark Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-800/85 z-0"></div>
+
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/10 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-500/10 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 z-0"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 z-0"></div>
 
       <div className="container mx-auto px-4 max-w-5xl relative z-10">
         <div className="flex flex-col lg:flex-row gap-10 items-center">
