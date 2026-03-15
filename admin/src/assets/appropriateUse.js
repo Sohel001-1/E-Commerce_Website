@@ -4,5 +4,6 @@ export const appropriateUseOptions = [
     "FOR BIKE",
     "FOR CAR & BIKE",
     "FOR COMMERCIAL",
+    "FOR COMMERCIAL VEHICLE",
     "FOR INDUSTRIAL"
 ];

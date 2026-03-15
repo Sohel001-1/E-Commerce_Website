@@ -16,7 +16,7 @@ const LOGO_PATH = path.resolve(
 
 /**
  * Apply watermarks to a product image:
- *  1. Small logo in the bottom-right corner (full opacity)
+ *  1. Small logo in the bottom-left corner (full opacity)
  *  2. Large semi-transparent logo in the center (~25% opacity)
  *
  * Returns the path to the watermarked image (a NEW temp file).
@@ -79,8 +79,7 @@ const applyWatermark = async (imagePath) => {
         const cornerLogoMeta = await sharp(cornerLogo).metadata();
         const cornerTop =
             imgHeight - (cornerLogoMeta.height || cornerSize) - padding;
-        const cornerLeft =
-            imgWidth - (cornerLogoMeta.width || cornerSize) - padding;
+        const cornerLeft = padding;
 
         // ─── Composite from buffer ───
         const processedImage = await sharp(imageBuffer)

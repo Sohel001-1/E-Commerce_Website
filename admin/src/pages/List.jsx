@@ -3,6 +3,7 @@ import { backendUrl } from "../App";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { MdDelete, MdEdit } from "react-icons/md";
+import SearchableSelect from "../components/SearchableSelect";
 import { subCategories } from "../assets/subCategories";
 import { brands } from "../assets/brands";
 import { importCountries, originCountries } from "../assets/countries";
@@ -13,6 +14,16 @@ import { apiOptions } from "../assets/apiOptions";
 import { aceaOptions } from "../assets/aceaOptions";
 import { appropriateUseOptions } from "../assets/appropriateUse";
 import { assets } from "../assets/assets";
+
+const categoryOptions = Object.keys(subCategories);
+
+const mergeCurrentOption = (options, currentValue) => {
+  if (!currentValue || options.includes(currentValue)) {
+    return options;
+  }
+
+  return [currentValue, ...options];
+};
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
@@ -28,9 +39,9 @@ const List = ({ token }) => {
     description: "",
     price: "",
     salePrice: "",
-    category: "Autodetailing",
+    category: categoryOptions[0] || "",
     subCategory: "",
-    brand: "3M",
+    brand: brands[0] || "",
     countryOfOrigin: "",
     countryOfImport: "",
     unitSize: "",
@@ -48,6 +59,22 @@ const List = ({ token }) => {
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
+  const editCategoryOptions = mergeCurrentOption(categoryOptions, editForm.category);
+  const editSubCategoryOptions = mergeCurrentOption(
+    subCategories[editForm.category] || [],
+    editForm.subCategory,
+  );
+  const editBrandOptions = mergeCurrentOption(brands, editForm.brand);
+  const editOriginCountryOptions = mergeCurrentOption(originCountries, editForm.countryOfOrigin);
+  const editImportCountryOptions = mergeCurrentOption(importCountries, editForm.countryOfImport);
+  const editSaeOptions = mergeCurrentOption(saeViscosities, editForm.sae);
+  const editOilTypeOptions = mergeCurrentOption(oilTypes, editForm.oilType);
+  const editApiOptions = mergeCurrentOption(apiOptions, editForm.api);
+  const editAceaOptions = mergeCurrentOption(aceaOptions, editForm.acea);
+  const editAppropriateUseOptions = mergeCurrentOption(
+    appropriateUseOptions,
+    editForm.appropriateUse,
+  );
 
   const ImageUploadSlot = ({ id, image, setImage, existingImage, onRemoveExisting }) => {
     const [isDragging, setIsDragging] = useState(false);
@@ -152,9 +179,9 @@ const List = ({ token }) => {
       description: item.description || "",
       price: item.price ?? "",
       salePrice: item.salePrice ?? "",
-      category: item.category || "Autodetailing",
+      category: item.category || categoryOptions[0] || "",
       subCategory: item.subCategory || "",
-      brand: item.brand || "3M",
+      brand: item.brand || brands[0] || "",
       countryOfOrigin: item.countryOfOrigin || "",
       countryOfImport: item.countryOfImport || "",
       unitSize: item.unitSize || "",
@@ -436,65 +463,63 @@ const List = ({ token }) => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm font-medium mb-1">Category</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-category"
+                    options={editCategoryOptions}
                     value={editForm.category}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, category: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({
+                        ...editForm,
+                        category: value,
+                        subCategory:
+                          value === editForm.category
+                            ? editForm.subCategory
+                            : "",
+                      })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {Object.keys(subCategories).map((cat) => (
-                      <option key={cat} value={cat}>{cat}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Category"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">Sub Category</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-sub-category"
+                    options={editSubCategoryOptions}
                     value={editForm.subCategory}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, subCategory: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, subCategory: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    <option value="">Select</option>
-                    {subCategories[editForm.category] && subCategories[editForm.category].map((sub) => (
-                      <option key={sub} value={sub}>{sub}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Sub Category"
+                  />
                 </div>
 
 
                 {/* Advanced Filters Dropdowns for Edit */}
                 <div>
                   <p className="text-sm font-medium mb-1">Country of Origin</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-country-origin"
+                    options={editOriginCountryOptions}
                     value={editForm.countryOfOrigin}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, countryOfOrigin: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, countryOfOrigin: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {originCountries.map((country) => (
-                      <option key={country} value={country}>{country}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Country of Origin"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">Country of Import</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-country-import"
+                    options={editImportCountryOptions}
                     value={editForm.countryOfImport}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, countryOfImport: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, countryOfImport: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {importCountries.map((country) => (
-                      <option key={country} value={country}>{country}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Country of Import"
+                  />
                 </div>
 
                 <div>
@@ -518,92 +543,80 @@ const List = ({ token }) => {
 
                 <div>
                   <p className="text-sm font-medium mb-1">SAE</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-sae"
+                    options={editSaeOptions}
                     value={editForm.sae}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, sae: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, sae: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {saeViscosities.map((item) => (
-                      <option key={item} value={item}>{item}</option>
-                    ))}
-                  </select>
+                    placeholder="Select SAE"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">Oil Type</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-oil-type"
+                    options={editOilTypeOptions}
                     value={editForm.oilType}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, oilType: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, oilType: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {oilTypes.map((item) => (
-                      <option key={item} value={item}>{item}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Oil Type"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">API</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-api"
+                    options={editApiOptions}
                     value={editForm.api}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, api: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, api: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {apiOptions.map((item) => (
-                      <option key={item} value={item}>{item}</option>
-                    ))}
-                  </select>
+                    placeholder="Select API"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">ACEA</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-acea"
+                    options={editAceaOptions}
                     value={editForm.acea}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, acea: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, acea: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600 max-h-60 overflow-y-auto"
-                  >
-                    {aceaOptions.map((item) => (
-                      <option key={item} value={item}>{item}</option>
-                    ))}
-                  </select>
+                    placeholder="Select ACEA"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">Appropriate Use</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-appropriate-use"
+                    options={editAppropriateUseOptions}
                     value={editForm.appropriateUse}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, appropriateUse: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, appropriateUse: value })
                     }
-                    className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-gray-600"
-                  >
-                    {appropriateUseOptions.map((item) => (
-                      <option key={item} value={item}>{item}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Appropriate Use"
+                  />
                 </div>
 
                 <div>
                   <p className="text-sm font-medium mb-1">Brand</p>
-                  <select
+                  <SearchableSelect
+                    id="edit-brand"
+                    options={editBrandOptions}
                     value={editForm.brand}
-                    onChange={(e) =>
-                      setEditForm({ ...editForm, brand: e.target.value })
+                    onChange={(value) =>
+                      setEditForm({ ...editForm, brand: value })
                     }
-                    className="w-full border px-3 py-2 rounded focus:ring-1 focus:ring-orange-500 outline-none"
-                  >
-                    {brands.map((b) => (
-                      <option key={b} value={b}>{b}</option>
-                    ))}
-                  </select>
+                    placeholder="Select Brand"
+                  />
                 </div>
               </div>
 
