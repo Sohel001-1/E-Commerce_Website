@@ -178,11 +178,13 @@ const Navbar = () => {
                 src={assets.cart_icon}
                 className="w-5"
                 alt=""
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.3, key: getCartCount() }}
                 whileHover={{ scale: 1.1 }}
               />
               <motion.span
                 className="absolute top-0.5 right-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-brand-500 text-[10px] font-bold text-white ring-2 ring-white"
-                key={getCartCount()}
+                key={`badge-${getCartCount()}`}
                 initial={{ scale: 1.4 }}
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 400 }}
