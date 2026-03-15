@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useParams, Link } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import RelatedProducts from "../components/RelatedProducts";
 import { SkeletonProductDetail } from "../components/Skeleton";
@@ -51,7 +51,6 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!productData) return;
     addToCart(productData._id);
-    setIsCartOpen(true);
   };
 
   const handleToggleWishlist = async () => {
@@ -131,16 +130,53 @@ const Product = () => {
         </motion.div>
 
         <motion.div className="flex-1" {...slideRight}>
-          <button
-            onClick={handleBackToResults}
-            className="mb-4 text-sm font-semibold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
-          >
-            Back to Results
-          </button>
+          {/* Breadcrumb Navigation */}
+          <nav className="flex flex-wrap items-center text-xs sm:text-sm font-medium text-surface-500 mb-6 gap-2 uppercase tracking-wider">
+            <Link to="/" className="hover:text-brand-600 transition-colors">Home</Link>
+            <span className="text-surface-300">/</span>
+            <Link to="/collection" className="hover:text-brand-600 transition-colors">Collection</Link>
+            
+            {productData.category && (
+              <>
+                <span className="text-surface-300">/</span>
+                <Link 
+                  to={`/collection?category=${encodeURIComponent(productData.category)}`}
+                  className="hover:text-brand-600 transition-colors"
+                >
+                  {productData.category}
+                </Link>
+              </>
+            )}
 
-          <h1 className="font-display font-bold text-2xl lg:text-3xl mt-2 text-surface-900">
-            {productData.name}
-          </h1>
+            {productData.subCategory && (
+              <>
+                <span className="text-surface-300">/</span>
+                <Link 
+                  to={`/collection?category=${encodeURIComponent(productData.category)}&subCategory=${encodeURIComponent(productData.subCategory)}`}
+                  className="hover:text-brand-600 transition-colors"
+                >
+                  {productData.subCategory}
+                </Link>
+              </>
+            )}
+
+            <span className="text-surface-300">/</span>
+            <span className="text-surface-900 font-bold truncate max-w-[200px] sm:max-w-xs" title={productData.name}>
+              {productData.name}
+            </span>
+          </nav>
+
+          <div className="flex items-center justify-between mt-2">
+            <h1 className="font-display font-bold text-2xl lg:text-3xl text-surface-900">
+              {productData.name}
+            </h1>
+            <button
+              onClick={handleBackToResults}
+              className="hidden sm:block text-xs font-semibold uppercase tracking-wider text-brand-600 hover:text-brand-700 transition-colors"
+            >
+              Back to Results
+            </button>
+          </div>
 
           <div className="mt-5 flex flex-col gap-3">
             <div className="flex items-center gap-4 flex-wrap">

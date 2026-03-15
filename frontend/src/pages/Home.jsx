@@ -4,7 +4,7 @@ import BestSeller from '../components/BestSeller';
 import OurPolicy from '../components/OurPolicy';
 import NewsletterBox from '../components/NewsletterBox';
 import CategorySection from '../components/CategorySection';
-
+import InquiryBanner from '../components/InquiryBanner';
 
 const Home = () => {
   return (
@@ -23,6 +23,9 @@ const Home = () => {
       <CategorySection categoryName="Wheels" sectionTitle="Wheels" />
       <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
       <CategorySection categoryName="Body" sectionTitle="Body" />
+
+      {/* Customer Inquiry Banner */}
+      <InquiryBanner />
 
       {/* Footer / Utility Sections */}
       <OurPolicy />
