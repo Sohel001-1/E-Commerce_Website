@@ -4,7 +4,7 @@ import { assets } from "../assets/assets";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
-const MAX_SUGGESTIONS = 8;
+const MAX_SUGGESTIONS = 3;
 
 const SearchBar = () => {
   const { search, setSearch, showSearch, setShowSearch, products, navigate } =

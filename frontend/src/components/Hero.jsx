@@ -80,7 +80,8 @@ const fallbackSlides = [
 
 export default function HeroSlider() {
   const { backendUrl } = useContext(ShopContext);
-  const [slides, setSlides] = useState(fallbackSlides);
+  const [slides, setSlides] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -88,9 +89,14 @@ export default function HeroSlider() {
         const response = await axios.get(backendUrl + "/api/banner/list");
         if (response.data.success && response.data.banners.length > 0) {
           setSlides(response.data.banners);
+        } else {
+          setSlides(fallbackSlides);
         }
       } catch (error) {
         console.error("Error fetching banners:", error);
+        setSlides(fallbackSlides);
+      } finally {
+        setLoading(false);
       }
     };
     if (backendUrl) {
@@ -118,6 +124,16 @@ export default function HeroSlider() {
       emblaApi.off("select", onSelect);
     };
   }, [emblaApi]);
+
+  if (loading) {
+    return (
+      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4">
+        <div className="flex justify-center">
+          <div className="w-[95%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[450px] md:h-[550px] rounded-3xl bg-gray-200/20 animate-pulse shadow-glass-lg"></div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
