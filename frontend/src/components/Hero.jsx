@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useContext } from "react";
+import axios from "axios";
+import { ShopContext } from "../context/ShopContext";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -9,7 +11,7 @@ import { heroTextVariants } from "../utils/animations";
 // 1. Video served from public folder
 import { assets } from "../assets/assets";
 
-const slides = [
+const fallbackSlides = [
   {
     type: "image",
     image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
@@ -77,6 +79,25 @@ const slides = [
 ];
 
 export default function HeroSlider() {
+  const { backendUrl } = useContext(ShopContext);
+  const [slides, setSlides] = useState(fallbackSlides);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const response = await axios.get(backendUrl + "/api/banner/list");
+        if (response.data.success && response.data.banners.length > 0) {
+          setSlides(response.data.banners);
+        }
+      } catch (error) {
+        console.error("Error fetching banners:", error);
+      }
+    };
+    if (backendUrl) {
+      fetchBanners();
+    }
+  }, [backendUrl]);
+
   const [emblaRef, emblaApi] = useEmblaCarousel(
     { loop: true, align: "center", skipSnaps: false },
     [Autoplay({ delay: 5000, stopOnInteraction: false })],
