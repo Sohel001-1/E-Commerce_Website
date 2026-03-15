@@ -328,14 +328,10 @@ const Collection = () => {
   ]);
 
   useEffect(() => {
-    if (searchParam !== search) {
-      setSearch(searchParam);
-    }
-
-    if (!searchParam && search && !showSearch) {
-      setSearch("");
-    }
-  }, [searchParam, search, setSearch, showSearch]);
+    // Only update global search state when the URL search parameter changes
+    // or when the search bar visibility changes
+    setSearch(searchParam || "");
+  }, [searchParam, showSearch, setSearch]);
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
