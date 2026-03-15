@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect } from "react";
 import { assets } from "../assets/assets";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [showProfileClick, setShowProfileClick] = useState(false);
   const { setShowSearch, getCartCount, navigate, token, logout, setIsCartOpen, getUserCart } =
     useContext(ShopContext);
+  const location = useLocation();
 
   useEffect(() => {
     document.body.style.overflow = visible ? "hidden" : "auto";
@@ -88,7 +89,11 @@ const Navbar = () => {
                   if (token) {
                     setShowProfileClick(!showProfileClick);
                   } else {
-                    navigate("/login");
+                    if (location.pathname === "/login") {
+                      navigate("/");
+                    } else {
+                      navigate("/login");
+                    }
                   }
                 }}
                 className="p-2.5 rounded-full text-surface-500 hover:bg-brand-50 hover:text-brand-500 transition-colors"
