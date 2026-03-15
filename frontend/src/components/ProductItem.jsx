@@ -108,7 +108,7 @@ const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: prop
           <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 translate-y-3 group-hover:translate-y-0 transition-all duration-500">
             <div className="glass rounded-xl px-3 py-2.5 text-center">
               <span className="text-xs font-bold text-brand-500 tracking-wider uppercase">
-                View Details
+                Add to Cart
               </span>
             </div>
           </div>
