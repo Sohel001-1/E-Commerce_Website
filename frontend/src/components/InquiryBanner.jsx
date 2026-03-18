@@ -73,114 +73,137 @@ const InquiryBanner = () => {
   };
 
   return (
-    <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-16 my-10 border-y border-gray-700">
+    <div className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] my-10">
       
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 z-0" 
-        style={{
-          backgroundImage: `url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000")`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-        }}
-      ></div>
+      {/* Background Container for Split Layout */}
+      <div className="absolute inset-0 flex flex-col z-0">
+        <div 
+          className="flex-1 w-full" 
+          style={{
+            backgroundImage: `url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000")`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundAttachment: 'fixed',
+          }}
+        >
+          <div className="w-full h-full bg-black/10"></div>
+        </div>
+        <div className="flex-1 w-full bg-white"></div>
+      </div>
 
-      {/* Dark Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-gray-900/95 to-gray-800/85 z-0"></div>
-
-      {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 z-0"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-brand-500/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 z-0"></div>
-
-      <div className="container mx-auto px-4 max-w-5xl relative z-10">
-        <div className="flex flex-col lg:flex-row gap-10 items-center">
+      <div className="container mx-auto px-4 max-w-5xl relative z-10 py-12 md:py-20">
+        <div className="bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col md:flex-row overflow-hidden border border-gray-100 p-8 md:p-12 gap-10 md:gap-16">
           
-          {/* Header Section */}
-          <div className="flex-1 text-center lg:text-left text-white">
-            <h2 className="text-3xl md:text-5xl font-display font-bold mb-4 leading-tight">
-              CAN'T FIND WHAT <span className="text-brand-500">YOU'RE LOOKING FOR?</span>
+          {/* Left Column - Information */}
+          <div className="flex-1 flex flex-col justify-center">
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-gray-900 mb-8 leading-[1.2]">
+              Can't Find What You're<br/>Looking For?
             </h2>
-            <p className="text-gray-400 text-lg md:text-xl leading-relaxed mb-6">
-              Let us know exactly what part or product you need. Our team will source it from our global network and get back to you with availability and pricing!
-            </p>
+            
+            <div className="flex flex-col gap-6">
+              <div className="flex items-start gap-3">
+                <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-[#e87a27] flex items-center justify-center text-white text-xs">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-900 font-bold mb-1.5 text-sm">Inquire about parts</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed pr-4">Add products with descriptions, images, and notes using the form, then proceed to checkout.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-[#e87a27] flex items-center justify-center text-white text-xs">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-900 font-bold mb-1.5 text-sm">Get price quote</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed pr-4">We'll process your request, send email updates, and contact if necessary.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-[#e87a27] flex items-center justify-center text-white text-xs">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-gray-900 font-bold mb-1.5 text-sm">Receive your order</h4>
+                  <p className="text-xs text-gray-600 leading-relaxed pr-4">Once your order is finalized, we will ship it to you when it's ready.</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Form Section */}
-          <div className="flex-1 w-full max-w-md">
-            <form onSubmit={onSubmitHandler} className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/10 shadow-2xl flex flex-col gap-5">
+          {/* Right Column - Form */}
+          <div className="flex-1 w-full relative">
+            <div className="hidden md:block absolute -left-8 top-4 bottom-4 w-[1px] bg-gray-100"></div>
+            
+            <form onSubmit={onSubmitHandler} className="flex flex-col gap-5 w-full">
               
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">Contact Number *</label>
-                <input
-                  required
-                  type="text"
-                  name="contactNumber"
-                  value={formData.contactNumber}
-                  onChange={onChangeHandler}
-                  placeholder="+8801XXXXXXXXX"
-                  className="bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 outline-none focus:border-brand-500 focus:bg-white/10 transition-colors"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">Product Details *</label>
-                <textarea
-                  required
-                  rows={3}
-                  name="productDetails"
-                  value={formData.productDetails}
-                  onChange={onChangeHandler}
-                  placeholder="Brand, Model, Year, Part Number..."
-                  className="bg-white/5 border border-white/20 text-white rounded-xl px-4 py-3 outline-none focus:border-brand-500 focus:bg-white/10 transition-colors resize-none scrollbar-thin scrollbar-thumb-white/20"
-                ></textarea>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-semibold text-gray-300 uppercase tracking-wider ml-1">Reference Photo (Optional)</label>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-700">Add Image</label>
                 {!preview ? (
-                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-white/20 rounded-xl p-4 cursor-pointer hover:bg-white/5 hover:border-brand-400 transition-colors group">
-                    <Upload className="w-6 h-6 text-gray-400 group-hover:text-brand-400 mb-2 transition-colors" />
-                    <span className="text-sm text-gray-400 group-hover:text-gray-300">Click to upload image</span>
+                  <label className="flex flex-col items-center justify-center w-20 h-20 border border-dashed border-gray-400 rounded-lg cursor-pointer hover:bg-gray-50 hover:border-brand-500 transition-colors group bg-white">
+                    <Upload className="w-6 h-6 text-gray-400 group-hover:text-brand-500 mb-1 transition-colors" />
                     <input type="file" accept="image/*" className="hidden" onChange={onImageChange} />
                   </label>
                 ) : (
-                  <div className="relative w-full h-32 rounded-xl overflow-hidden border border-white/20 bg-black/50">
-                    <img src={preview} alt="Preview" className="w-full h-full object-contain" />
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-gray-200">
+                    <img src={preview} alt="Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
                       onClick={removeImage}
-                      className="absolute top-2 right-2 p-1.5 bg-black/60 hover:bg-red-500 text-white rounded-full backdrop-blur-md transition-colors"
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-md transition-colors"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3" />
                     </button>
                   </div>
                 )}
               </div>
 
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-800">Part Name (including Contact Number)*</label>
                 <input
-                  type="checkbox"
-                  id="askForPrice"
-                  name="askForPrice"
-                  checked={formData.askForPrice}
+                  required
+                  type="text"
+                  name="productDetails"
+                  value={formData.productDetails}
                   onChange={onChangeHandler}
-                  className="w-4 h-4 text-brand-500 bg-white/5 border-white/20 rounded focus:ring-brand-500 focus:ring-2"
+                  placeholder="Description of the part, e.g. +8801XXXXXXX"
+                  className="bg-white border border-gray-200 text-gray-800 rounded-md px-4 py-2.5 outline-none focus:border-brand-500 transition-colors placeholder-gray-400 text-sm"
                 />
-                <label htmlFor="askForPrice" className="text-sm font-semibold text-gray-300 ml-1 cursor-pointer">
-                  Ask for Price
-                </label>
               </div>
 
-              <motion.button
-                type="submit"
-                disabled={isSubmitting}
-                className={`w-full py-4 mt-2 rounded-xl font-bold tracking-widest uppercase transition-all shadow-lg ${isSubmitting ? 'bg-gray-600 text-gray-300 cursor-not-allowed' : 'bg-brand-500 text-white hover:bg-brand-600 hover:shadow-brand-500/25 active:scale-[0.98]'}`}
-                whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                whileTap={!isSubmitting ? { scale: 0.98 } : {}}
-              >
-                {isSubmitting ? 'Submitting...' : 'Submit Request'}
-              </motion.button>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-gray-800">Additional Information</label>
+                <textarea
+                  required
+                  rows={2}
+                  name="contactNumber"
+                  value={formData.contactNumber}
+                  onChange={onChangeHandler}
+                  placeholder="Your vehicle make, model and year, plus contact number"
+                  className="bg-white border border-gray-200 text-gray-800 rounded-md px-4 py-2.5 outline-none focus:border-brand-500 transition-colors placeholder-gray-400 text-sm resize-none"
+                ></textarea>
+              </div>
+
+              <div className="mt-2 flex justify-end md:justify-center lg:justify-end">
+                <motion.button
+                  type="submit"
+                  disabled={isSubmitting}
+                  onClick={() => setFormData(prev => ({...prev, askForPrice: true}))}
+                  className={`px-8 py-2.5 rounded text-sm font-bold tracking-wide transition-all ${isSubmitting ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-[#e87a27] text-white hover:bg-[#d66b1e] hover:shadow-md active:scale-[0.98]'}`}
+                  whileHover={!isSubmitting ? { scale: 1.02 } : {}}
+                  whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+                >
+                  {isSubmitting ? 'Submitting...' : 'Ask For Price'}
+                </motion.button>
+              </div>
             </form>
           </div>
         </div>
