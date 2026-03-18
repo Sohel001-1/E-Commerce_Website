@@ -19,6 +19,7 @@ const Product = () => {
     navigate,
     token,
     setIsCartOpen,
+    cartItems,
   } = useContext(ShopContext);
 
   const [productData, setProductData] = useState(null);
@@ -47,6 +48,8 @@ const Product = () => {
       setIsInWishlist(inWishlist);
     }
   }, [productId, wishlist]);
+
+  const isInCart = productData ? !!cartItems[productData._id] : false;
 
   const handleAddToCart = () => {
     if (!productData) return;
@@ -135,11 +138,11 @@ const Product = () => {
             <Link to="/" className="hover:text-brand-600 transition-colors">Home</Link>
             <span className="text-surface-300">/</span>
             <Link to="/collection" className="hover:text-brand-600 transition-colors">Collection</Link>
-            
+
             {productData.category && (
               <>
                 <span className="text-surface-300">/</span>
-                <Link 
+                <Link
                   to={`/collection?category=${encodeURIComponent(productData.category)}`}
                   className="hover:text-brand-600 transition-colors"
                 >
@@ -151,7 +154,7 @@ const Product = () => {
             {productData.subCategory && (
               <>
                 <span className="text-surface-300">/</span>
-                <Link 
+                <Link
                   to={`/collection?category=${encodeURIComponent(productData.category)}&subCategory=${encodeURIComponent(productData.subCategory)}`}
                   className="hover:text-brand-600 transition-colors"
                 >
@@ -201,9 +204,23 @@ const Product = () => {
 
           <div className="flex gap-3 mt-8">
             <motion.button
+              onClick={handleAddToCart}
+              disabled={productData.stock <= 0}
+              className={`flex-1 px-4 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${
+                productData.stock <= 0 
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed grayscale' 
+                  : 'bg-[#e87a27] hover:bg-[#d66b1e] text-white transition-all'
+              } ${isInCart ? 'bg-opacity-90' : ''}`}
+              whileHover={productData.stock > 0 ? { scale: 1.02 } : {}}
+              whileTap={productData.stock > 0 ? { scale: 0.98 } : {}}
+            >
+              {productData.stock <= 0 ? "UNAVAILABLE" : isInCart ? "ALREADY IN CART" : "ADD TO CART"}
+            </motion.button>
+
+            <motion.button
               onClick={handleOrderNow}
               disabled={productData.stock <= 0}
-              className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:from-green-600 hover:to-green-700 hover:shadow-xl transition-all'}`}
+              className={`flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-3 text-sm font-bold tracking-wider uppercase rounded-lg shadow-lg ${productData.stock <= 0 ? 'opacity-50 cursor-not-allowed grayscale' : 'hover:from-green-600 hover:to-green-700 hover:shadow-xl transition-all'}`}
               whileHover={productData.stock > 0 ? { scale: 1.02 } : {}}
               whileTap={productData.stock > 0 ? { scale: 0.98 } : {}}
             >
