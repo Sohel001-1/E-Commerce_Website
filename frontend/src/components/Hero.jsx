@@ -3,10 +3,8 @@ import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { heroTextVariants } from "../utils/animations";
 
 // 1. Video served from public folder
 import { assets } from "../assets/assets";
@@ -127,132 +125,78 @@ export default function HeroSlider() {
 
   if (loading) {
     return (
-      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4">
-        <div className="flex justify-center">
-          <div className="w-[95%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[450px] md:h-[550px] rounded-3xl bg-gray-200/20 animate-pulse shadow-glass-lg"></div>
+      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-0 bg-white">
+        <div className="flex justify-center w-full">
+          <div className="w-full aspect-[21/9] bg-gray-200/50 animate-pulse"></div>
         </div>
       </section>
     );
   }
 
   return (
-    <section
-      ref={heroRef}
-      className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-4"
-    >
-      <div className="overflow-visible" ref={emblaRef}>
+    <section ref={heroRef} className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden bg-white pb-8">
+      {/* Full-Width Image Slider */}
+      <div className="overflow-visible w-full" ref={emblaRef}>
         <div className="flex">
           {slides.map((slide, idx) => (
-            <div
-              key={idx}
-              className="flex-[0_0_95%] sm:flex-[0_0_75%] md:flex-[0_0_70%] lg:flex-[0_0_65%] min-w-0 px-2 relative"
-            >
-              <div className="relative h-[450px] md:h-[550px] overflow-hidden rounded-3xl shadow-glass-lg group">
-
-                {/* 2. Conditional Rendering for Video or Image */}
-                {slide.type === "video" ? (
-                  <video
-                    src={slide.videoSource}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover"
-                  />
-                ) : slide.type === "icon" ? (
-                  <div className="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-8 text-[#E85D04]">
-                    <motion.img
-                      src={slide.image}
-                      alt={slide.title}
-                      className="w-1/2 h-1/2 object-contain drop-shadow-2xl opacity-50 contrast-125 saturate-200"
-                    />
-                  </div>
-                ) : (
-                  <motion.img
+            <div key={idx} className="flex-[0_0_100%] min-w-0 relative">
+              {slide.type === "video" ? (
+                <video
+                  src={slide.videoSource}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-auto block object-contain bg-black"
+                />
+              ) : slide.type === "icon" ? (
+                <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-8 text-[#E85D04]">
+                  <img
                     src={slide.image}
                     alt={slide.title}
-                    className={`w-full h-full ${slide.category === 'Transmission' ? 'object-cover bg-black' : 'object-cover'}`}
+                    className="w-1/2 h-1/2 object-contain drop-shadow-2xl opacity-50 contrast-125 saturate-200"
                   />
-                )}
-
-                {/* Dark Overlay to make text readable */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
-
-
-                <div className="absolute inset-0 flex items-center px-8 md:px-16">
-                  <div className="max-w-xl text-white relative z-20">
-                    {idx === selectedIndex && (
-                      <>
-                        <motion.h2
-                          key={`title-${selectedIndex}`}
-                          custom={0}
-                          initial="hidden"
-                          animate="visible"
-                          variants={heroTextVariants}
-                          className="text-3xl md:text-6xl font-display font-bold mb-4 leading-tight uppercase drop-shadow-lg"
-                        >
-                          {slide.title}
-                        </motion.h2>
-                        <motion.p
-                          key={`sub-${selectedIndex}`}
-                          custom={1}
-                          initial="hidden"
-                          animate="visible"
-                          variants={heroTextVariants}
-                          className="text-lg md:text-xl mb-8 text-white/80 font-light"
-                        >
-                          {slide.subtitle}
-                        </motion.p>
-                        <motion.div
-                          key={`cta-${selectedIndex}`}
-                          custom={2}
-                          initial="hidden"
-                          animate="visible"
-                          variants={heroTextVariants}
-                        >
-                          <Link to={`/collection?category=${encodeURIComponent(slide.category)}`}>
-                            <button className="btn-primary btn-shimmer text-lg">
-                              <span className="relative z-10">{slide.cta}</span>
-                            </button>
-                          </Link>
-                        </motion.div>
-                      </>
-                    )}
-                  </div>
                 </div>
-              </div>
+              ) : (
+                <Link to={slide.category ? `/collection?category=${encodeURIComponent(slide.category)}` : '#'}>
+                  <img
+                    src={slide.image}
+                    alt={slide.title}
+                    className="w-full h-auto block object-contain"
+                  />
+                </Link>
+              )}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={scrollPrev}
-        className="absolute left-4 sm:left-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full glass text-white flex items-center justify-center hover:bg-white/30 hover:scale-110 active:scale-95 z-20 transition-all duration-300"
-      >
-        <ChevronLeft size={22} />
-      </button>
-      <button
-        onClick={scrollNext}
-        className="absolute right-4 sm:right-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full glass text-white flex items-center justify-center hover:bg-white/30 hover:scale-110 active:scale-95 z-20 transition-all duration-300"
-      >
-        <ChevronRight size={22} />
-      </button>
-
-      {/* Pagination Dots */}
-      <div className="flex justify-center gap-2 mt-6">
-        {slides.map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => emblaApi?.scrollTo(idx)}
-            className={`h-2 rounded-full transition-all duration-500 ${idx === selectedIndex
-              ? "w-8 bg-brand-500 shadow-glow"
-              : "w-2 bg-surface-300 hover:bg-surface-400"
-              }`}
-          />
-        ))}
+      {/* Dynamic Text & CTA Section */}
+      <div className="mt-8 md:mt-12 text-center px-4 flex flex-col justify-center items-center min-h-[160px]">
+        {slides[selectedIndex]?.title && (
+          <h2 
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter" 
+            style={{ transform: "scaleY(1.1)" }}
+          >
+            {slides[selectedIndex].title}
+          </h2>
+        )}
+        {slides[selectedIndex]?.subtitle && (
+          <p className="text-sm sm:text-base md:text-xl text-gray-800 tracking-wide mt-3 md:mt-4 font-medium">
+            {slides[selectedIndex].subtitle}
+          </p>
+        )}
+        {slides[selectedIndex]?.cta && (
+          <div className="mt-6 md:mt-8">
+            <Link to={slides[selectedIndex].category ? `/collection?category=${encodeURIComponent(slides[selectedIndex].category)}` : '#'}>
+              <button className="bg-[#EA580C] hover:bg-[#C2410C] text-white px-8 py-3 rounded-full font-bold uppercase transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-xs sm:text-sm tracking-widest cursor-pointer">
+                {slides[selectedIndex].cta}
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
+
     </section>
   );
 }

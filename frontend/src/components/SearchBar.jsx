@@ -129,37 +129,29 @@ const SearchBar = () => {
         >
           <div className="py-4">
             <div ref={containerRef} className="max-w-xl mx-auto">
-              <div className="flex items-center gap-3 glass-card rounded-2xl px-5 py-3 focus-within:border-orange-300 focus-within:shadow-glow transition-all duration-300">
-                <img
-                  className="w-4 opacity-40"
-                  src={assets.search_icon}
-                  alt="search"
-                />
-                <input
-                  ref={inputRef}
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  className="flex-1 outline-none bg-transparent text-sm text-surface-700 placeholder:text-surface-400"
-                  type="text"
-                  placeholder="Search for parts, brands, categories..."
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch("")}
-                    className="text-surface-400 hover:text-surface-600 transition-colors"
-                  >
-                    <img className="w-3" src={assets.cross_icon} alt="clear" />
-                  </button>
-                )}
+              <div className="flex items-center justify-between bg-white rounded-full px-4 py-2 shadow-sm border border-surface-200 focus-within:border-orange-300 focus-within:shadow-glow transition-all duration-300">
+                <div className="flex flex-col flex-1 pl-2">
+                  <span className="text-[11px] font-bold text-surface-900 mb-0.5">
+                    Inventory
+                  </span>
+                  <input
+                    ref={inputRef}
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    className="w-full outline-none bg-transparent text-sm text-surface-700 placeholder:text-surface-400"
+                    type="text"
+                    placeholder="Type any keywords"
+                  />
+                </div>
                 <button
-                  onClick={() => setShowSearch(false)}
-                  className="p-1.5 rounded-full hover:bg-surface-100 transition-colors"
+                  onClick={() => search ? submitSearch(search) : setShowSearch(false)}
+                  className="flex items-center justify-center w-10 h-10 rounded-full bg-[#f97316] hover:bg-[#ea580c] transition-colors shrink-0 outline-none"
                 >
                   <img
-                    className="w-3 opacity-50"
-                    src={assets.cross_icon}
-                    alt="close"
+                    className="w-4 opacity-100 brightness-0 invert"
+                    src={assets.search_icon}
+                    alt="search"
                   />
                 </button>
               </div>
