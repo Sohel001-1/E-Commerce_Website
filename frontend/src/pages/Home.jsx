@@ -4,6 +4,7 @@ import BestSeller from '../components/BestSeller';
 import OurPolicy from '../components/OurPolicy';
 import NewsletterBox from '../components/NewsletterBox';
 import CategorySection from '../components/CategorySection';
+import PromoBanner from '../components/PromoBanner';
 import InquiryBanner from '../components/InquiryBanner';
 
 const Home = () => {
@@ -22,6 +23,10 @@ const Home = () => {
       <CategorySection categoryName="Oils and Fluids" sectionTitle="Oils and Fluids" />
       <CategorySection categoryName="Wheels" sectionTitle="Wheels" />
       <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
+      
+      {/* Promo Banner between Ignition and Body */}
+      <PromoBanner />
+
       <CategorySection categoryName="Body" sectionTitle="Body" />
 
       {/* Customer Inquiry Banner */}
