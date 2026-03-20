@@ -8,6 +8,7 @@ import Orders from "./pages/Orders";
 import Pos from "./pages/Pos";
 import Banners from "./pages/Banners";
 import Demands from "./pages/Demands";
+import Settings from "./pages/Settings";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -43,6 +44,7 @@ const App = () => {
                 <Route path="/pos" element={<Pos token={token} />} />
                 <Route path="/banners" element={<Banners token={token} />} />
                 <Route path="/demands" element={<Demands token={token} />} />
+                <Route path="/settings" element={<Settings token={token} />} />
                 <Route path="*" element={<Navigate to="/add" replace />} />
               </Routes>
             </div>

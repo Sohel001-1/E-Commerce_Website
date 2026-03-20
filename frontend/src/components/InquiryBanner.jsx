@@ -78,12 +78,9 @@ const InquiryBanner = () => {
       {/* Background Container for Split Layout */}
       <div className="absolute inset-0 flex flex-col z-0">
         <div 
-          className="flex-1 w-full" 
+          className="flex-1 w-full bg-cover bg-center md:bg-fixed" 
           style={{
             backgroundImage: `url("https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000")`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundAttachment: 'fixed',
           }}
         >
           <div className="w-full h-full bg-black/10"></div>

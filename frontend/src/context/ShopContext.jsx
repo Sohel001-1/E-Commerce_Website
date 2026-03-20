@@ -6,9 +6,11 @@ import axios from "axios";
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-  const currency = "৳",
-    delivery_fee = 10;
+  const currency = "৳";
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [shippingFees, setShippingFees] = useState({ inside: 0, outside: 0 });
+  const [selectedRegion, setSelectedRegion] = useState("inside");
+  const delivery_fee = selectedRegion === "inside" ? shippingFees.inside : shippingFees.outside;
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
@@ -154,6 +156,20 @@ const ShopContextProvider = (props) => {
     }
   };
 
+  const getSettingsData = async () => {
+    try {
+      const response = await axios.get(backendUrl + "/api/settings");
+      if (response.data.success && response.data.settings) {
+        setShippingFees({
+          inside: response.data.settings.insideChittagongFee || 0,
+          outside: response.data.settings.outsideChittagongFee || 0,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const updateQuantity = async (itemId, quantity) => {
     const product = products.find(p => p._id === itemId);
     if (product && quantity > product.stock) {
@@ -239,6 +255,7 @@ const ShopContextProvider = (props) => {
 
   useEffect(() => {
     getProductsData();
+    getSettingsData();
   }, []);
 
   // Load token from localStorage on mount
@@ -285,8 +302,10 @@ const ShopContextProvider = (props) => {
     setWishlist,
     toggleWishlist,
     getWishlistData,
-    isCartOpen,
     setIsCartOpen,
+    shippingFees,
+    selectedRegion,
+    setSelectedRegion,
   };
 
   return (

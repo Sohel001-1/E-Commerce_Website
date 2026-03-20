@@ -19,6 +19,8 @@ const PlaceOrder = () => {
     getCartAmount,
     delivery_fee,
     products,
+    selectedRegion,
+    setSelectedRegion,
   } = useContext(ShopContext);
   const [formData, setFormData] = useState({
     firstName: "",
@@ -201,6 +203,34 @@ const PlaceOrder = () => {
           type="number"
           placeholder="Phone"
         />
+        
+        <div className="flex flex-col gap-3 mt-4 glass-card p-4 rounded bg-white/5 border border-white/10">
+          <p className="font-medium text-surface-900">Delivery Area</p>
+          <div className="flex gap-6">
+            <label className="flex items-center gap-2 cursor-pointer transition-colors hover:text-brand-500">
+              <input 
+                type="radio" 
+                name="region" 
+                value="inside" 
+                checked={selectedRegion === "inside"} 
+                onChange={() => setSelectedRegion("inside")} 
+                className="w-4 h-4 cursor-pointer accent-brand-500" 
+              />
+              Inside Chittagong
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer transition-colors hover:text-brand-500">
+              <input 
+                type="radio" 
+                name="region" 
+                value="outside" 
+                checked={selectedRegion === "outside"} 
+                onChange={() => setSelectedRegion("outside")} 
+                className="w-4 h-4 cursor-pointer accent-brand-500" 
+              />
+              Outside Chittagong
+            </label>
+          </div>
+        </div>
       </motion.div>
 
       <motion.div className="mt-8 sm:mt-0" {...slideRight}>
