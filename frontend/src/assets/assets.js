@@ -111,6 +111,7 @@ import hero_lighting from "./hero_lighting.jpg";
 import lighting_components_3d from "./lighting-components-3d.png";
 import hero_transmission from "./hero_transmission.png";
 import motor_oil_bottles from "./motor_oil_bottles.png";
+import promo_banner from "./promo_banner.png";
 import brand_3m from "./brand/3m.png";
 import brand_555 from "./brand/555.jpg";
 import brand_70mai from "./brand/70mai.jpg";
@@ -522,5 +523,6 @@ export const assets = {
   lighting_components_3d,
   hero_transmission,
   motor_oil_bottles,
+  promo_banner,
   brandAssets,
 };
