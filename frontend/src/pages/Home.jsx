@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import Hero from '../components/Hero';
 import BestSeller from '../components/BestSeller';
-import OurPolicy from '../components/OurPolicy';
-import NewsletterBox from '../components/NewsletterBox';
 import CategorySection from '../components/CategorySection';
-import InquiryBanner from '../components/InquiryBanner';
+
+const OurPolicy = lazy(() => import('../components/OurPolicy'));
+const NewsletterBox = lazy(() => import('../components/NewsletterBox'));
+const InquiryBanner = lazy(() => import('../components/InquiryBanner'));
+
+const featuredCategories = [
+  { categoryName: "Filters", sectionTitle: "Filters" },
+  { categoryName: "Oils and Fluids", sectionTitle: "Oils and Fluids" },
+  { categoryName: "Wheels", sectionTitle: "Wheels" },
+  { categoryName: "Ignition", sectionTitle: "Ignition" },
+  { categoryName: "Body", sectionTitle: "Body" },
+];
 
 const Home = () => {
   return (
@@ -18,18 +27,24 @@ const Home = () => {
           Ensure the 'categoryName' matches the 'category' string 
           saved via your productController exactly.
       */}
-      <CategorySection categoryName="Filters" sectionTitle="Filters" />
-      <CategorySection categoryName="Oils and Fluids" sectionTitle="Oils and Fluids" />
-      <CategorySection categoryName="Wheels" sectionTitle="Wheels" />
-      <CategorySection categoryName="Ignition" sectionTitle="Ignition" />
-      <CategorySection categoryName="Body" sectionTitle="Body" />
+      {featuredCategories.map((section) => (
+        <CategorySection
+          key={section.categoryName}
+          categoryName={section.categoryName}
+          sectionTitle={section.sectionTitle}
+        />
+      ))}
 
       {/* Customer Inquiry Banner */}
-      <InquiryBanner />
+      <Suspense fallback={null}>
+        <InquiryBanner />
+      </Suspense>
 
       {/* Footer / Utility Sections */}
-      <OurPolicy />
-      <NewsletterBox />
+      <Suspense fallback={null}>
+        <OurPolicy />
+        <NewsletterBox />
+      </Suspense>
     </div>
   )
 }

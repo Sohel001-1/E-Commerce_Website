@@ -362,7 +362,7 @@ const Collection = () => {
 
     let isMounted = true;
 
-    import("../assets/assets").then(({ brandAssets }) => {
+    import("../assets/brandAssets").then(({ brandAssets }) => {
       if (!isMounted) {
         return;
       }

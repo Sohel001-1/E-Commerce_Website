@@ -47,6 +47,10 @@ const buildExactCaseInsensitiveRegex = (value) =>
 const buildCollectionQuery = (queryParams = {}) => {
   const query = {};
 
+  if (queryParams.bestseller !== undefined) {
+    query.bestseller = parseBoolean(queryParams.bestseller);
+  }
+
   FILTERABLE_FIELDS.forEach((field) => {
     const values = parseMultiValueParam(queryParams[field]);
     if (values.length === 1) {

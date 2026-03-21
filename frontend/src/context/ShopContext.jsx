@@ -238,7 +238,25 @@ const ShopContextProvider = (props) => {
   };
 
   useEffect(() => {
-    getProductsData();
+    let timeoutId;
+
+    const scheduleFetch = () => {
+      if ("requestIdleCallback" in window) {
+        const idleId = window.requestIdleCallback(() => {
+          getProductsData();
+        }, { timeout: 1200 });
+
+        return () => window.cancelIdleCallback(idleId);
+      }
+
+      timeoutId = window.setTimeout(() => {
+        getProductsData();
+      }, 300);
+
+      return () => window.clearTimeout(timeoutId);
+    };
+
+    return scheduleFetch();
   }, []);
 
   // Load token from localStorage on mount
