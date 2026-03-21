@@ -54,14 +54,19 @@ const ProductItem = ({ id, image, name, price, stock: propStock, salePrice: prop
       return;
     }
 
+    if (isInCart) {
+      setIsCartOpen(true);
+      return;
+    }
+
     addToCart(id);
     setIsCartOpen(true);
   };
 
   return (
-    <div className="flex flex-col h-full group">
+    <div className="flex flex-col h-full">
       <Link
-        className="flex flex-col flex-grow"
+        className="flex flex-col flex-grow group"
         to={`/product/${id}`}
         onClick={handleProductOpen}
         state={{
