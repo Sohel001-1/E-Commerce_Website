@@ -53,6 +53,12 @@ const Product = () => {
 
   const handleAddToCart = () => {
     if (!productData) return;
+    
+    if (isInCart) {
+      setIsCartOpen(true);
+      return;
+    }
+
     addToCart(productData._id);
   };
 
