@@ -302,6 +302,7 @@ const ShopContextProvider = (props) => {
     setWishlist,
     toggleWishlist,
     getWishlistData,
+    isCartOpen,
     setIsCartOpen,
     shippingFees,
     selectedRegion,
