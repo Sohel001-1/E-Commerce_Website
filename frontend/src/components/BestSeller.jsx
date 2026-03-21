@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
@@ -7,18 +8,51 @@ import { Link } from "react-router-dom";
 import { SkeletonGrid } from "./Skeleton";
 import { staggerContainer, fadeUp } from "../utils/animations";
 
+const BESTSELLER_LIMIT = 8;
+
 const BestSeller = () => {
-  const { products } = useContext(ShopContext);
+  const { backendUrl } = useContext(ShopContext);
   const [bestSeller, setBestSeller] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (products.length > 0) {
-      const bestProduct = products.filter((item) => item.bestseller);
-      setBestSeller(bestProduct.slice(0, 15));
-      setLoading(false);
+    let isMounted = true;
+
+    const fetchBestSellers = async () => {
+      try {
+        const { data } = await axios.get(`${backendUrl}/api/product/collection`, {
+          params: {
+            bestseller: true,
+            limit: BESTSELLER_LIMIT,
+          },
+        });
+
+        if (!isMounted || !data.success) {
+          return;
+        }
+
+        setBestSeller(data.products || []);
+      } catch (error) {
+        console.error("Failed to load best sellers", error);
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    if (backendUrl) {
+      fetchBestSellers();
     }
-  }, [products]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [backendUrl]);
+
+  if (!loading && bestSeller.length === 0) {
+    return null;
+  }
 
   return (
     <div className="my-16">
@@ -48,10 +82,10 @@ const BestSeller = () => {
         </p>
       </motion.div>
       {loading ? (
-        <SkeletonGrid count={15} />
+        <SkeletonGrid count={BESTSELLER_LIMIT} cols="grid-cols-2 sm:grid-cols-3 md:grid-cols-4" />
       ) : (
         <motion.div
-          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6"
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 gap-y-6"
           variants={staggerContainer}
           initial="initial"
           whileInView="animate"
@@ -64,6 +98,8 @@ const BestSeller = () => {
               name={item.name}
               image={item.image}
               price={item.price}
+              stock={item.stock}
+              salePrice={item.salePrice}
               index={index}
             />
           ))}

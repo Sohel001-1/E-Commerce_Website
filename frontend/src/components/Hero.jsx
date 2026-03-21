@@ -1,13 +1,10 @@
-import { useCallback, useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-
-// 1. Video served from public folder
-import { assets } from "../assets/assets";
+import { heroAssets } from "../assets/heroAssets";
 
 const fallbackSlides = [
   {
@@ -36,7 +33,7 @@ const fallbackSlides = [
   },
   {
     type: "image",
-    image: assets.hero_suspension,
+    image: heroAssets.hero_suspension,
     title: "Suspension Components",
     subtitle: "Ensure a smooth and stable ride",
     cta: "View Suspension",
@@ -44,7 +41,7 @@ const fallbackSlides = [
   },
   {
     type: "image",
-    image: assets.hero_transmission,
+    image: heroAssets.hero_transmission,
     title: "Transmission Systems",
     subtitle: "Power the roads seamlessly",
     cta: "View Transmission",
@@ -52,7 +49,7 @@ const fallbackSlides = [
   },
   {
     type: "image",
-    image: assets.hero_filter,
+    image: heroAssets.hero_filter,
     title: "Filters",
     subtitle: "Clean engine operations",
     cta: "Shop Filters",
@@ -60,7 +57,7 @@ const fallbackSlides = [
   },
   {
     type: "image",
-    image: assets.hero_lighting,
+    image: heroAssets.hero_lighting,
     title: "Lighting",
     subtitle: "Illuminate your journey",
     cta: "View Lighting",
@@ -68,7 +65,7 @@ const fallbackSlides = [
   },
   {
     type: "image",
-    image: assets.hero_detailing,
+    image: heroAssets.hero_detailing,
     title: "Auto Detailing",
     subtitle: "Keep your car looking brand new",
     cta: "View Detailing",
@@ -78,8 +75,7 @@ const fallbackSlides = [
 
 export default function HeroSlider() {
   const { backendUrl } = useContext(ShopContext);
-  const [slides, setSlides] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [slides, setSlides] = useState(fallbackSlides);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -87,14 +83,9 @@ export default function HeroSlider() {
         const response = await axios.get(backendUrl + "/api/banner/list");
         if (response.data.success && response.data.banners.length > 0) {
           setSlides(response.data.banners);
-        } else {
-          setSlides(fallbackSlides);
         }
       } catch (error) {
         console.error("Error fetching banners:", error);
-        setSlides(fallbackSlides);
-      } finally {
-        setLoading(false);
       }
     };
     if (backendUrl) {
@@ -110,9 +101,6 @@ export default function HeroSlider() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const heroRef = useRef(null);
 
-  const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
-  const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-
   useEffect(() => {
     if (!emblaApi) return;
     const onSelect = () => setSelectedIndex(emblaApi.selectedScrollSnap());
@@ -122,16 +110,6 @@ export default function HeroSlider() {
       emblaApi.off("select", onSelect);
     };
   }, [emblaApi]);
-
-  if (loading) {
-    return (
-      <section className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden py-0 bg-white">
-        <div className="flex justify-center w-full">
-          <div className="w-full aspect-[21/9] bg-gray-200/50 animate-pulse"></div>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section ref={heroRef} className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden bg-white pb-8">
@@ -163,6 +141,9 @@ export default function HeroSlider() {
                     src={slide.image}
                     alt={slide.title}
                     className="w-full h-auto block object-contain"
+                    loading={idx === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    fetchPriority={idx === 0 ? "high" : "auto"}
                   />
                 </Link>
               )}
