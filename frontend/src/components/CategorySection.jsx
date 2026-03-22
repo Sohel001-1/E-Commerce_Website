@@ -9,28 +9,22 @@ import { staggerContainer, fadeUp } from "../utils/animations";
 import { CATEGORY_DATA } from "../assets/data";
 
 const CategorySection = ({ categoryName, sectionTitle }) => {
-  const { products } = useContext(ShopContext);
+  const { products, isProductsLoading } = useContext(ShopContext);
   const [filterProducts, setFilterProducts] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (products.length > 0) {
-      const filtered = products.filter(
-        (item) =>
-          item.category.toLowerCase().trim() ===
-          categoryName.toLowerCase().trim(),
-      );
-      setFilterProducts(filtered.slice(0, 15));
-      setTotalProducts(filtered.length);
-      setLoading(false);
-    }
+    const filtered = products.filter(
+      (item) =>
+        item.category.toLowerCase().trim() ===
+        categoryName.toLowerCase().trim(),
+    );
+    setFilterProducts(filtered.slice(0, 15));
   }, [products, categoryName]);
 
-  if (!loading && filterProducts.length === 0) return null;
+  if (!isProductsLoading && filterProducts.length === 0) return null;
 
   const categoryInfo = CATEGORY_DATA.find(
-    (c) => c.name.toLowerCase().trim() === categoryName.toLowerCase().trim()
+    (c) => c.name.toLowerCase().trim() === categoryName.toLowerCase().trim(),
   );
 
   return (
@@ -44,32 +38,44 @@ const CategorySection = ({ categoryName, sectionTitle }) => {
         <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4 mb-3 max-w-7xl mx-auto px-4 border-b pb-4">
           <div className="flex items-center gap-4">
             {categoryInfo && categoryInfo.image && (
-              <img 
-                src={categoryInfo.image} 
-                alt={categoryInfo.name} 
+              <img
+                src={categoryInfo.image}
+                alt={categoryInfo.name}
                 className="w-12 h-12 md:w-16 md:h-16 object-contain drop-shadow-md"
                 style={{ imageRendering: "-webkit-optimize-contrast" }}
               />
             )}
-            <Title text1={""} text2={`${sectionTitle} (${totalProducts})`} />
+            <Title text1={""} text2={sectionTitle} />
           </div>
 
-          <Link 
+          <Link
             to={`/collection?category=${encodeURIComponent(categoryName)}`}
             className="sm:absolute sm:right-4 text-sm font-bold tracking-widest uppercase text-brand-600 hover:text-brand-700 hover:underline underline-offset-4 transition-all flex items-center gap-1"
           >
             View More
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
             </svg>
           </Link>
         </div>
         <p className="w-full text-center mt-2 px-4 max-w-7xl mx-auto text-xs sm:text-sm md:text-base text-surface-500">
-          Explore our carefully selected collection of premium automotive components.
+          Explore our carefully selected collection of premium automotive
+          components.
         </p>
       </motion.div>
 
-      {loading ? (
+      {isProductsLoading ? (
         <SkeletonGrid count={15} />
       ) : (
         <>

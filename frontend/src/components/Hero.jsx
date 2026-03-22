@@ -5,75 +5,80 @@ import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-
-// 1. Video served from public folder
-import { assets } from "../assets/assets";
+import hero_suspension from "../assets/hero_suspension.jpg";
+import hero_transmission from "../assets/hero_transmission.png";
+import hero_filter from "../assets/hero_filter.jpg";
+import hero_lighting from "../assets/hero_lighting.jpg";
+import hero_detailing from "../assets/hero_detailing.jpg";
 
 const fallbackSlides = [
   {
     type: "image",
-    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
+    image:
+      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=2000",
     title: "Top-Grade Motor Oil",
     subtitle: "Clean emissions with authentic lubricants",
     cta: "View Oils",
-    category: "Oils and Fluids"
+    category: "Oils and Fluids",
   },
   {
     type: "image",
-    image: "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
+    image:
+      "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=2000",
     title: "Genuine Engine Parts",
     subtitle: "OEM quality components for peak performance",
     cta: "Shop Engine Parts",
-    category: "Engine"
+    category: "Engine",
   },
   {
     type: "image",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000",
     title: "Premium Brake Systems",
     subtitle: "Safety first with authentic components",
     cta: "Browse Brakes",
-    category: "Brakes"
+    category: "Brakes",
   },
   {
     type: "image",
-    image: assets.hero_suspension,
+    image: hero_suspension,
     title: "Suspension Components",
     subtitle: "Ensure a smooth and stable ride",
     cta: "View Suspension",
-    category: "Suspension"
+    category: "Suspension",
   },
   {
     type: "image",
-    image: assets.hero_transmission,
+    image: hero_transmission,
     title: "Transmission Systems",
     subtitle: "Power the roads seamlessly",
     cta: "View Transmission",
-    category: "Transmission"
+    category: "Transmission",
   },
   {
     type: "image",
-    image: assets.hero_filter,
+    image: hero_filter,
     title: "Filters",
     subtitle: "Clean engine operations",
     cta: "Shop Filters",
-    category: "Filters"
+    category: "Filters",
   },
   {
     type: "image",
-    image: assets.hero_lighting,
+    image: hero_lighting,
     title: "Lighting",
     subtitle: "Illuminate your journey",
     cta: "View Lighting",
-    category: "Lighting"
+    category: "Lighting",
   },
   {
     type: "image",
-    image: assets.hero_detailing,
+    image: hero_detailing,
     title: "Auto Detailing",
     subtitle: "Keep your car looking brand new",
     cta: "View Detailing",
-    category: "Auto Detailing and Care"
-  }
+    category: "Auto Detailing and Care",
+  },
 ];
 
 export default function HeroSlider() {
@@ -134,7 +139,10 @@ export default function HeroSlider() {
   }
 
   return (
-    <section ref={heroRef} className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden bg-white pb-8">
+    <section
+      ref={heroRef}
+      className="relative w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden bg-white pb-8"
+    >
       {/* Full-Width Image Slider */}
       <div className="overflow-visible w-full" ref={emblaRef}>
         <div className="flex">
@@ -158,7 +166,13 @@ export default function HeroSlider() {
                   />
                 </div>
               ) : (
-                <Link to={slide.category ? `/collection?category=${encodeURIComponent(slide.category)}` : '#'}>
+                <Link
+                  to={
+                    slide.category
+                      ? `/collection?category=${encodeURIComponent(slide.category)}`
+                      : "#"
+                  }
+                >
                   <img
                     src={slide.image}
                     alt={slide.title}
@@ -174,8 +188,8 @@ export default function HeroSlider() {
       {/* Dynamic Text & CTA Section */}
       <div className="mt-8 md:mt-12 text-center px-4 flex flex-col justify-center items-center min-h-[160px]">
         {slides[selectedIndex]?.title && (
-          <h2 
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter" 
+          <h2
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-black tracking-tighter"
             style={{ transform: "scaleY(1.1)" }}
           >
             {slides[selectedIndex].title}
@@ -188,7 +202,13 @@ export default function HeroSlider() {
         )}
         {slides[selectedIndex]?.cta && (
           <div className="mt-6 md:mt-8">
-            <Link to={slides[selectedIndex].category ? `/collection?category=${encodeURIComponent(slides[selectedIndex].category)}` : '#'}>
+            <Link
+              to={
+                slides[selectedIndex].category
+                  ? `/collection?category=${encodeURIComponent(slides[selectedIndex].category)}`
+                  : "#"
+              }
+            >
               <button className="bg-[#EA580C] hover:bg-[#C2410C] text-white px-8 py-3 rounded-full font-bold uppercase transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 text-xs sm:text-sm tracking-widest cursor-pointer">
                 {slides[selectedIndex].cta}
               </button>
@@ -196,7 +216,6 @@ export default function HeroSlider() {
           </div>
         )}
       </div>
-
     </section>
   );
 }

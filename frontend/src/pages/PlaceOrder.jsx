@@ -1,12 +1,12 @@
 import React, { useContext, useState } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
-import { assets } from "../assets/assets";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { fadeUp, slideLeft, slideRight } from "../utils/animations";
+import stripe_logo from "../assets/stripe_logo.png";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
@@ -112,7 +112,10 @@ const PlaceOrder = () => {
       onSubmit={onSubmitHandler}
       className="flex flex-col sm:flex-row justify-between gap-8 pt-5 sm:pt-14 min-h-[80vh]"
     >
-      <motion.div className="flex flex-col gap-4 w-full sm:max-w-[480px]" {...slideLeft}>
+      <motion.div
+        className="flex flex-col gap-4 w-full sm:max-w-[480px]"
+        {...slideLeft}
+      >
         <div className="text-xl sm:text-2xl my-3">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
@@ -203,29 +206,29 @@ const PlaceOrder = () => {
           type="number"
           placeholder="Phone"
         />
-        
+
         <div className="flex flex-col gap-3 mt-4 glass-card p-4 rounded bg-white/5 border border-white/10">
           <p className="font-medium text-surface-900">Delivery Area</p>
           <div className="flex gap-6">
             <label className="flex items-center gap-2 cursor-pointer transition-colors hover:text-brand-500">
-              <input 
-                type="radio" 
-                name="region" 
-                value="inside" 
-                checked={selectedRegion === "inside"} 
-                onChange={() => setSelectedRegion("inside")} 
-                className="w-4 h-4 cursor-pointer accent-brand-500" 
+              <input
+                type="radio"
+                name="region"
+                value="inside"
+                checked={selectedRegion === "inside"}
+                onChange={() => setSelectedRegion("inside")}
+                className="w-4 h-4 cursor-pointer accent-brand-500"
               />
               Inside Chittagong
             </label>
             <label className="flex items-center gap-2 cursor-pointer transition-colors hover:text-brand-500">
-              <input 
-                type="radio" 
-                name="region" 
-                value="outside" 
-                checked={selectedRegion === "outside"} 
-                onChange={() => setSelectedRegion("outside")} 
-                className="w-4 h-4 cursor-pointer accent-brand-500" 
+              <input
+                type="radio"
+                name="region"
+                value="outside"
+                checked={selectedRegion === "outside"}
+                onChange={() => setSelectedRegion("outside")}
+                className="w-4 h-4 cursor-pointer accent-brand-500"
               />
               Outside Chittagong
             </label>
@@ -244,29 +247,37 @@ const PlaceOrder = () => {
             <motion.div
               onClick={() => setMethod("stripe")}
               className={`flex items-center gap-3 glass-card p-4 cursor-pointer transition-all duration-300 ${
-                method === "stripe" ? "border-brand-500 shadow-glow" : "hover:border-surface-300"
+                method === "stripe"
+                  ? "border-brand-500 shadow-glow"
+                  : "hover:border-surface-300"
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <div
                 className={`w-4 h-4 border-2 rounded-full transition-colors ${
-                  method === "stripe" ? "bg-brand-500 border-brand-500" : "border-surface-300"
+                  method === "stripe"
+                    ? "bg-brand-500 border-brand-500"
+                    : "border-surface-300"
                 }`}
               />
-              <img className="h-5 mx-4" src={assets.stripe_logo} alt="Stripe" />
+              <img className="h-5 mx-4" src={stripe_logo} alt="Stripe" />
             </motion.div>
             <motion.div
               onClick={() => setMethod("cod")}
               className={`flex items-center gap-3 glass-card p-4 cursor-pointer transition-all duration-300 ${
-                method === "cod" ? "border-brand-500 shadow-glow" : "hover:border-surface-300"
+                method === "cod"
+                  ? "border-brand-500 shadow-glow"
+                  : "hover:border-surface-300"
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               <div
                 className={`w-4 h-4 border-2 rounded-full transition-colors ${
-                  method === "cod" ? "bg-brand-500 border-brand-500" : "border-surface-300"
+                  method === "cod"
+                    ? "bg-brand-500 border-brand-500"
+                    : "border-surface-300"
                 }`}
               />
               <p className="text-surface-500 text-sm font-semibold mx-4 uppercase">

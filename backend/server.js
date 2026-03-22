@@ -12,6 +12,7 @@ import orderRouter from "./routes/orderRoute.js";
 import bannerRouter from "./routes/bannerRoute.js";
 import inquiryRouter from "./routes/inquiryRoute.js";
 import settingsRouter from "./routes/settingsRoute.js";
+import supportRouter from "./routes/supportRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -28,15 +29,31 @@ app.use("/api/order", orderRouter);
 app.use("/api/banner", bannerRouter);
 app.use("/api/inquiry", inquiryRouter);
 app.use("/api/settings", settingsRouter);
+app.use("/api/support", supportRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");
 });
 
+app.use((err, req, res, next) => {
+  if (err?.type === "entity.parse.failed" || err instanceof SyntaxError) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid JSON payload",
+    });
+  }
+
+  console.error("Unhandled request error:", err?.message || err);
+  return res.status(500).json({
+    success: false,
+    message: "Internal server error",
+  });
+});
+
 // ✅ SAFE BOOTSTRAP
 const startServer = async () => {
   try {
-    await connectDB();            // ⬅️ MUST WAIT
+    await connectDB(); // ⬅️ MUST WAIT
     connectCloudinary();
 
     app.listen(port, "0.0.0.0", () => {

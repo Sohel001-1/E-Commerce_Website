@@ -30,6 +30,16 @@ const COLLECTION_CARD_PROJECTION = {
   date: 1,
 };
 
+let productListCache = {
+  payload: null,
+};
+
+const invalidateProductListCache = () => {
+  productListCache = {
+    payload: null,
+  };
+};
+
 const parseMultiValueParam = (value) => {
   if (!value) return [];
 
@@ -108,7 +118,14 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    if (!name || !description || !category || !subCategory || price === undefined || !brand) {
+    if (
+      !name ||
+      !description ||
+      !category ||
+      !subCategory ||
+      price === undefined ||
+      !brand
+    ) {
       return res.status(400).json({
         success: false,
         message:
@@ -139,7 +156,7 @@ const addProduct = async (req, res) => {
             resource_type: "image",
           });
           return result.secure_url;
-        })
+        }),
       );
     }
 
@@ -166,7 +183,9 @@ const addProduct = async (req, res) => {
     };
 
     if (Number.isNaN(productData.price)) {
-      return res.status(400).json({ success: false, message: "Price must be a number" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Price must be a number" });
     }
 
     // Check for duplicate product (same name + brand + category + subCategory)
@@ -185,6 +204,7 @@ const addProduct = async (req, res) => {
     }
 
     const product = await productModel.create(productData);
+    invalidateProductListCache();
 
     return res.status(201).json({
       success: true,
@@ -222,31 +242,41 @@ const updateProduct = async (req, res) => {
     } = req.body;
 
     if (!id) {
-      return res.status(400).json({ success: false, message: "Product id is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Product id is required" });
     }
 
     // Build update object (only update fields that were provided)
     const updateData = {};
     if (name !== undefined) updateData.name = String(name).trim();
-    if (description !== undefined) updateData.description = String(description).trim();
+    if (description !== undefined)
+      updateData.description = String(description).trim();
     if (category !== undefined) updateData.category = String(category).trim();
-    if (subCategory !== undefined) updateData.subCategory = String(subCategory).trim();
+    if (subCategory !== undefined)
+      updateData.subCategory = String(subCategory).trim();
     if (brand !== undefined) updateData.brand = String(brand).trim();
-    if (countryOfOrigin !== undefined) updateData.countryOfOrigin = String(countryOfOrigin).trim();
-    if (countryOfImport !== undefined) updateData.countryOfImport = String(countryOfImport).trim();
+    if (countryOfOrigin !== undefined)
+      updateData.countryOfOrigin = String(countryOfOrigin).trim();
+    if (countryOfImport !== undefined)
+      updateData.countryOfImport = String(countryOfImport).trim();
     if (unitSize !== undefined) updateData.unitSize = String(unitSize).trim();
     if (sae !== undefined) updateData.sae = String(sae).trim();
     if (oilType !== undefined) updateData.oilType = String(oilType).trim();
     if (api !== undefined) updateData.api = String(api).trim();
     if (acea !== undefined) updateData.acea = String(acea).trim();
-    if (appropriateUse !== undefined) updateData.appropriateUse = String(appropriateUse).trim();
+    if (appropriateUse !== undefined)
+      updateData.appropriateUse = String(appropriateUse).trim();
     if (price !== undefined) updateData.price = Number(price);
     if (salePrice !== undefined) updateData.salePrice = Number(salePrice);
     if (stock !== undefined) updateData.stock = Number(stock);
-    if (bestseller !== undefined) updateData.bestseller = parseBoolean(bestseller);
+    if (bestseller !== undefined)
+      updateData.bestseller = parseBoolean(bestseller);
 
     if ("price" in updateData && Number.isNaN(updateData.price)) {
-      return res.status(400).json({ success: false, message: "Price must be a number" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Price must be a number" });
     }
 
     // Determine preserved existing images (sent as array from frontend)
@@ -255,12 +285,16 @@ const updateProduct = async (req, res) => {
       try {
         preservedImages = JSON.parse(req.body.existingImages);
       } catch (e) {
-        // handle string single values if not json array 
-        preservedImages = Array.isArray(req.body.existingImages) ? req.body.existingImages : [req.body.existingImages];
+        // handle string single values if not json array
+        preservedImages = Array.isArray(req.body.existingImages)
+          ? req.body.existingImages
+          : [req.body.existingImages];
       }
     }
     // Filter out null/empty values
-    preservedImages = preservedImages.filter(img => img && typeof img === 'string');
+    preservedImages = preservedImages.filter(
+      (img) => img && typeof img === "string",
+    );
 
     // Handle new image uploads
     const files = req.files || {};
@@ -286,12 +320,12 @@ const updateProduct = async (req, res) => {
             resource_type: "image",
           });
           return result.secure_url;
-        })
+        }),
       );
     }
 
     // update to the combined pool of old retained images + new images
-    // Note: If no new images and no existing images provided, we don't wipe out the images unless strictly told to 
+    // Note: If no new images and no existing images provided, we don't wipe out the images unless strictly told to
     // BUT since we are building an edit UI where removing all existing images + no new images = empty array, we will update it if expected.
     // If the frontend explicitly sends `existingImages`, we assume they intend to update the image list.
     if (req.body.existingImages !== undefined || images.length > 0) {
@@ -304,8 +338,12 @@ const updateProduct = async (req, res) => {
     });
 
     if (!updated) {
-      return res.status(404).json({ success: false, message: "Product not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
     }
+
+    invalidateProductListCache();
 
     return res.json({
       success: true,
@@ -320,11 +358,27 @@ const updateProduct = async (req, res) => {
 
 const listProduct = async (req, res) => {
   try {
-    const products = await productModel.find({}).sort({ date: -1 });
-    res.json({ success: true, products });
+    if (productListCache.payload) {
+      res.set("Content-Type", "application/json");
+      return res.send(productListCache.payload);
+    }
+
+    const products = await productModel
+      .find({})
+      .select("-__v -createdAt -updatedAt")
+      .sort({ date: -1 })
+      .lean();
+
+    const payload = JSON.stringify({ success: true, products });
+    productListCache = {
+      payload,
+    };
+
+    res.set("Content-Type", "application/json");
+    return res.send(payload);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -333,7 +387,10 @@ const listCollectionProducts = async (req, res) => {
   try {
     const queryBuiltAt = Date.now();
     const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
-    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 24, 1), 60);
+    const limit = Math.min(
+      Math.max(parseInt(req.query.limit, 10) || 24, 1),
+      60,
+    );
     const skip = (page - 1) * limit;
     const query = buildCollectionQuery(req.query);
     const sort = getSortSpec(req.query.sort);
@@ -357,7 +414,7 @@ const listCollectionProducts = async (req, res) => {
       `[collection] page=${page} limit=${limit} total=${totalProducts} ` +
         `build=${dbStartedAt - queryBuiltAt}ms db=${dbFinishedAt - dbStartedAt}ms ` +
         `serialize=${responseReadyAt - dbFinishedAt}ms total=${responseReadyAt - requestStartedAt}ms ` +
-        `query=${JSON.stringify(query)} sort=${JSON.stringify(sort)}`
+        `query=${JSON.stringify(query)} sort=${JSON.stringify(sort)}`,
     );
 
     res.json({
@@ -389,13 +446,13 @@ const listCollectionProducts = async (req, res) => {
 const getCollectionFilters = async (_req, res) => {
   try {
     const distinctFields = FILTERABLE_FIELDS.filter(
-      (field) => field !== "category" && field !== "subCategory"
+      (field) => field !== "category" && field !== "subCategory",
     );
 
     const results = await Promise.all(
       distinctFields.map((field) =>
-        productModel.distinct(field, { [field]: { $nin: ["", "N/A", null] } })
-      )
+        productModel.distinct(field, { [field]: { $nin: ["", "N/A", null] } }),
+      ),
     );
 
     const filters = distinctFields.reduce((acc, field, index) => {
@@ -413,11 +470,18 @@ const getCollectionFilters = async (_req, res) => {
 const removeProduct = async (req, res) => {
   try {
     const id = req.params?.id || req.body?.id;
-    if (!id) return res.status(400).json({ success: false, message: "Product id is required" });
+    if (!id)
+      return res
+        .status(400)
+        .json({ success: false, message: "Product id is required" });
 
     const deleted = await productModel.findByIdAndDelete(id);
-    if (!deleted) return res.status(404).json({ success: false, message: "Product not found" });
+    if (!deleted)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
+    invalidateProductListCache();
     res.json({ success: true, message: "Product removed" });
   } catch (error) {
     console.log(error);
@@ -428,10 +492,16 @@ const removeProduct = async (req, res) => {
 const singleProduct = async (req, res) => {
   try {
     const id = req.params?.id || req.body?.id || req.body?.productId;
-    if (!id) return res.status(400).json({ success: false, message: "Product id is required" });
+    if (!id)
+      return res
+        .status(400)
+        .json({ success: false, message: "Product id is required" });
 
     const product = await productModel.findById(id);
-    if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
 
     res.json({ success: true, product });
   } catch (error) {

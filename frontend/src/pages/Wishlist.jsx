@@ -1,15 +1,10 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
+import logo from "../assets/logo.svg";
 
 const Wishlist = () => {
-  const {
-    token,
-    wishlist,
-    toggleWishlist,
-    navigate,
-    currency,
-  } = useContext(ShopContext);
+  const { token, wishlist, toggleWishlist, navigate, currency } =
+    useContext(ShopContext);
 
   if (!token) {
     return (
@@ -39,7 +34,7 @@ const Wishlist = () => {
                 className="border rounded-lg overflow-hidden hover:shadow-lg transition bg-white"
               >
                 <img
-                  src={product.image?.[0] || assets.placeholder}
+                  src={product.image?.[0] || logo}
                   alt={product.name}
                   className="w-full h-48 object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                   onClick={() => navigate(`/product/${product._id}`)}

@@ -1,15 +1,27 @@
 import React, { useState, useContext, useEffect } from "react";
-import { assets } from "../assets/assets";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "../assets/logo.svg";
+import search_icon from "../assets/search_icon.png";
+import profile_icon from "../assets/profile_icon.png";
+import cart_icon from "../assets/cart_icon.png";
+import menu_icon from "../assets/menu_icon.png";
+import dropdown_icon from "../assets/dropdown_icon.png";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showProfileClick, setShowProfileClick] = useState(false);
-  const { setShowSearch, getCartCount, navigate, token, logout, setIsCartOpen, getUserCart } =
-    useContext(ShopContext);
+  const {
+    setShowSearch,
+    getCartCount,
+    navigate,
+    token,
+    logout,
+    setIsCartOpen,
+    getUserCart,
+  } = useContext(ShopContext);
   const location = useLocation();
 
   useEffect(() => {
@@ -43,7 +55,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between py-3">
           <Link to="/" className="flex items-center gap-2 group">
             <motion.img
-              src={assets.logo}
+              src={logo}
               className="h-16 w-16 sm:h-20 sm:w-20"
               alt="Japan Autos"
               whileHover={{ scale: 1.05 }}
@@ -76,7 +88,7 @@ const Navbar = () => {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              <img src={assets.search_icon} className="w-5" alt="" />
+              <img src={search_icon} className="w-5" alt="" />
             </motion.button>
 
             <div
@@ -100,7 +112,7 @@ const Navbar = () => {
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <img src={assets.profile_icon} className="w-5" alt="" />
+                <img src={profile_icon} className="w-5" alt="" />
               </motion.button>
 
               <AnimatePresence>
@@ -180,7 +192,7 @@ const Navbar = () => {
               className="relative p-2.5 rounded-full text-surface-500 group hover:bg-brand-50 transition-colors"
             >
               <motion.img
-                src={assets.cart_icon}
+                src={cart_icon}
                 className="w-5"
                 alt=""
                 animate={{ scale: [1, 1.2, 1] }}
@@ -203,7 +215,7 @@ const Navbar = () => {
               className="md:hidden p-2.5 text-surface-600"
               whileTap={{ scale: 0.9 }}
             >
-              <img src={assets.menu_icon} className="w-6" alt="" />
+              <img src={menu_icon} className="w-6" alt="" />
             </motion.button>
           </div>
         </div>
@@ -238,32 +250,34 @@ const Navbar = () => {
                 >
                   <img
                     className="h-4 rotate-180"
-                    src={assets.dropdown_icon}
+                    src={dropdown_icon}
                     alt="Close"
                   />
                 </motion.button>
               </div>
 
               <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-                {["HOME", "COLLECTION", "CATEGORY", "ABOUT", "CONTACT"].map((label, i) => (
-                  <motion.div
-                    key={label}
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.08 }}
-                  >
-                    <NavLink
-                      onClick={() => setVisible(false)}
-                      className={({ isActive }) =>
-                        `block px-6 py-4 rounded-2xl text-base font-bold transition-all
-                        ${isActive ? "bg-brand-500 text-white shadow-md shadow-orange-200" : "text-surface-700 hover:bg-brand-50 hover:text-brand-500"}`
-                      }
-                      to={label === "HOME" ? "/" : `/${label.toLowerCase()}`}
+                {["HOME", "COLLECTION", "CATEGORY", "ABOUT", "CONTACT"].map(
+                  (label, i) => (
+                    <motion.div
+                      key={label}
+                      initial={{ opacity: 0, x: 30 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.08 }}
                     >
-                      {label}
-                    </NavLink>
-                  </motion.div>
-                ))}
+                      <NavLink
+                        onClick={() => setVisible(false)}
+                        className={({ isActive }) =>
+                          `block px-6 py-4 rounded-2xl text-base font-bold transition-all
+                        ${isActive ? "bg-brand-500 text-white shadow-md shadow-orange-200" : "text-surface-700 hover:bg-brand-50 hover:text-brand-500"}`
+                        }
+                        to={label === "HOME" ? "/" : `/${label.toLowerCase()}`}
+                      >
+                        {label}
+                      </NavLink>
+                    </motion.div>
+                  ),
+                )}
               </nav>
 
               <div className="p-6 border-t border-gray-100">

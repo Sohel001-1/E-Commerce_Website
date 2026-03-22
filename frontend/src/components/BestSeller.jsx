@@ -8,16 +8,13 @@ import { SkeletonGrid } from "./Skeleton";
 import { staggerContainer, fadeUp } from "../utils/animations";
 
 const BestSeller = () => {
-  const { products } = useContext(ShopContext);
+  const { products, isProductsLoading } = useContext(ShopContext);
   const [bestSeller, setBestSeller] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (products.length > 0) {
-      const bestProduct = products.filter((item) => item.bestseller);
-      setBestSeller(bestProduct.slice(0, 15));
-      setLoading(false);
-    }
+    const bestProduct = products.filter((item) => item.bestseller);
+    const productsToShow = bestProduct.length > 0 ? bestProduct : products;
+    setBestSeller(productsToShow.slice(0, 15));
   }, [products]);
 
   return (
@@ -33,13 +30,24 @@ const BestSeller = () => {
             <Title text1={""} text2={"BEST-SELLERS"} />
           </div>
 
-          <Link 
+          <Link
             to={`/collection`}
             className="sm:absolute sm:right-4 text-sm font-bold tracking-widest uppercase text-brand-600 hover:text-brand-700 hover:underline underline-offset-4 transition-all flex items-center gap-1"
           >
             View All
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M14 5l7 7m0 0l-7 7m7-7H3"
+              />
             </svg>
           </Link>
         </div>
@@ -47,7 +55,7 @@ const BestSeller = () => {
           Premium auto parts selected for reliability and performance.
         </p>
       </motion.div>
-      {loading ? (
+      {isProductsLoading ? (
         <SkeletonGrid count={15} />
       ) : (
         <motion.div

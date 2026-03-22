@@ -10,12 +10,14 @@ const ShopContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [shippingFees, setShippingFees] = useState({ inside: 0, outside: 0 });
   const [selectedRegion, setSelectedRegion] = useState("inside");
-  const delivery_fee = selectedRegion === "inside" ? shippingFees.inside : shippingFees.outside;
+  const delivery_fee =
+    selectedRegion === "inside" ? shippingFees.inside : shippingFees.outside;
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [products, setProducts] = useState([]);
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
   const [token, setToken] = useState("");
   const navigate = useNavigate();
   const [userData, setUserData] = useState(false);
@@ -23,7 +25,7 @@ const ShopContextProvider = (props) => {
   const cartModificationRef = useRef(0); // Track local modifications to prevent stale server updates
 
   const addToCart = async (itemId) => {
-    const product = products.find(p => p._id === itemId);
+    const product = products.find((p) => p._id === itemId);
     if (!product) return;
 
     // Check stock
@@ -33,7 +35,11 @@ const ShopContextProvider = (props) => {
     }
 
     if (currentQty + 1 > product.stock) {
-      return toast.error(product.stock <= 0 ? "This item is out of stock." : `Only ${product.stock} items available in stock.`);
+      return toast.error(
+        product.stock <= 0
+          ? "This item is out of stock."
+          : `Only ${product.stock} items available in stock.`,
+      );
     }
 
     toast.success("Product Added to cart.");
@@ -147,12 +153,33 @@ const ShopContextProvider = (props) => {
   };
 
   const getProductsData = async () => {
+    setIsProductsLoading(true);
     try {
-      const { data } = await axios.get(backendUrl + "/api/product/list");
-      if (data.success) setProducts(data.products);
-      else toast.error(data.message);
+      let responseData = null;
+
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        try {
+          const { data } = await axios.get(backendUrl + "/api/product/list");
+          responseData = data;
+          break;
+        } catch (error) {
+          if (attempt === 2) {
+            throw error;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 600));
+        }
+      }
+
+      if (responseData?.success) setProducts(responseData.products);
+      else {
+        setProducts([]);
+        toast.error(responseData?.message || "Failed to load products");
+      }
     } catch (error) {
+      setProducts([]);
       toast.error(error.message);
+    } finally {
+      setIsProductsLoading(false);
     }
   };
 
@@ -171,7 +198,7 @@ const ShopContextProvider = (props) => {
   };
 
   const updateQuantity = async (itemId, quantity) => {
-    const product = products.find(p => p._id === itemId);
+    const product = products.find((p) => p._id === itemId);
     if (product && quantity > product.stock) {
       return toast.error(`Only ${product.stock} items available in stock.`);
     }
@@ -218,7 +245,8 @@ const ShopContextProvider = (props) => {
             ? Object.values(qty).reduce((a, b) => a + b, 0)
             : 0;
 
-      const activePrice = product.salePrice > 0 ? product.salePrice : product.price;
+      const activePrice =
+        product.salePrice > 0 ? product.salePrice : product.price;
       totalAmount += activePrice * count;
     }
 
@@ -238,7 +266,9 @@ const ShopContextProvider = (props) => {
         if (cartModificationRef.current < requestStartTime) {
           setCartItems(data.cartData);
         } else {
-          console.log("Discarding stale cart data from server due to local modifications.");
+          console.log(
+            "Discarding stale cart data from server due to local modifications.",
+          );
         }
       }
     } catch (error) {
@@ -277,6 +307,7 @@ const ShopContextProvider = (props) => {
 
   const value = {
     products,
+    isProductsLoading,
     currency,
     delivery_fee,
     search,

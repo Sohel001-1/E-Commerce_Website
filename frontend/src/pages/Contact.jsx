@@ -1,9 +1,9 @@
 import React from "react";
 import Title from "../components/Title";
-import { assets } from "../assets/assets";
 import NewsletterBox from "../components/NewsletterBox";
 import { motion } from "framer-motion";
 import { fadeUp, slideLeft, slideRight } from "../utils/animations";
+import contact_img from "../assets/contact_img.png";
 
 const Contact = () => {
   return (
@@ -15,7 +15,7 @@ const Contact = () => {
       <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
         <motion.img
           className="w-full md:max-w-[480px] rounded-3xl shadow-glass-lg object-cover"
-          src={assets.contact_img}
+          src={contact_img}
           alt="contact"
           {...slideLeft}
         />
@@ -23,7 +23,9 @@ const Contact = () => {
           className="flex flex-col justify-center items-start gap-6"
           {...slideRight}
         >
-          <p className="font-display font-bold text-xl text-surface-800">Our Store</p>
+          <p className="font-display font-bold text-xl text-surface-800">
+            Our Store
+          </p>
           <p className="text-surface-500 leading-relaxed">
             123 Auto Parts Street <br /> Tokyo, Japan 100-0001
           </p>

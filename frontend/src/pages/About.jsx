@@ -1,9 +1,15 @@
 import React from "react";
 import Title from "../components/Title";
-import { assets } from "../assets/assets";
 import NewsletterBox from "../components/NewsletterBox";
 import { motion } from "framer-motion";
-import { fadeUp, slideLeft, slideRight, staggerContainer, staggerItem } from "../utils/animations";
+import {
+  fadeUp,
+  slideLeft,
+  slideRight,
+  staggerContainer,
+  staggerItem,
+} from "../utils/animations";
+import about_img from "../assets/about_img.png";
 
 const About = () => {
   return (
@@ -15,7 +21,7 @@ const About = () => {
       <div className="my-10 flex flex-col md:flex-row gap-12 lg:gap-16">
         <motion.img
           className="w-full md:max-w-[520px] rounded-3xl object-cover shadow-glass-lg"
-          src={assets.about_img}
+          src={about_img}
           alt="Japan Autos - Auto Parts"
           {...slideLeft}
         />
@@ -52,11 +58,15 @@ const About = () => {
           <div className="grid grid-cols-2 gap-3 pt-2 text-sm">
             <div className="glass-card-hover p-5">
               <b className="font-display text-surface-800">Authentic Parts</b>
-              <p className="text-surface-400 mt-1">Verified & trusted supply.</p>
+              <p className="text-surface-400 mt-1">
+                Verified & trusted supply.
+              </p>
             </div>
             <div className="glass-card-hover p-5">
               <b className="font-display text-surface-800">Fast Dispatch</b>
-              <p className="text-surface-400 mt-1">Quick processing & shipping.</p>
+              <p className="text-surface-400 mt-1">
+                Quick processing & shipping.
+              </p>
             </div>
           </div>
         </motion.div>
@@ -92,7 +102,9 @@ const About = () => {
             variants={staggerItem}
             className="flex-1 glass-card-hover p-8 sm:p-10 flex flex-col gap-4"
           >
-            <b className="font-display text-surface-800 text-base">{item.title}</b>
+            <b className="font-display text-surface-800 text-base">
+              {item.title}
+            </b>
             <p className="text-surface-400 leading-relaxed">{item.desc}</p>
           </motion.div>
         ))}

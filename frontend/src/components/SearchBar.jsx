@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
 import { useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import search_icon from "../assets/search_icon.png";
 
 const MAX_SUGGESTIONS = 3;
 
@@ -54,8 +54,8 @@ const SearchBar = () => {
             product.api,
             product.acea,
             product.appropriateUse,
-          ])
-        )
+          ]),
+        ),
       )
         .filter((value) => value && String(value).trim())
         .map((value) => String(value).trim())
@@ -96,9 +96,7 @@ const SearchBar = () => {
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveIndex((prev) =>
-        prev <= 0 ? suggestions.length - 1 : prev - 1
-      );
+      setActiveIndex((prev) => (prev <= 0 ? suggestions.length - 1 : prev - 1));
       return;
     }
 
@@ -145,12 +143,14 @@ const SearchBar = () => {
                   />
                 </div>
                 <button
-                  onClick={() => search ? submitSearch(search) : setShowSearch(false)}
+                  onClick={() =>
+                    search ? submitSearch(search) : setShowSearch(false)
+                  }
                   className="flex items-center justify-center w-10 h-10 rounded-full bg-[#f97316] hover:bg-[#ea580c] transition-colors shrink-0 outline-none"
                 >
                   <img
                     className="w-4 opacity-100 brightness-0 invert"
-                    src={assets.search_icon}
+                    src={search_icon}
                     alt="search"
                   />
                 </button>

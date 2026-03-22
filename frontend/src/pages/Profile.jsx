@@ -1,9 +1,9 @@
 import React, { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { assets } from "../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import profile_icon from "../assets/profile_icon.png";
 
 const Profile = () => {
   const { token, backendUrl, userData, getProfileData, navigate } =
@@ -108,7 +108,7 @@ const Profile = () => {
                 src={
                   image
                     ? URL.createObjectURL(image)
-                    : userData.profileImage || assets.profile_icon
+                    : userData.profileImage || profile_icon
                 }
                 alt="Profile"
               />

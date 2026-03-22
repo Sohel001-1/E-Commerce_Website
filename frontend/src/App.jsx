@@ -10,6 +10,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SearchBar from "./components/SearchBar";
 import CartDrawer from "./components/CartDrawer";
+import SupportChat from "./components/SupportChat";
 
 const Home = lazy(() => import("./pages/Home"));
 const Collection = lazy(() => import("./pages/Collection"));
@@ -75,6 +76,7 @@ const App = () => {
         <Navbar />
         <SearchBar />
         <CartDrawer />
+        <SupportChat />
         <AnimatePresence mode="wait">
           <Suspense fallback={<RouteFallback />}>
             <Routes location={location} key={location.pathname}>

@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
-import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { staggerContainer, staggerItem, fadeUp } from "../utils/animations";
+import bin_icon from "../assets/bin_icon.png";
 
 const Cart = () => {
   const { products, currency, cartItems, updateQuantity } =
@@ -117,23 +117,27 @@ const Cart = () => {
                               {productData?.name}
                             </p>
                             <div className="flex items-center gap-5 mt-2">
-                              {productData?.unitSize && productData?.unitSize !== "N/A" && (
-                                <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50 text-xs rounded-full">
-                                  {productData?.unitSize}
-                                </p>
-                              )}
+                              {productData?.unitSize &&
+                                productData?.unitSize !== "N/A" && (
+                                  <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50 text-xs rounded-full">
+                                    {productData?.unitSize}
+                                  </p>
+                                )}
                               {productData?.salePrice > 0 ? (
                                 <>
                                   <p className="text-gray-400 line-through text-xs sm:text-sm">
-                                    {currency}{productData?.price}
+                                    {currency}
+                                    {productData?.price}
                                   </p>
                                   <p className="text-red-600 font-bold">
-                                    {currency}{productData?.salePrice}
+                                    {currency}
+                                    {productData?.salePrice}
                                   </p>
                                 </>
                               ) : (
                                 <p className="text-brand-500 font-bold">
-                                  {currency}{productData?.price}
+                                  {currency}
+                                  {productData?.price}
                                 </p>
                               )}
                             </div>
@@ -159,7 +163,7 @@ const Cart = () => {
                     <motion.img
                       onClick={() => updateQuantity(item._id, 0)}
                       className="w-4 mr-4 sm:w-5 cursor-pointer opacity-40 hover:opacity-100 transition-opacity"
-                      src={assets.bin_icon}
+                      src={bin_icon}
                       alt="Delete"
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.8 }}
@@ -169,40 +173,37 @@ const Cart = () => {
               })}
             </AnimatePresence>
           </motion.div>
-        )
-        }
-      </div >
+        )}
+      </div>
 
-      {
-        cartData.length > 0 && (
-          <motion.div className="flex justify-end my-16" {...fadeUp}>
-            <div className="w-full sm:w-[450px] glass-card p-8 rounded-3xl">
-              <CartTotal />
-              <div className="w-full flex justify-end gap-3 mt-8">
-                <motion.button
-                  onClick={() => navigate("/collection")}
-                  className="btn-secondary text-sm px-6 py-3 uppercase"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Continue Shopping
-                </motion.button>
+      {cartData.length > 0 && (
+        <motion.div className="flex justify-end my-16" {...fadeUp}>
+          <div className="w-full sm:w-[450px] glass-card p-8 rounded-3xl">
+            <CartTotal />
+            <div className="w-full flex justify-end gap-3 mt-8">
+              <motion.button
+                onClick={() => navigate("/collection")}
+                className="btn-secondary text-sm px-6 py-3 uppercase"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Continue Shopping
+              </motion.button>
 
-                <motion.button
-                  onClick={() => navigate("/place-order")}
-                  className="btn-primary btn-shimmer text-sm px-6 py-3 uppercase disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={cartData.length === 0}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Checkout
-                </motion.button>
-              </div>
+              <motion.button
+                onClick={() => navigate("/place-order")}
+                className="btn-primary btn-shimmer text-sm px-6 py-3 uppercase disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={cartData.length === 0}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Checkout
+              </motion.button>
             </div>
-          </motion.div>
-        )
-      }
-    </div >
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 };
 
