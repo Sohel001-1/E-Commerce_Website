@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
@@ -13,13 +15,18 @@ import bannerRouter from "./routes/bannerRoute.js";
 import inquiryRouter from "./routes/inquiryRoute.js";
 import settingsRouter from "./routes/settingsRoute.js";
 import supportRouter from "./routes/supportRoute.js";
+import vehicleRouter from "./routes/vehicleRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const vehicleMediaDir = path.resolve(__dirname, "public", "vehicle-media");
 
 // Middlewares
 app.use(express.json());
 app.use(cors());
+app.use("/vehicle-media", express.static(vehicleMediaDir));
 
 // Routes
 app.use("/api/user", userRouter);
@@ -30,6 +37,7 @@ app.use("/api/banner", bannerRouter);
 app.use("/api/inquiry", inquiryRouter);
 app.use("/api/settings", settingsRouter);
 app.use("/api/support", supportRouter);
+app.use("/api/vehicle", vehicleRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");

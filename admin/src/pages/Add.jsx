@@ -13,6 +13,10 @@ import { appropriateUseOptions } from "../assets/appropriateUse";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
+import useVehicleAdminCatalog from "../hooks/useVehicleAdminCatalog";
+import VehicleFitmentEditor, {
+  validateVehicleFitments,
+} from "../components/VehicleFitmentEditor";
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
@@ -38,9 +42,13 @@ const Add = ({ token }) => {
   const [acea, setAcea] = useState("");
   const [appropriateUse, setAppropriateUse] = useState("");
   const [stock, setStock] = useState("");
+  const [vehicleFitments, setVehicleFitments] = useState([]);
+  const [isUniversalFit, setIsUniversalFit] = useState(true);
 
   const [bestseller, setBestseller] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { vehicleCatalog, isVehicleCatalogLoading } =
+    useVehicleAdminCatalog(token);
 
   const handleMultipleImages = (e) => {
     const files = Array.from(e.target.files);
@@ -86,6 +94,15 @@ const Add = ({ token }) => {
     setLoading(true);
 
     try {
+      const fitmentError = isUniversalFit
+        ? null
+        : validateVehicleFitments(vehicleFitments, { requireAtLeastOne: true });
+      if (fitmentError) {
+        toast.error(fitmentError);
+        setLoading(false);
+        return;
+      }
+
       const formData = new FormData();
       formData.append("name", name);
       formData.append("description", description);
@@ -105,6 +122,8 @@ const Add = ({ token }) => {
       formData.append("appropriateUse", appropriateUse);
       formData.append("stock", stock);
       formData.append("bestseller", bestseller);
+      formData.append("isUniversalFit", isUniversalFit);
+      formData.append("vehicleFitments", JSON.stringify(vehicleFitments));
 
       if (image1) formData.append("image1", image1);
       if (image2) formData.append("image2", image2);
@@ -125,7 +144,7 @@ const Add = ({ token }) => {
         setSalePrice("");
         setCategory("Suspension");
         setSubCategory("Shock Absorber");
-        setBrand(""); // Reset Brand
+        setBrand(brands[0] || "");
         setCountryOfOrigin("");
         setCountryOfImport("");
         setUnitSize("");
@@ -140,6 +159,8 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setBestseller(false);
+        setIsUniversalFit(true);
+        setVehicleFitments([]);
       } else {
         toast.error(response.data.message);
       }
@@ -188,7 +209,10 @@ const Add = ({ token }) => {
         <h2 className="text-base font-semibold text-gray-800">Product Info</h2>
         <div className="mt-4 grid gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="productName" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="productName"
+              className="text-sm font-medium text-gray-700"
+            >
               Product Name
             </label>
             <input
@@ -220,10 +244,14 @@ const Add = ({ token }) => {
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="text-base font-semibold text-gray-800">Classification</h2>
+        <h2 className="text-base font-semibold text-gray-800">
+          Classification
+        </h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Category</label>
+            <label className="text-sm font-medium text-gray-700">
+              Category
+            </label>
             <SearchableSelect
               id="category"
               options={Object.keys(subCategories)}
@@ -237,7 +265,9 @@ const Add = ({ token }) => {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Sub Category</label>
+            <label className="text-sm font-medium text-gray-700">
+              Sub Category
+            </label>
             <SearchableSelect
               id="subCategory"
               options={subCategories[category] || []}
@@ -261,10 +291,14 @@ const Add = ({ token }) => {
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="text-base font-semibold text-gray-800">Origin & Import</h2>
+        <h2 className="text-base font-semibold text-gray-800">
+          Origin & Import
+        </h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Country of Origin</label>
+            <label className="text-sm font-medium text-gray-700">
+              Country of Origin
+            </label>
             <SearchableSelect
               id="countryOfOrigin"
               options={originCountries}
@@ -274,7 +308,9 @@ const Add = ({ token }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Country of Import</label>
+            <label className="text-sm font-medium text-gray-700">
+              Country of Import
+            </label>
             <SearchableSelect
               id="countryOfImport"
               options={importCountries}
@@ -287,10 +323,14 @@ const Add = ({ token }) => {
       </section>
 
       <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
-        <h2 className="text-base font-semibold text-gray-800">Technical Specs</h2>
+        <h2 className="text-base font-semibold text-gray-800">
+          Technical Specs
+        </h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Unit Size</label>
+            <label className="text-sm font-medium text-gray-700">
+              Unit Size
+            </label>
             <input
               type="text"
               list="unit-sizes-datalist"
@@ -317,7 +357,9 @@ const Add = ({ token }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Oil Type</label>
+            <label className="text-sm font-medium text-gray-700">
+              Oil Type
+            </label>
             <SearchableSelect
               id="oilType"
               options={oilTypes}
@@ -347,7 +389,9 @@ const Add = ({ token }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-gray-700">Appropriate Use</label>
+            <label className="text-sm font-medium text-gray-700">
+              Appropriate Use
+            </label>
             <SearchableSelect
               id="appropriateUse"
               options={appropriateUseOptions}
@@ -359,11 +403,24 @@ const Add = ({ token }) => {
         </div>
       </section>
 
+      <VehicleFitmentEditor
+        catalog={vehicleCatalog}
+        value={vehicleFitments}
+        onChange={setVehicleFitments}
+        isUniversalFit={isUniversalFit}
+        onUniversalFitChange={setIsUniversalFit}
+        fitmentRequired={!isUniversalFit}
+        disabled={loading || isVehicleCatalogLoading}
+      />
+
       <section className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
         <h2 className="text-base font-semibold text-gray-800">Pricing</h2>
         <div className="mt-4 grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-4">
           <div className="flex flex-col gap-2">
-            <label htmlFor="price" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="price"
+              className="text-sm font-medium text-gray-700"
+            >
               Regular Price (৳)
             </label>
             <input
@@ -377,7 +434,10 @@ const Add = ({ token }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="salePrice" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="salePrice"
+              className="text-sm font-medium text-gray-700"
+            >
               Sale Price (৳) - Optional
             </label>
             <input
@@ -390,7 +450,10 @@ const Add = ({ token }) => {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="stock" className="text-sm font-medium text-gray-700">
+            <label
+              htmlFor="stock"
+              className="text-sm font-medium text-gray-700"
+            >
               Initial Stock Count
             </label>
             <input

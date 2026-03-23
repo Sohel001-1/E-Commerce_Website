@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { AnimatePresence, motion } from "framer-motion";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { SlidersHorizontal, Plus, Minus, X, RotateCcw } from "lucide-react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
@@ -21,6 +21,108 @@ const normalizeValue = (value) =>
   String(value || "")
     .trim()
     .toLowerCase();
+const formatSlugLabel = (value) =>
+  String(value || "")
+    .split("-")
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+const parseOptionalInteger = (value) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) ? parsed : null;
+};
+const formatVehicleYearSelection = (yearFrom, yearTo, fallback = "") => {
+  if (Number.isInteger(yearFrom) && Number.isInteger(yearTo)) {
+    return yearFrom === yearTo ? String(yearFrom) : `${yearFrom} - ${yearTo}`;
+  }
+
+  if (Number.isInteger(yearFrom)) {
+    return String(yearFrom);
+  }
+
+  if (Number.isInteger(yearTo)) {
+    return String(yearTo);
+  }
+
+  return fallback;
+};
+const buildVehicleRoute = ({
+  brandSlug,
+  modelSlug,
+  year,
+  yearFrom,
+  yearTo,
+}) => {
+  if (!brandSlug) {
+    return "/vehicle";
+  }
+
+  const pathname = modelSlug
+    ? `/vehicle/${brandSlug}/${modelSlug}`
+    : `/vehicle/${brandSlug}`;
+  const params = new URLSearchParams();
+  const resolvedYearFrom = Number.isInteger(year) ? year : yearFrom;
+  const resolvedYearTo = Number.isInteger(year) ? year : yearTo;
+
+  if (
+    modelSlug &&
+    Number.isInteger(resolvedYearFrom) &&
+    Number.isInteger(resolvedYearTo)
+  ) {
+    params.set("yearFrom", String(Math.min(resolvedYearFrom, resolvedYearTo)));
+    params.set("yearTo", String(Math.max(resolvedYearFrom, resolvedYearTo)));
+  }
+
+  return `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
+};
+
+const matchesVehicleSelection = (
+  product,
+  { brandSlug, modelSlug, year, yearFrom, yearTo },
+) => {
+  const resolvedYearFrom = Number.isInteger(year) ? year : yearFrom;
+  const resolvedYearTo = Number.isInteger(year) ? year : yearTo;
+
+  if (
+    !brandSlug &&
+    !modelSlug &&
+    !Number.isInteger(resolvedYearFrom) &&
+    !Number.isInteger(resolvedYearTo)
+  ) {
+    return true;
+  }
+
+  if (product?.isUniversalFit) {
+    return true;
+  }
+
+  const fitments = product?.vehicleFitments;
+  if (!Array.isArray(fitments) || fitments.length === 0) {
+    return false;
+  }
+
+  return fitments.some((fitment) => {
+    const brandMatch = brandSlug
+      ? normalizeValue(fitment.brandSlug) === normalizeValue(brandSlug)
+      : true;
+    const modelMatch = modelSlug
+      ? normalizeValue(fitment.modelSlug) === normalizeValue(modelSlug)
+      : true;
+    const fitmentYearFrom = Number(fitment.yearFrom);
+    const fitmentYearTo = Number(fitment.yearTo);
+    const yearMatch =
+      Number.isInteger(resolvedYearFrom) && Number.isInteger(resolvedYearTo)
+        ? fitmentYearFrom <= Math.max(resolvedYearFrom, resolvedYearTo) &&
+          fitmentYearTo >= Math.min(resolvedYearFrom, resolvedYearTo)
+        : Number.isInteger(resolvedYearFrom)
+          ? fitmentYearTo >= resolvedYearFrom
+          : Number.isInteger(resolvedYearTo)
+            ? fitmentYearFrom <= resolvedYearTo
+            : true;
+
+    return brandMatch && modelMatch && yearMatch;
+  });
+};
 
 const createInitialCollectionState = (searchParams, cachedState) => {
   if (cachedState) {
@@ -196,6 +298,7 @@ const Collection = () => {
   const { backendUrl, search, setSearch, showSearch, products } =
     useContext(ShopContext);
   const location = useLocation();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const stateCacheKey = `${location.pathname}${location.search}`;
   const restorePayloadRef = useRef(null);
@@ -271,6 +374,38 @@ const Collection = () => {
   const categoryParam = searchParams.get("category") || "";
   const subCategoryParam = searchParams.get("subCategory") || "";
   const searchParam = searchParams.get("search") || "";
+  const vehicleBrandSlug = searchParams.get("vehicleBrandSlug") || "";
+  const vehicleBrandName = searchParams.get("vehicleBrandName") || "";
+  const vehicleModelSlug = searchParams.get("vehicleModelSlug") || "";
+  const vehicleModelName = searchParams.get("vehicleModelName") || "";
+  const vehicleYearParam = searchParams.get("vehicleYear") || "";
+  const vehicleYearFromParam = searchParams.get("vehicleYearFrom") || "";
+  const vehicleYearToParam = searchParams.get("vehicleYearTo") || "";
+  const parsedVehicleYear = parseOptionalInteger(vehicleYearParam);
+  const parsedVehicleYearFrom = Number.isInteger(parsedVehicleYear)
+    ? parsedVehicleYear
+    : parseOptionalInteger(vehicleYearFromParam);
+  const parsedVehicleYearTo = Number.isInteger(parsedVehicleYear)
+    ? parsedVehicleYear
+    : parseOptionalInteger(vehicleYearToParam);
+  const vehicleYearLabel = formatVehicleYearSelection(
+    parsedVehicleYearFrom,
+    parsedVehicleYearTo,
+    vehicleYearParam,
+  );
+  const hasVehicleSelection = Boolean(
+    vehicleBrandSlug ||
+      vehicleModelSlug ||
+      Number.isInteger(parsedVehicleYearFrom) ||
+      Number.isInteger(parsedVehicleYearTo),
+  );
+  const vehicleSummaryLabel = [
+    vehicleBrandName || formatSlugLabel(vehicleBrandSlug),
+    vehicleModelName || formatSlugLabel(vehicleModelSlug),
+    vehicleYearLabel,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   useEffect(() => {
     if (!shouldRestore) {
@@ -465,6 +600,15 @@ const Collection = () => {
       params.appropriateUse = appropriateUse.join(",");
     if (debouncedSearch) params.search = debouncedSearch;
     if (sortType !== "relavent") params.sort = sortType;
+    if (vehicleBrandSlug) params.vehicleBrandSlug = vehicleBrandSlug;
+    if (vehicleModelSlug) params.vehicleModelSlug = vehicleModelSlug;
+    if (vehicleYearParam) params.vehicleYear = vehicleYearParam;
+    if (Number.isInteger(parsedVehicleYearFrom)) {
+      params.vehicleYearFrom = parsedVehicleYearFrom;
+    }
+    if (Number.isInteger(parsedVehicleYearTo)) {
+      params.vehicleYearTo = parsedVehicleYearTo;
+    }
 
     return params;
   };
@@ -561,6 +705,11 @@ const Collection = () => {
     api,
     acea,
     appropriateUse,
+    vehicleBrandSlug,
+    vehicleModelSlug,
+    vehicleYearParam,
+    parsedVehicleYearFrom,
+    parsedVehicleYearTo,
   ]);
 
   useEffect(() => {
@@ -689,6 +838,17 @@ const Collection = () => {
         matchesSelectedValues(item.appropriateUse, appropriateUse),
       );
     }
+    if (hasVehicleSelection) {
+      productsCopy = productsCopy.filter((item) =>
+        matchesVehicleSelection(item, {
+          brandSlug: vehicleBrandSlug,
+          modelSlug: vehicleModelSlug,
+          year: parsedVehicleYear,
+          yearFrom: parsedVehicleYearFrom,
+          yearTo: parsedVehicleYearTo,
+        }),
+      );
+    }
 
     if (sortType === "low-high") {
       productsCopy.sort((a, b) => a.price - b.price);
@@ -730,6 +890,36 @@ const Collection = () => {
     }
 
     return category.flatMap((cat) => subCategories[cat] || []);
+  };
+
+  const clearVehicleSelection = () => {
+    const nextParams = new URLSearchParams(location.search);
+    [
+      "vehicleBrandSlug",
+      "vehicleBrandName",
+      "vehicleModelSlug",
+      "vehicleModelName",
+      "vehicleYear",
+      "vehicleYearFrom",
+      "vehicleYearTo",
+    ].forEach((key) => nextParams.delete(key));
+
+    navigate({
+      pathname: location.pathname,
+      search: nextParams.toString() ? `?${nextParams.toString()}` : "",
+    });
+  };
+
+  const changeVehicleSelection = () => {
+    navigate(
+      buildVehicleRoute({
+        brandSlug: vehicleBrandSlug,
+        modelSlug: vehicleModelSlug,
+        year: parsedVehicleYear,
+        yearFrom: parsedVehicleYearFrom,
+        yearTo: parsedVehicleYearTo,
+      }),
+    );
   };
 
   return (
@@ -979,7 +1169,7 @@ const Collection = () => {
             <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
               <Title text1={"ALL"} text2={"COLLECTIONS"} />
               <span className="text-surface-500 text-sm font-medium">
-                {totalProducts} Displaying
+                {totalProducts} {hasVehicleSelection ? "Compatible Products" : "Displaying"}
               </span>
             </div>
           </div>
@@ -995,6 +1185,41 @@ const Collection = () => {
           </select>
         </div>
 
+        {hasVehicleSelection && (
+          <div className="mb-8 rounded-[2rem] border border-orange-200 bg-[linear-gradient(135deg,_rgba(255,247,237,1),_rgba(255,255,255,1))] p-5 shadow-sm">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.28em] text-orange-600">
+                  Selected Vehicle
+                </p>
+                <h2 className="mt-2 text-2xl font-bold text-surface-900">
+                  {vehicleSummaryLabel}
+                </h2>
+                <p className="mt-2 text-sm text-surface-500">
+                  Showing only products tagged as compatible with this vehicle.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={changeVehicleSelection}
+                  className="rounded-full bg-surface-900 px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-surface-800"
+                >
+                  Change Vehicle
+                </button>
+                <button
+                  type="button"
+                  onClick={clearVehicleSelection}
+                  className="rounded-full border border-surface-200 bg-white px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-surface-600 transition hover:bg-surface-50"
+                >
+                  Clear Vehicle
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <SkeletonGrid
             count={8}
@@ -1003,11 +1228,33 @@ const Collection = () => {
         ) : filterProducts.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-surface-500 text-lg font-medium">
-              No products found
+              {hasVehicleSelection
+                ? "No products found for this vehicle"
+                : "No products found"}
             </p>
             <p className="text-surface-400 text-sm mt-2">
-              Try adjusting your filters or search terms
+              {hasVehicleSelection
+                ? "Try changing the vehicle selection or clear it to browse the full collection."
+                : "Try adjusting your filters or search terms"}
             </p>
+            {hasVehicleSelection && (
+              <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={changeVehicleSelection}
+                  className="rounded-full bg-surface-900 px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-surface-800"
+                >
+                  Change Vehicle
+                </button>
+                <button
+                  type="button"
+                  onClick={clearVehicleSelection}
+                  className="rounded-full border border-surface-200 bg-white px-5 py-3 text-sm font-bold uppercase tracking-[0.2em] text-surface-600 transition hover:bg-surface-50"
+                >
+                  Clear Vehicle
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <>

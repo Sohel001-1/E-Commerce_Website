@@ -9,11 +9,26 @@ import Pos from "./pages/Pos";
 import Banners from "./pages/Banners";
 import Demands from "./pages/Demands";
 import Settings from "./pages/Settings";
+import Vehicles from "./pages/Vehicles";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const normalizeBackendUrl = (value) => {
+  const trimmed = String(value || "").trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/$/, "");
+  }
+
+  return `http://${trimmed}`.replace(/\/$/, "");
+};
+
+export const backendUrl = normalizeBackendUrl(import.meta.env.VITE_BACKEND_URL);
 export const currency = "$";
 
 const App = () => {
@@ -45,6 +60,7 @@ const App = () => {
                 <Route path="/banners" element={<Banners token={token} />} />
                 <Route path="/demands" element={<Demands token={token} />} />
                 <Route path="/settings" element={<Settings token={token} />} />
+                <Route path="/vehicles" element={<Vehicles token={token} />} />
                 <Route path="*" element={<Navigate to="/add" replace />} />
               </Routes>
             </div>

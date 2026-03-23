@@ -5,9 +5,23 @@ import axios from "axios";
 
 export const ShopContext = createContext();
 
+const normalizeBackendUrl = (value) => {
+  const trimmed = String(value || "").trim();
+
+  if (!trimmed) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/$/, "");
+  }
+
+  return `http://${trimmed}`.replace(/\/$/, "");
+};
+
 const ShopContextProvider = (props) => {
   const currency = "৳";
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = normalizeBackendUrl(import.meta.env.VITE_BACKEND_URL);
   const [shippingFees, setShippingFees] = useState({ inside: 0, outside: 0 });
   const [selectedRegion, setSelectedRegion] = useState("inside");
   const delivery_fee =

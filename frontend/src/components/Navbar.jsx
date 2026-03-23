@@ -70,6 +70,9 @@ const Navbar = () => {
             <NavLink to="/collection" className={navLinkClass}>
               COLLECTION
             </NavLink>
+            <NavLink to="/vehicle" className={navLinkClass}>
+              VEHICLE
+            </NavLink>
             <NavLink to="/category" className={navLinkClass}>
               CATEGORY
             </NavLink>
@@ -257,7 +260,7 @@ const Navbar = () => {
               </div>
 
               <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
-                {["HOME", "COLLECTION", "CATEGORY", "ABOUT", "CONTACT"].map(
+                {["HOME", "COLLECTION", "VEHICLE", "CATEGORY", "ABOUT", "CONTACT"].map(
                   (label, i) => (
                     <motion.div
                       key={label}

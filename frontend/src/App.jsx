@@ -14,6 +14,7 @@ import SupportChat from "./components/SupportChat";
 
 const Home = lazy(() => import("./pages/Home"));
 const Collection = lazy(() => import("./pages/Collection"));
+const Vehicle = lazy(() => import("./pages/Vehicle"));
 const Categories = lazy(() => import("./pages/Categories"));
 const SubCategories = lazy(() => import("./pages/SubCategories"));
 const About = lazy(() => import("./pages/About"));
@@ -93,6 +94,14 @@ const App = () => {
                 element={
                   <PageTransition>
                     <Collection />
+                  </PageTransition>
+                }
+              />
+              <Route
+                path="/vehicle/*"
+                element={
+                  <PageTransition>
+                    <Vehicle />
                   </PageTransition>
                 }
               />

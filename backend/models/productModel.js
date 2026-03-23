@@ -1,5 +1,49 @@
 import mongoose from "mongoose";
 
+const vehicleFitmentSchema = new mongoose.Schema(
+  {
+    brandId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    brandName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    brandSlug: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    modelId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    modelName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    modelSlug: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    yearFrom: {
+      type: Number,
+      required: true,
+    },
+    yearTo: {
+      type: Number,
+      required: true,
+    },
+  },
+  { _id: false },
+);
+
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -104,9 +148,19 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
 
+    isUniversalFit: {
+      type: Boolean,
+      default: false,
+    },
+
     date: {
       type: Number,
       default: Date.now,
+    },
+
+    vehicleFitments: {
+      type: [vehicleFitmentSchema],
+      default: [],
     },
   },
   { timestamps: true }
@@ -117,6 +171,14 @@ productSchema.index({ category: 1, date: -1 });
 productSchema.index({ subCategory: 1, date: -1 });
 productSchema.index({ brand: 1, date: -1 });
 productSchema.index({ bestseller: 1, date: -1 });
+productSchema.index({ isUniversalFit: 1, date: -1 });
+productSchema.index({
+  "vehicleFitments.brandSlug": 1,
+  "vehicleFitments.modelSlug": 1,
+  "vehicleFitments.yearFrom": 1,
+  "vehicleFitments.yearTo": 1,
+  date: -1,
+});
 productSchema.index({ name: "text", brand: "text" });
 
 const productModel =

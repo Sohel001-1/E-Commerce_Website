@@ -14,6 +14,10 @@ import { apiOptions } from "../assets/apiOptions";
 import { aceaOptions } from "../assets/aceaOptions";
 import { appropriateUseOptions } from "../assets/appropriateUse";
 import { assets } from "../assets/assets";
+import useVehicleAdminCatalog from "../hooks/useVehicleAdminCatalog";
+import VehicleFitmentEditor, {
+  validateVehicleFitments,
+} from "../components/VehicleFitmentEditor";
 
 const categoryOptions = Object.keys(subCategories);
 
@@ -29,6 +33,7 @@ const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [untaggedOnly, setUntaggedOnly] = useState(false);
 
   // ✅ Edit modal state - Updated with Brand field
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -52,6 +57,7 @@ const List = ({ token }) => {
     appropriateUse: "",
     stock: "",
     bestseller: false,
+    isUniversalFit: false,
   });
 
   const [image1, setImage1] = useState(false);
@@ -59,6 +65,8 @@ const List = ({ token }) => {
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
   const [existingImages, setExistingImages] = useState([]);
+  const [editVehicleFitments, setEditVehicleFitments] = useState([]);
+  const { vehicleCatalog, isVehicleCatalogLoading } = useVehicleAdminCatalog(token);
   const editCategoryOptions = mergeCurrentOption(categoryOptions, editForm.category);
   const editSubCategoryOptions = mergeCurrentOption(
     subCategories[editForm.category] || [],
@@ -192,17 +200,20 @@ const List = ({ token }) => {
       appropriateUse: item.appropriateUse || "",
       stock: item.stock ?? "",
       bestseller: !!item.bestseller,
+      isUniversalFit: !!item.isUniversalFit,
     });
     setImage1(false);
     setImage2(false);
     setImage3(false);
     setImage4(false);
     setExistingImages(item.image || []);
+    setEditVehicleFitments(item.vehicleFitments || []);
     setIsEditOpen(true);
   };
 
   const closeEdit = () => {
     setIsEditOpen(false);
+    setEditVehicleFitments([]);
   };
 
   // ✅ save edit
@@ -216,6 +227,16 @@ const List = ({ token }) => {
       return toast.error("Valid price is required");
 
     try {
+      const fitmentError = editForm.isUniversalFit
+        ? null
+        : validateVehicleFitments(editVehicleFitments, {
+            requireAtLeastOne: true,
+          });
+      if (fitmentError) {
+        toast.error(fitmentError);
+        return;
+      }
+
       setSaving(true);
 
       const formData = new FormData();
@@ -237,7 +258,9 @@ const List = ({ token }) => {
       formData.append("appropriateUse", editForm.appropriateUse);
       formData.append("stock", Number(editForm.stock));
       formData.append("bestseller", editForm.bestseller);
+      formData.append("isUniversalFit", editForm.isUniversalFit);
       formData.append("existingImages", JSON.stringify(existingImages));
+      formData.append("vehicleFitments", JSON.stringify(editVehicleFitments));
 
       if (image1) formData.append("image1", image1);
       if (image2) formData.append("image2", image2);
@@ -272,11 +295,21 @@ const List = ({ token }) => {
     const name = (item.name || "").toLowerCase();
     const category = (item.category || "").toLowerCase();
     const brand = (item.brand || "").toLowerCase();
-    return (
+    const matchesSearch = (
       name.includes(searchTerm.toLowerCase()) ||
       category.includes(searchTerm.toLowerCase()) ||
       brand.includes(searchTerm.toLowerCase())
     );
+
+    if (!matchesSearch) {
+      return false;
+    }
+
+    if (!untaggedOnly) {
+      return true;
+    }
+
+    return !item.isUniversalFit && (!item.vehicleFitments || item.vehicleFitments.length === 0);
   });
 
   return (
@@ -284,13 +317,24 @@ const List = ({ token }) => {
       <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-3">
         <p className="font-semibold">ALL PRODUCT LIST</p>
 
-        <input
-          type="text"
-          placeholder="Search by name, brand, or category..."
-          className="border border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64 outline-none focus:border-gray-600 transition-all"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row md:items-center">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-600">
+            <input
+              type="checkbox"
+              checked={untaggedOnly}
+              onChange={() => setUntaggedOnly((prev) => !prev)}
+            />
+            Show products needing compatibility setup only
+          </label>
+
+          <input
+            type="text"
+            placeholder="Search by name, brand, or category..."
+            className="border border-gray-300 rounded-md px-3 py-1.5 w-full md:w-64 outline-none focus:border-gray-600 transition-all"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
       </div>
 
       {loading ? (
@@ -298,12 +342,13 @@ const List = ({ token }) => {
       ) : (
         <div className="flex flex-col gap-2">
           {/* Table header */}
-          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border bg-gray-100 text-sm">
+          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border bg-gray-100 text-sm">
             <b>Image</b>
             <b>Name & Brand</b>
             <b>Category</b>
             <b>Price</b>
             <b>Stock</b>
+            <b>Fitments</b>
             <b className="text-center">Actions</b>
           </div>
 
@@ -311,7 +356,7 @@ const List = ({ token }) => {
             filteredList.map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border text-sm hover:bg-gray-50 transition-colors"
+                className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr_1fr] gap-2 items-center py-2 px-3 border text-sm hover:bg-gray-50 transition-colors"
               >
                 <img
                   src={item.image?.[0]}
@@ -341,6 +386,21 @@ const List = ({ token }) => {
                   )}
                 </div>
                 <p className={`${item.stock <= 5 ? "text-red-600 font-bold" : "text-green-600 font-medium"}`}>{item.stock}</p>
+                <div>
+                  {item.isUniversalFit ? (
+                    <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+                      Universal fit
+                    </span>
+                  ) : item.vehicleFitments?.length ? (
+                    <span className="inline-flex rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                      {item.vehicleFitments.length} fitments
+                    </span>
+                  ) : (
+                    <span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+                      Needs setup
+                    </span>
+                  )}
+                </div>
 
                 <div className="flex items-center justify-center gap-4">
                   <MdEdit
@@ -619,6 +679,18 @@ const List = ({ token }) => {
                   />
                 </div>
               </div>
+
+              <VehicleFitmentEditor
+                catalog={vehicleCatalog}
+                value={editVehicleFitments}
+                onChange={setEditVehicleFitments}
+                isUniversalFit={editForm.isUniversalFit}
+                onUniversalFitChange={(value) =>
+                  setEditForm((prev) => ({ ...prev, isUniversalFit: value }))
+                }
+                fitmentRequired={!editForm.isUniversalFit}
+                disabled={saving || isVehicleCatalogLoading}
+              />
 
               <label className="flex items-center gap-2 text-sm font-medium cursor-pointer">
                 <input

@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
 import applyWatermark from "../middleware/watermarkImage.js";
+import { normalizeVehicleFitments } from "../utils/vehicleUtils.js";
 
 // Helper: parse boolean safely (true/false OR "true"/"false")
 const parseBoolean = (val) => val === true || val === "true";
@@ -27,6 +28,7 @@ const COLLECTION_CARD_PROJECTION = {
   brand: 1,
   category: 1,
   subCategory: 1,
+  isUniversalFit: 1,
   date: 1,
 };
 
@@ -53,6 +55,31 @@ const parseMultiValueParam = (value) => {
 const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const buildExactCaseInsensitiveRegex = (value) =>
   new RegExp(`^${escapeRegex(String(value).trim())}$`, "i");
+const slugToLooseRegex = (slugValue) => {
+  const slug = String(slugValue || "")
+    .trim()
+    .toLowerCase();
+
+  if (!slug) {
+    return null;
+  }
+
+  const tokens = slug
+    .split("-")
+    .map((token) => token.trim())
+    .filter(Boolean)
+    .map((token) => escapeRegex(token));
+
+  if (tokens.length === 0) {
+    return null;
+  }
+
+  return new RegExp(tokens.join("[-\\s/]*"), "i");
+};
+const parseOptionalInteger = (value) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) ? parsed : null;
+};
 
 const buildCollectionQuery = (queryParams = {}) => {
   const query = {};
@@ -80,6 +107,90 @@ const buildCollectionQuery = (queryParams = {}) => {
         name: { $regex: term, $options: "i" },
       }));
     }
+  }
+
+  const vehicleBrandSlug = String(queryParams.vehicleBrandSlug || "")
+    .trim()
+    .toLowerCase();
+  const vehicleModelSlug = String(queryParams.vehicleModelSlug || "")
+    .trim()
+    .toLowerCase();
+  const vehicleYear = parseOptionalInteger(queryParams.vehicleYear);
+  const vehicleYearFrom = Number.isInteger(vehicleYear)
+    ? vehicleYear
+    : parseOptionalInteger(queryParams.vehicleYearFrom);
+  const vehicleYearTo = Number.isInteger(vehicleYear)
+    ? vehicleYear
+    : parseOptionalInteger(queryParams.vehicleYearTo);
+
+  if (
+    vehicleBrandSlug ||
+    vehicleModelSlug ||
+    Number.isInteger(vehicleYearFrom) ||
+    Number.isInteger(vehicleYearTo)
+  ) {
+    const vehicleSearchOr = [];
+    const vehicleFitmentQuery = {};
+
+    if (vehicleBrandSlug) {
+      vehicleFitmentQuery.brandSlug = vehicleBrandSlug;
+    }
+
+    if (vehicleModelSlug) {
+      vehicleFitmentQuery.modelSlug = vehicleModelSlug;
+    }
+
+    if (Number.isInteger(vehicleYearFrom) && Number.isInteger(vehicleYearTo)) {
+      vehicleFitmentQuery.yearFrom = {
+        $lte: Math.max(vehicleYearFrom, vehicleYearTo),
+      };
+      vehicleFitmentQuery.yearTo = {
+        $gte: Math.min(vehicleYearFrom, vehicleYearTo),
+      };
+    } else if (Number.isInteger(vehicleYearFrom)) {
+      vehicleFitmentQuery.yearTo = { $gte: vehicleYearFrom };
+    } else if (Number.isInteger(vehicleYearTo)) {
+      vehicleFitmentQuery.yearFrom = { $lte: vehicleYearTo };
+    }
+
+    vehicleSearchOr.push(
+      { isUniversalFit: true },
+      {
+        vehicleFitments: {
+          $elemMatch: vehicleFitmentQuery,
+        },
+      },
+    );
+
+    const fallbackTextAnd = [];
+    const brandRegex = slugToLooseRegex(vehicleBrandSlug);
+    const modelRegex = slugToLooseRegex(vehicleModelSlug);
+
+    if (brandRegex) {
+      fallbackTextAnd.push({
+        $or: [
+          { name: brandRegex },
+          { description: brandRegex },
+          { brand: brandRegex },
+        ],
+      });
+    }
+
+    if (modelRegex) {
+      fallbackTextAnd.push({
+        $or: [
+          { name: modelRegex },
+          { description: modelRegex },
+          { brand: modelRegex },
+        ],
+      });
+    }
+
+    if (fallbackTextAnd.length > 0) {
+      vehicleSearchOr.push({ $and: fallbackTextAnd });
+    }
+
+    query.$or = vehicleSearchOr;
   }
 
   return query;
@@ -116,7 +227,10 @@ const addProduct = async (req, res) => {
       stock,
       api,
       bestseller,
+      isUniversalFit,
     } = req.body;
+    let vehicleFitments = [];
+    const universalFit = parseBoolean(isUniversalFit);
 
     if (
       !name ||
@@ -130,6 +244,20 @@ const addProduct = async (req, res) => {
         success: false,
         message:
           "Missing required fields: name, description, category, subCategory, price, brand",
+      });
+    }
+
+    try {
+      vehicleFitments = normalizeVehicleFitments(req.body.vehicleFitments);
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+
+    if (!universalFit && vehicleFitments.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Add at least one compatible vehicle or mark the product as universal fit",
       });
     }
 
@@ -178,8 +306,10 @@ const addProduct = async (req, res) => {
       salePrice: salePrice ? Number(salePrice) : 0,
       stock: stock ? Number(stock) : 0,
       bestseller: parseBoolean(bestseller),
+      isUniversalFit: universalFit,
       image: imagesUrl,
       date: Date.now(),
+      vehicleFitments: universalFit ? [] : vehicleFitments,
     };
 
     if (Number.isNaN(productData.price)) {
@@ -239,12 +369,26 @@ const updateProduct = async (req, res) => {
       stock,
       api,
       bestseller,
+      isUniversalFit,
     } = req.body;
+    let normalizedVehicleFitments;
+    const universalFitWasProvided = isUniversalFit !== undefined;
+    const universalFit = parseBoolean(isUniversalFit);
 
     if (!id) {
       return res
         .status(400)
         .json({ success: false, message: "Product id is required" });
+    }
+
+    if (req.body.vehicleFitments !== undefined) {
+      try {
+        normalizedVehicleFitments = normalizeVehicleFitments(
+          req.body.vehicleFitments,
+        );
+      } catch (error) {
+        return res.status(400).json({ success: false, message: error.message });
+      }
     }
 
     // Build update object (only update fields that were provided)
@@ -272,6 +416,29 @@ const updateProduct = async (req, res) => {
     if (stock !== undefined) updateData.stock = Number(stock);
     if (bestseller !== undefined)
       updateData.bestseller = parseBoolean(bestseller);
+    if (universalFitWasProvided) {
+      updateData.isUniversalFit = universalFit;
+    }
+    if (normalizedVehicleFitments !== undefined) {
+      updateData.vehicleFitments = universalFit
+        ? []
+        : normalizedVehicleFitments;
+    } else if (universalFitWasProvided && universalFit) {
+      updateData.vehicleFitments = [];
+    }
+
+    if (
+      universalFitWasProvided &&
+      !universalFit &&
+      normalizedVehicleFitments !== undefined &&
+      normalizedVehicleFitments.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Add at least one compatible vehicle or mark the product as universal fit",
+      });
+    }
 
     if ("price" in updateData && Number.isNaN(updateData.price)) {
       return res
@@ -518,4 +685,5 @@ export {
   getCollectionFilters,
   removeProduct,
   singleProduct,
+  invalidateProductListCache,
 };
