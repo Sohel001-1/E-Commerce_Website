@@ -12,20 +12,6 @@ import {
 
 const URL_REGEX = /(https?:\/\/[^\s]+)/gi;
 
-const ACTION_LABELS = {
-  answer: "Resolved",
-  clarify: "Need detail",
-  recommend_products: "Recommendations",
-  offer_handoff: "Human support available",
-  handoff_created: "Escalated",
-  refuse: "Human review required",
-};
-
-const ROLE_LABELS = {
-  assistant: "AI Assistant",
-  admin: "Human Support",
-};
-
 const FEEDBACK_LABELS = {
   helpful: "Helpful",
   not_helpful: "Not helpful",
@@ -286,54 +272,17 @@ const SupportChat = () => {
     }
 
     const meta = messageItem.meta || {};
-    const citations = Array.isArray(meta.citations) ? meta.citations : [];
     const handoff = meta.handoff || {};
     const feedback = meta.feedback || "";
+
+    if (messageItem.role === "admin") {
+      return null;
+    }
 
     return (
       <div className="mt-3 space-y-2 border-t border-surface-200/70 pt-3 text-xs text-surface-500">
         <div className="flex flex-wrap gap-2">
-          <span className="rounded-full bg-white px-2 py-1 font-medium text-surface-700">
-            {ACTION_LABELS[meta.actionType] || "Support"}
-          </span>
-          <span className="rounded-full bg-white px-2 py-1 font-medium text-surface-700">
-            {ROLE_LABELS[messageItem.role] || "Support"}
-          </span>
-          <span className="rounded-full bg-white px-2 py-1">
-            Confidence: {Math.round((Number(meta.confidence || 0) || 0) * 100)}%
-          </span>
-          {meta.intent ? (
-            <span className="rounded-full bg-white px-2 py-1 capitalize">
-              {meta.intent}
-            </span>
-          ) : null}
-        </div>
-
-        {citations.length > 0 ? (
-          <div className="space-y-1">
-            <p className="font-medium text-surface-600">Sources</p>
-            {citations.map((citation, index) => (
-              <div key={`${citation.label}-${index}`}>
-                {citation.url ? (
-                  <a
-                    href={citation.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline break-all"
-                  >
-                    {citation.label}
-                  </a>
-                ) : (
-                  <span>{citation.label}</span>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap gap-2">
-          {messageItem.role === "assistant"
-            ? ["helpful", "not_helpful", "escalated"].map((value) => (
+          {["helpful", "not_helpful", "escalated"].map((value) => (
             <button
               key={value}
               type="button"
@@ -347,11 +296,9 @@ const SupportChat = () => {
             >
               {FEEDBACK_LABELS[value]}
             </button>
-            ))
-            : null}
+          ))}
 
           {handoff.available &&
-          messageItem.role === "assistant" &&
           meta.actionType !== "handoff_created" &&
           handoff.status !== "resolved" ? (
             <button
@@ -364,12 +311,6 @@ const SupportChat = () => {
             </button>
           ) : null}
         </div>
-
-        {handoff.ticketId ? (
-          <p className="text-surface-600">
-            Human support ticket: {handoff.ticketId} ({handoff.status})
-          </p>
-        ) : null}
       </div>
     );
   };

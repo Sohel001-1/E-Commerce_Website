@@ -248,6 +248,45 @@ const extractKeywords = (message) => {
   return [...new Set(words)].slice(0, 10);
 };
 
+const PRODUCT_QUERY_SYNONYMS = [
+  {
+    triggers: ["bike", "bikes"],
+    expansions: ["motorbike", "motorcycle"],
+  },
+  {
+    triggers: ["fog light", "fog lights"],
+    expansions: ["lighting", "lamp", "bulb", "auxiliary", "aux", "driving"],
+  },
+  {
+    triggers: ["aux light", "aux lights", "auxiliary light", "auxiliary lights"],
+    expansions: ["lighting", "lamp", "driving", "fog"],
+  },
+  {
+    triggers: ["headlight", "head light", "headlights", "head lights"],
+    expansions: ["lighting", "lamp", "bulb"],
+  },
+];
+
+const expandProductSearchKeywords = (message, keywords) => {
+  const normalizedMessage = String(message || "").toLowerCase();
+  const expandedKeywords = new Set(Array.isArray(keywords) ? keywords : []);
+
+  PRODUCT_QUERY_SYNONYMS.forEach((rule) => {
+    const matched = rule.triggers.some((trigger) => normalizedMessage.includes(trigger));
+    if (!matched) {
+      return;
+    }
+
+    rule.expansions.forEach((token) => {
+      if (token) {
+        expandedKeywords.add(token);
+      }
+    });
+  });
+
+  return [...expandedKeywords];
+};
+
 const getProductSearchKeywords = (message) => {
   const normalized = String(message || "").trim();
   const keywords = extractKeywords(normalized);
@@ -255,7 +294,8 @@ const getProductSearchKeywords = (message) => {
     (keyword) =>
       !GENERIC_QUERY_TERMS.has(keyword) && !LOW_PRICE_QUERY_TERMS.has(keyword),
   );
-  return meaningfulKeywords.length > 0 ? meaningfulKeywords : keywords;
+  const baseKeywords = meaningfulKeywords.length > 0 ? meaningfulKeywords : keywords;
+  return expandProductSearchKeywords(normalized, baseKeywords).slice(0, 16);
 };
 
 const isLowPriceProductQuery = (message) =>
@@ -772,27 +812,54 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
         strictKeywords.length > 0
           ? matchedKeywordCount / strictKeywords.length
           : 1;
+      const matchScore = getProductMatchScore(product, strictKeywords);
+      const relevanceScore = matchScore + matchedKeywordCount * 5 + keywordCoverage * 10;
 
       return {
         product,
         matchedKeywordCount,
         keywordCoverage,
+        matchScore,
+        relevanceScore,
       };
     });
 
-    const strongProductMatches = scoredProducts
+    const sortedScoredProducts = [...scoredProducts].sort((left, right) => {
+      if (left.relevanceScore !== right.relevanceScore) {
+        return right.relevanceScore - left.relevanceScore;
+      }
+
+      const leftInStock = toNumberOrNull(left?.product?.stock) > 0 ? 1 : 0;
+      const rightInStock = toNumberOrNull(right?.product?.stock) > 0 ? 1 : 0;
+      return rightInStock - leftInStock;
+    });
+
+    const strongProductMatches = sortedScoredProducts
       .filter(
         (item) =>
           strictKeywords.length === 0 ||
-          item.matchedKeywordCount >= Math.min(2, strictKeywords.length),
+          item.matchedKeywordCount >= Math.min(2, strictKeywords.length) ||
+          item.relevanceScore >= 18,
+      )
+      .map((item) => item.product);
+
+    const closeProductMatches = sortedScoredProducts
+      .filter(
+        (item) =>
+          strictKeywords.length <= 1
+            ? item.matchedKeywordCount >= 1 || item.relevanceScore >= 10
+            : item.matchedKeywordCount >= 2 ||
+              (item.keywordCoverage >= 0.5 && item.matchScore >= 12),
       )
       .map((item) => item.product);
 
     const productsToShow =
       strongProductMatches.length > 0
         ? strongProductMatches
-        : strictKeywords.length > 0
-          ? []
+        : closeProductMatches.length > 0
+          ? closeProductMatches
+          : strictKeywords.length > 0
+            ? []
           : strictProducts;
 
     const preferLowestPrice = isLowPriceProductQuery(normalizedMessage);
@@ -834,6 +901,8 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
       };
     }
 
+    const usingCloseMatchesOnly = strongProductMatches.length === 0 && sortedProductsToShow.length > 0;
+
     const lines = sortedProductsToShow.slice(0, 3).map((product, index) => {
       const stockText = toNumberOrNull(product.stock) > 0 ? `${product.stock} in stock` : "Out of stock";
       return `${index + 1}. ${product.name} | Price: ${getEffectivePriceText(product)} | Stock: ${stockText} | Link: ${product.url}`;
@@ -842,21 +911,35 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
     return {
       intent: "product",
       sourceType: "database-direct",
-      confidence: sortedProductsToShow.length > 0 ? 0.92 : 0.55,
-      handoffRecommended: sortedProductsToShow.length === 0,
+      confidence: usingCloseMatchesOnly ? 0.68 : sortedProductsToShow.length > 0 ? 0.92 : 0.55,
+      handoffRecommended: usingCloseMatchesOnly,
       actionType: preferLowestPrice ? "recommend_products" : "recommend_products",
-      conversationTags: ["product", preferLowestPrice ? "price-intent" : "browse"],
+      conversationTags: [
+        "product",
+        usingCloseMatchesOnly ? "close-match" : preferLowestPrice ? "price-intent" : "browse",
+      ],
       retrievalSummary: {
         sources: ["catalog"],
         matchedProductCount: sortedProductsToShow.length,
         sortMode: preferLowestPrice ? "lowest-price" : "relevance",
+        matchStrength: usingCloseMatchesOnly ? "close" : "strong",
       },
       citations: sortedProductsToShow.slice(0, 3).map((product) => ({
         type: "product",
         label: product.name,
         url: product.url,
       })),
-      reply: `${preferLowestPrice ? "Here are the lowest-priced matching products from our database:" : "Based on our product database, here are the closest matches:"}\n${lines.join("\n")}`,
+      reply: `${
+        preferLowestPrice
+          ? "Here are the lowest-priced matching products from our database:"
+          : usingCloseMatchesOnly
+            ? "I could not find an exact match, but these are the closest related products in our catalog:"
+            : "Based on our product database, here are the closest matches:"
+      }\n${lines.join("\n")}${
+        usingCloseMatchesOnly
+          ? "\nIf you want, send the exact product name or vehicle model and I can narrow it down further."
+          : ""
+      }`,
     };
   }
 
@@ -1461,6 +1544,7 @@ const __testables = {
   detectSupportIntent,
   classifySupportQuery,
   getProductSearchKeywords,
+  expandProductSearchKeywords,
 };
 
 export {

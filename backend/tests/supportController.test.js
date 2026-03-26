@@ -6,6 +6,7 @@ import { __testables } from "../controllers/supportController.js";
 const {
   buildDirectDatabaseReply,
   classifySupportQuery,
+  getProductSearchKeywords,
 } = __testables;
 
 const buildProduct = (overrides = {}) => ({
@@ -123,6 +124,66 @@ test("uses the discounted sale price when sorting low-price product matches", ()
   assert.ok(result);
   assert.match(result.reply, /1\. Castrol Magnatec 4L/);
   assert.match(result.reply, /regular .*3600/);
+});
+
+test("expands lighting-related product synonyms for retrieval", () => {
+  const keywords = getProductSearchKeywords("do you sell bike fog light?");
+
+  assert.ok(keywords.includes("bike"));
+  assert.ok(keywords.includes("motorcycle"));
+  assert.ok(keywords.includes("lighting"));
+  assert.ok(keywords.includes("lamp"));
+});
+
+test("returns a close-match shortlist for bike fog light queries", () => {
+  const knowledgeContext = {
+    products: [
+      buildProduct({
+        id: "fog-1",
+        name: "PIAA Fog Light Bulb",
+        brand: "PIAA",
+        category: "Lighting",
+        subCategory: "Fog Light Bulb",
+        description: "Motorcycle and car fog lamp bulb",
+        price: 900,
+        url: "http://localhost:5173/product/fog-1",
+      }),
+      buildProduct({
+        id: "head-1",
+        name: "Philips Headlight Bulb",
+        brand: "Philips",
+        category: "Lighting",
+        subCategory: "Headlight Bulb",
+        description: "Auxiliary lamp option for motorcycle lighting",
+        price: 1100,
+        url: "http://localhost:5173/product/head-1",
+      }),
+      buildProduct({
+        id: "oil-1",
+        name: "Shell Helix HX7 4L",
+        brand: "Shell",
+        category: "Oils and Fluids",
+        subCategory: "Engine Oil",
+        description: "Synthetic engine oil",
+        price: 3200,
+        url: "http://localhost:5173/product/oil-1",
+      }),
+    ],
+  };
+
+  const result = buildDirectDatabaseReply({
+    message: "do you sell bike fog light?",
+    knowledgeContext,
+  });
+
+  assert.ok(result);
+  assert.equal(result.intent, "product");
+  assert.equal(result.actionType, "recommend_products");
+  assert.equal(result.handoffRecommended, false);
+  assert.match(result.reply, /closest matches|closest related products/i);
+  assert.match(result.reply, /PIAA Fog Light Bulb/);
+  assert.match(result.reply, /Philips Headlight Bulb/);
+  assert.doesNotMatch(result.reply, /Shell Helix HX7 4L/);
 });
 
 test("answers grounded FAQ questions from curated FAQ knowledge", () => {
