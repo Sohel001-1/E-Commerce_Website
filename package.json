@@ -2,6 +2,8 @@
   "name": "e-commerce-website",
   "private": true,
   "scripts": {
+    "test:e2e:support": "playwright test tests/e2e/support-chat.spec.js",
+    "test:support": "npm --prefix backend test",
     "dev": "concurrently -n admin,frontend,backend -c yellow,cyan,green \"npm --prefix admin run dev\" \"npm --prefix frontend run dev\" \"npm --prefix backend run dev\"",
     "dev:admin": "npm --prefix admin run dev",
     "dev:frontend": "npm --prefix frontend run dev",
@@ -15,6 +17,7 @@
     "three": "^0.182.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "concurrently": "^9.2.1"
   }
 }

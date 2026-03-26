@@ -34,4 +34,34 @@ const clearSupportHistory = async ({ backendUrl, token, sessionId }) => {
   return data;
 };
 
-export { fetchSupportHistory, sendSupportMessage, clearSupportHistory };
+const requestSupportHandoff = async ({ backendUrl, token, sessionId }) => {
+  const { data } = await axios.post(
+    `${backendUrl}/api/support/handoff`,
+    { sessionId },
+    withAuth(token),
+  );
+  return data;
+};
+
+const submitSupportFeedback = async ({
+  backendUrl,
+  token,
+  sessionId,
+  messageCreatedAt,
+  feedback,
+}) => {
+  const { data } = await axios.post(
+    `${backendUrl}/api/support/feedback`,
+    { sessionId, messageCreatedAt, feedback },
+    withAuth(token),
+  );
+  return data;
+};
+
+export {
+  fetchSupportHistory,
+  sendSupportMessage,
+  clearSupportHistory,
+  requestSupportHandoff,
+  submitSupportFeedback,
+};

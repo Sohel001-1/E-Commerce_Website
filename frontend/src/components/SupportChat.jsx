@@ -5,10 +5,32 @@ import { ShopContext } from "../context/ShopContext";
 import {
   clearSupportHistory,
   fetchSupportHistory,
+  requestSupportHandoff,
   sendSupportMessage,
+  submitSupportFeedback,
 } from "../utils/supportChatApi";
 
 const URL_REGEX = /(https?:\/\/[^\s]+)/gi;
+
+const ACTION_LABELS = {
+  answer: "Resolved",
+  clarify: "Need detail",
+  recommend_products: "Recommendations",
+  offer_handoff: "Human support available",
+  handoff_created: "Escalated",
+  refuse: "Human review required",
+};
+
+const ROLE_LABELS = {
+  assistant: "AI Assistant",
+  admin: "Human Support",
+};
+
+const FEEDBACK_LABELS = {
+  helpful: "Helpful",
+  not_helpful: "Not helpful",
+  escalated: "Escalated",
+};
 
 const renderMessageContent = (content) => {
   const safeContent = String(content || "");
@@ -44,6 +66,7 @@ const SupportChat = () => {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [chatUnavailable, setChatUnavailable] = useState(false);
+  const [busyMessageKey, setBusyMessageKey] = useState("");
   const sessionIdRef = useRef("");
   const bottomRef = useRef(null);
 
@@ -188,12 +211,175 @@ const SupportChat = () => {
     }
   };
 
+  const handleFeedback = async (messageItem, feedback) => {
+    if (!backendUrl || !sessionIdRef.current || !messageItem?.createdAt) {
+      return;
+    }
+
+    const requestKey = `${messageItem.createdAt}-${feedback}`;
+    setBusyMessageKey(requestKey);
+    setError("");
+
+    try {
+      const data = await submitSupportFeedback({
+        backendUrl,
+        token,
+        sessionId: sessionIdRef.current,
+        messageCreatedAt: messageItem.createdAt,
+        feedback,
+      });
+
+      if (!data.success) {
+        setError(data.message || "Failed to save support feedback.");
+        return;
+      }
+
+      setMessages(data.messages || []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Failed to save support feedback.",
+      );
+    } finally {
+      setBusyMessageKey("");
+    }
+  };
+
+  const handleHandoff = async (messageItem) => {
+    if (!backendUrl || !sessionIdRef.current) {
+      return;
+    }
+
+    const requestKey = `${messageItem.createdAt}-handoff`;
+    setBusyMessageKey(requestKey);
+    setError("");
+
+    try {
+      const data = await requestSupportHandoff({
+        backendUrl,
+        token,
+        sessionId: sessionIdRef.current,
+      });
+
+      if (!data.success) {
+        setError(data.message || "Failed to request human support.");
+        return;
+      }
+
+      sessionIdRef.current = data.sessionId || sessionIdRef.current;
+      setMessages(data.messages || []);
+    } catch (err) {
+      setError(
+        err?.response?.data?.message ||
+          err.message ||
+          "Failed to request human support.",
+      );
+    } finally {
+      setBusyMessageKey("");
+    }
+  };
+
+  const renderAssistantMeta = (messageItem) => {
+    if (!["assistant", "admin"].includes(messageItem.role)) {
+      return null;
+    }
+
+    const meta = messageItem.meta || {};
+    const citations = Array.isArray(meta.citations) ? meta.citations : [];
+    const handoff = meta.handoff || {};
+    const feedback = meta.feedback || "";
+
+    return (
+      <div className="mt-3 space-y-2 border-t border-surface-200/70 pt-3 text-xs text-surface-500">
+        <div className="flex flex-wrap gap-2">
+          <span className="rounded-full bg-white px-2 py-1 font-medium text-surface-700">
+            {ACTION_LABELS[meta.actionType] || "Support"}
+          </span>
+          <span className="rounded-full bg-white px-2 py-1 font-medium text-surface-700">
+            {ROLE_LABELS[messageItem.role] || "Support"}
+          </span>
+          <span className="rounded-full bg-white px-2 py-1">
+            Confidence: {Math.round((Number(meta.confidence || 0) || 0) * 100)}%
+          </span>
+          {meta.intent ? (
+            <span className="rounded-full bg-white px-2 py-1 capitalize">
+              {meta.intent}
+            </span>
+          ) : null}
+        </div>
+
+        {citations.length > 0 ? (
+          <div className="space-y-1">
+            <p className="font-medium text-surface-600">Sources</p>
+            {citations.map((citation, index) => (
+              <div key={`${citation.label}-${index}`}>
+                {citation.url ? (
+                  <a
+                    href={citation.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline break-all"
+                  >
+                    {citation.label}
+                  </a>
+                ) : (
+                  <span>{citation.label}</span>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : null}
+
+        <div className="flex flex-wrap gap-2">
+          {messageItem.role === "assistant"
+            ? ["helpful", "not_helpful", "escalated"].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => handleFeedback(messageItem, value)}
+              disabled={busyMessageKey === `${messageItem.createdAt}-${value}`}
+              className={`rounded-full border px-2 py-1 ${
+                feedback === value
+                  ? "border-brand-500 bg-brand-50 text-brand-700"
+                  : "border-surface-200 bg-white text-surface-500 hover:border-brand-300 hover:text-surface-700"
+              }`}
+            >
+              {FEEDBACK_LABELS[value]}
+            </button>
+            ))
+            : null}
+
+          {handoff.available &&
+          messageItem.role === "assistant" &&
+          meta.actionType !== "handoff_created" &&
+          handoff.status !== "resolved" ? (
+            <button
+              type="button"
+              onClick={() => handleHandoff(messageItem)}
+              disabled={busyMessageKey === `${messageItem.createdAt}-handoff`}
+              className="rounded-full bg-brand-500 px-3 py-1 font-medium text-white hover:bg-brand-600"
+            >
+              Request human support
+            </button>
+          ) : null}
+        </div>
+
+        {handoff.ticketId ? (
+          <p className="text-surface-600">
+            Human support ticket: {handoff.ticketId} ({handoff.status})
+          </p>
+        ) : null}
+      </div>
+    );
+  };
+
   return (
     <>
       <motion.button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="fixed bottom-6 right-6 z-[70] h-14 w-14 rounded-full bg-brand-500 text-white shadow-lg hover:bg-brand-600 transition-colors"
+        className="fixed bottom-6 right-6 z-[70] h-14 w-14 rounded-full bg-brand-500 text-white shadow-lg transition-colors hover:bg-brand-600"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         aria-label="Toggle support chat"
@@ -206,7 +392,7 @@ const SupportChat = () => {
       </motion.button>
 
       <AnimatePresence>
-        {isOpen && (
+        {isOpen ? (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -216,18 +402,16 @@ const SupportChat = () => {
           >
             <div className="flex items-center justify-between border-b border-surface-100 px-4 py-3">
               <div>
-                <p className="text-sm font-bold text-surface-900">
-                  Support Chat
-                </p>
+                <p className="text-sm font-bold text-surface-900">Support Chat</p>
                 <p className="text-xs text-surface-500">
-                  Logged-in users only • FAQ support
+                  Logged-in users only | AI + human support
                 </p>
               </div>
 
               <button
                 type="button"
                 onClick={handleClear}
-                className="rounded-lg p-2 text-surface-500 hover:bg-surface-100 hover:text-surface-800 transition-colors"
+                className="rounded-lg p-2 text-surface-500 transition-colors hover:bg-surface-100 hover:text-surface-800"
                 title="Clear chat"
               >
                 <Trash2 size={16} />
@@ -236,15 +420,12 @@ const SupportChat = () => {
 
             <div className="h-[420px] overflow-y-auto px-4 py-3">
               {loadingHistory ? (
-                <p className="text-sm text-surface-500">
-                  Loading conversation...
-                </p>
+                <p className="text-sm text-surface-500">Loading conversation...</p>
               ) : !hasMessages ? (
                 <div className="space-y-2 text-sm text-surface-600">
                   <p>Hi, how can we help you today?</p>
                   <p className="text-xs text-surface-400">
-                    Ask about products, delivery info, return policy, or general
-                    support.
+                    Ask about products, delivery, order status, returns, or store policy.
                   </p>
                 </div>
               ) : (
@@ -258,14 +439,17 @@ const SupportChat = () => {
                         className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                           messageItem.role === "user"
                             ? "bg-brand-500 text-white"
-                            : "bg-surface-100 text-surface-700"
+                            : messageItem.role === "admin"
+                              ? "bg-emerald-50 text-emerald-900 border border-emerald-200"
+                              : "bg-surface-100 text-surface-700"
                         } whitespace-pre-wrap break-words overflow-hidden`}
                       >
                         {renderMessageContent(messageItem.content)}
+                        {renderAssistantMeta(messageItem)}
                       </div>
                     </div>
                   ))}
-                  {sending && (
+                  {sending ? (
                     <div className="flex justify-start">
                       <div className="max-w-[85%] rounded-2xl bg-surface-100 px-3 py-2 text-sm text-surface-700">
                         <div className="flex items-center gap-2">
@@ -290,14 +474,14 @@ const SupportChat = () => {
                         </div>
                       </div>
                     </div>
-                  )}
+                  ) : null}
                   <div ref={bottomRef} />
                 </div>
               )}
             </div>
 
             <div className="border-t border-surface-100 px-3 py-3">
-              {error && <p className="mb-2 text-xs text-red-500">{error}</p>}
+              {error ? <p className="mb-2 text-xs text-red-500">{error}</p> : null}
 
               <div className="flex items-center gap-2">
                 <input
@@ -319,14 +503,15 @@ const SupportChat = () => {
                   type="button"
                   onClick={handleSend}
                   disabled={sending || chatUnavailable || !input.trim()}
-                  className="rounded-xl bg-brand-500 p-2 text-white hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Send support message"
+                  className="rounded-xl bg-brand-500 p-2 text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Send size={16} />
                 </button>
               </div>
             </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
     </>
   );

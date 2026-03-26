@@ -10,6 +10,8 @@ import Banners from "./pages/Banners";
 import Demands from "./pages/Demands";
 import Settings from "./pages/Settings";
 import Vehicles from "./pages/Vehicles";
+import SupportInbox from "./pages/SupportInbox";
+import SupportKnowledge from "./pages/SupportKnowledge";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -61,6 +63,8 @@ const App = () => {
                 <Route path="/demands" element={<Demands token={token} />} />
                 <Route path="/settings" element={<Settings token={token} />} />
                 <Route path="/vehicles" element={<Vehicles token={token} />} />
+                <Route path="/support-inbox" element={<SupportInbox token={token} />} />
+                <Route path="/support-knowledge" element={<SupportKnowledge token={token} />} />
                 <Route path="*" element={<Navigate to="/add" replace />} />
               </Routes>
             </div>

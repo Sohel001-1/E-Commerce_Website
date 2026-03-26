@@ -56,6 +56,36 @@ const supportMetaSchema = new mongoose.Schema(
       type: [supportCitationSchema],
       default: [],
     },
+    actionType: {
+      type: String,
+      default: "answer",
+      trim: true,
+      maxlength: 64,
+    },
+    retrievalSummary: {
+      type: Object,
+      default: {},
+    },
+    handoff: {
+      type: Object,
+      default: {},
+    },
+    conversationTags: {
+      type: [String],
+      default: [],
+    },
+    promptVersion: {
+      type: String,
+      default: "support-v2",
+      trim: true,
+      maxlength: 64,
+    },
+    feedback: {
+      type: String,
+      default: "",
+      trim: true,
+      maxlength: 32,
+    },
   },
   { _id: false },
 );
@@ -64,7 +94,7 @@ const supportMessageSchema = new mongoose.Schema(
   {
     role: {
       type: String,
-      enum: ["user", "assistant"],
+      enum: ["user", "assistant", "admin"],
       required: true,
     },
     content: {

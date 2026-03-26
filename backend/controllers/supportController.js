@@ -4,6 +4,8 @@ import supportChatModel, {
 import productModel from "../models/productModel.js";
 import orderModel from "../models/orderModel.js";
 import settingsModel from "../models/settingsModel.js";
+import supportFaqModel from "../models/supportFaqModel.js";
+import supportTicketModel from "../models/supportTicketModel.js";
 
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_CONTEXT_MESSAGES = 20;
@@ -13,6 +15,10 @@ const MAX_DISTINCT_VALUES = 25;
 const LOW_CONFIDENCE_THRESHOLD = Number(
   process.env.SUPPORT_CONFIDENCE_THRESHOLD || 0.55,
 );
+const CLARIFY_CONFIDENCE_THRESHOLD = Number(
+  process.env.SUPPORT_CLARIFY_CONFIDENCE_THRESHOLD || 0.72,
+);
+const PROMPT_VERSION = "support-v2";
 
 const SYSTEM_PROMPT = `You are JAPAN AUTOS support assistant for customer help.
 Rules:
@@ -29,10 +35,13 @@ const supportMetrics = {
   databaseDirect: 0,
   llmFallback: 0,
   handoffRecommended: 0,
+  handoffCreated: 0,
   byIntent: {
     product: 0,
     shipping: 0,
     order: 0,
+    faq: 0,
+    unsupported: 0,
     general: 0,
   },
 };
@@ -77,6 +86,14 @@ const detectSupportIntent = (message) => {
   }
 
   if (
+    /return policy|returns|warranty|guarantee|exchange policy|payment method|cash on delivery|cod|store policy/i.test(
+      normalized,
+    )
+  ) {
+    return "faq";
+  }
+
+  if (
     /price|cost|stock|available|availability|product link|link|have\s+.*\b(oil|product)\b|\boil\b|\bsku\b/i.test(
       normalized,
     )
@@ -85,6 +102,21 @@ const detectSupportIntent = (message) => {
   }
 
   return "general";
+};
+
+const classifySupportQuery = (message) => {
+  const normalized = String(message || "").toLowerCase();
+  const intent = detectSupportIntent(normalized);
+  const isUnsupported =
+    /\blegal\b|attorney|lawsuit|court|chargeback|fraud|stolen card|payment dispute/i.test(
+      normalized,
+    );
+
+  return {
+    intent: isUnsupported ? "unsupported" : intent,
+    riskLevel: isUnsupported ? "high" : "normal",
+    requiresHuman: isUnsupported,
+  };
 };
 
 const normalizeCitation = (citation) => {
@@ -191,6 +223,17 @@ const GENERIC_QUERY_TERMS = new Set([
   "have",
 ]);
 
+const LOW_PRICE_QUERY_TERMS = new Set([
+  "cheap",
+  "cheaper",
+  "cheapest",
+  "budget",
+  "affordable",
+  "lowest",
+  "low",
+  "inexpensive",
+]);
+
 const escapeRegex = (value) =>
   String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -208,9 +251,17 @@ const extractKeywords = (message) => {
 const getProductSearchKeywords = (message) => {
   const normalized = String(message || "").trim();
   const keywords = extractKeywords(normalized);
-  const meaningfulKeywords = keywords.filter((keyword) => !GENERIC_QUERY_TERMS.has(keyword));
+  const meaningfulKeywords = keywords.filter(
+    (keyword) =>
+      !GENERIC_QUERY_TERMS.has(keyword) && !LOW_PRICE_QUERY_TERMS.has(keyword),
+  );
   return meaningfulKeywords.length > 0 ? meaningfulKeywords : keywords;
 };
+
+const isLowPriceProductQuery = (message) =>
+  /\b(cheap|cheaper|cheapest|budget|affordable|lowest|low price|least expensive|best price)\b/i.test(
+    String(message || ""),
+  );
 
 const buildProductQuery = (searchKeywords) => {
   const safeKeywords = Array.isArray(searchKeywords) ? searchKeywords : [];
@@ -264,6 +315,24 @@ const getProductMatchScore = (product, searchKeywords) => {
   }, 0);
 };
 
+const getProductSearchText = (product) =>
+  [
+    product?.name,
+    product?.brand,
+    product?.category,
+    product?.subCategory,
+    product?.description,
+    product?.unitSize,
+    product?.sae,
+    product?.oilType,
+    product?.api,
+    product?.acea,
+    product?.appropriateUse,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
 const toNumberOrNull = (value) => (typeof value === "number" && Number.isFinite(value) ? value : null);
 
 const formatOrderItems = (items) => {
@@ -290,7 +359,7 @@ const getProductBaseUrl = () => {
   return configured.replace(/\/$/, "");
 };
 
-const getFaqContext = () => {
+const getEnvFaqContext = () => {
   const raw = String(process.env.SUPPORT_FAQ_TEXT || "").trim();
   if (!raw) {
     return [];
@@ -300,7 +369,40 @@ const getFaqContext = () => {
     .split(/\r?\n/)
     .map((line) => line.trim())
     .filter(Boolean)
-    .slice(0, 20);
+    .slice(0, 20)
+    .map((line, index) => ({
+      id: `env-faq-${index + 1}`,
+      title: line,
+      question: line,
+      answer: line,
+      category: "General",
+      tags: [],
+      sourceVersion: "env-faq-v1",
+      updatedAt: new Date(0).toISOString(),
+    }));
+};
+
+const getFaqContext = async () => {
+  const faqEntries = await supportFaqModel
+    .find({ status: "active" })
+    .sort({ priority: -1, updatedAt: -1 })
+    .limit(30)
+    .lean();
+
+  if (faqEntries.length > 0) {
+    return faqEntries.map((entry) => ({
+      id: String(entry._id),
+      title: entry.title,
+      question: entry.question,
+      answer: entry.answer,
+      category: entry.category,
+      tags: entry.tags || [],
+      sourceVersion: entry.sourceVersion || "faq-v1",
+      updatedAt: entry.updatedAt ? new Date(entry.updatedAt).toISOString() : null,
+    }));
+  }
+
+  return getEnvFaqContext();
 };
 
 const buildKnowledgeContext = async ({ userId, message }) => {
@@ -308,7 +410,7 @@ const buildKnowledgeContext = async ({ userId, message }) => {
   const productQuery = buildProductQuery(searchKeywords);
   const productBaseUrl = getProductBaseUrl();
 
-  const [productCandidates, categories, subCategories, settings, recentOrders] = await Promise.all([
+  const [productCandidates, categories, subCategories, settings, recentOrders, faqEntries] = await Promise.all([
     productModel
       .find(productQuery)
       .sort({ bestseller: -1, updatedAt: -1, date: -1 })
@@ -326,6 +428,7 @@ const buildKnowledgeContext = async ({ userId, message }) => {
       .limit(MAX_RECENT_ORDERS)
       .select("status amount paymentMethod payment trackingUrl date items")
       .lean(),
+    getFaqContext(),
   ]);
 
   const rankedProducts = productCandidates
@@ -381,7 +484,15 @@ const buildKnowledgeContext = async ({ userId, message }) => {
       outsideChittagong: toNumberOrNull(settings?.outsideChittagongFee),
     },
     recentOrders: normalizedOrders,
-    faq: getFaqContext(),
+    faq: faqEntries,
+    freshness: {
+      catalogVersion:
+        rankedProducts[0]?.updatedAt || rankedProducts[0]?.date
+          ? new Date(rankedProducts[0]?.updatedAt || rankedProducts[0]?.date).toISOString()
+          : null,
+      faqVersion: faqEntries[0]?.sourceVersion || "faq-v1",
+      ordersVersion: normalizedOrders[0]?.date || null,
+    },
   };
 };
 
@@ -401,6 +512,17 @@ const getEffectivePriceText = (product) => {
   return formatMoney(price);
 };
 
+const getEffectivePriceValue = (product) => {
+  const salePrice = toNumberOrNull(product?.salePrice);
+  const price = toNumberOrNull(product?.price);
+
+  if (salePrice && price && salePrice > 0 && salePrice < price) {
+    return salePrice;
+  }
+
+  return price;
+};
+
 const formatShortDate = (isoString) => {
   if (!isoString) {
     return "Unknown date";
@@ -414,9 +536,115 @@ const formatShortDate = (isoString) => {
   return date.toISOString().slice(0, 10);
 };
 
+const getFaqMatchScore = (faqEntry, keywords) => {
+  const haystack = [
+    faqEntry?.title,
+    faqEntry?.question,
+    faqEntry?.answer,
+    ...(Array.isArray(faqEntry?.tags) ? faqEntry.tags : []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return keywords.reduce((score, keyword) => {
+    if (haystack.includes(keyword)) {
+      return score + 1;
+    }
+
+    return score;
+  }, 0);
+};
+
+const buildFaqReply = ({ message, knowledgeContext }) => {
+  const faqEntries = Array.isArray(knowledgeContext?.faq) ? knowledgeContext.faq : [];
+  if (faqEntries.length === 0) {
+    return null;
+  }
+
+  const keywords = extractKeywords(message).filter((keyword) => keyword.length >= 3);
+  if (keywords.length === 0 && detectSupportIntent(message) !== "faq") {
+    return null;
+  }
+
+  const rankedFaqs = faqEntries
+    .map((entry) => ({
+      entry,
+      score: getFaqMatchScore(entry, keywords),
+    }))
+    .filter((item) => item.score > 0 || detectSupportIntent(message) === "faq")
+    .sort((left, right) => right.score - left.score)
+    .slice(0, 3);
+
+  if (rankedFaqs.length === 0) {
+    return null;
+  }
+
+  const topFaq = rankedFaqs[0];
+
+  return {
+    intent: "faq",
+    sourceType: "faq",
+    confidence: topFaq.score >= 2 ? 0.9 : 0.7,
+    handoffRecommended: topFaq.score < 1,
+    actionType: topFaq.score >= 2 ? "answer" : "clarify",
+    conversationTags: ["faq", String(topFaq.entry.category || "general").toLowerCase()],
+    citations: rankedFaqs.map(({ entry }) => ({
+      type: "faq",
+      label: entry.title,
+      url: "",
+    })),
+    retrievalSummary: {
+      sources: ["faq"],
+      matchedFaqCount: rankedFaqs.length,
+      faqVersion: topFaq.entry.sourceVersion || "faq-v1",
+    },
+    reply:
+      topFaq.score >= 2
+        ? `${topFaq.entry.answer}`
+        : `I found a related policy answer, but I need one more detail to be accurate. Are you asking about ${topFaq.entry.category || "our policy"}?`,
+  };
+};
+
+const buildUnsupportedReply = () => ({
+  intent: "unsupported",
+  sourceType: "policy",
+  confidence: 0.2,
+  handoffRecommended: true,
+  actionType: "refuse",
+  conversationTags: ["unsupported", "high-risk"],
+  citations: [{ type: "policy", label: "Human review required for this topic" }],
+  retrievalSummary: {
+    sources: [],
+    matchedProductCount: 0,
+    matchedFaqCount: 0,
+  },
+  reply:
+    "I cannot safely answer that request in chat. Please contact human support so a team member can review it directly.",
+});
+
+const buildRetrievalSummary = ({ knowledgeContext, sourceType }) => ({
+  sources: [sourceType],
+  matchedProductCount: Array.isArray(knowledgeContext?.products) ? knowledgeContext.products.length : 0,
+  matchedOrderCount: Array.isArray(knowledgeContext?.recentOrders) ? knowledgeContext.recentOrders.length : 0,
+  matchedFaqCount: Array.isArray(knowledgeContext?.faq) ? knowledgeContext.faq.length : 0,
+  freshness: knowledgeContext?.freshness || {},
+});
+
+const buildConversationTags = ({ intent, handoffRecommended, sourceType }) =>
+  [intent, sourceType, handoffRecommended ? "handoff" : "resolved"].filter(Boolean);
+
+const buildHandoffState = ({ chatSession, createdTicket }) => ({
+  available: true,
+  recommended: Boolean(createdTicket) || false,
+  ticketId: createdTicket ? String(createdTicket._id) : "",
+  status: createdTicket ? createdTicket.status : "not_created",
+});
+
 const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
   const normalizedMessage = String(message || "").toLowerCase();
-  const intent = detectSupportIntent(normalizedMessage);
+  const classification = classifySupportQuery(normalizedMessage);
+  const intent = classification.intent;
   const products = Array.isArray(knowledgeContext?.products)
     ? knowledgeContext.products
     : [];
@@ -425,6 +653,19 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
     : [];
   const shippingFees = knowledgeContext?.shippingFees || {};
 
+  if (classification.requiresHuman) {
+    return buildUnsupportedReply();
+  }
+
+  const faqReply = buildFaqReply({
+    message: normalizedMessage,
+    knowledgeContext,
+  });
+
+  if (faqReply) {
+    return faqReply;
+  }
+
   if (intent === "order") {
     if (recentOrders.length === 0) {
       return {
@@ -432,6 +673,12 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
         sourceType: "database-direct",
         confidence: 0.45,
         handoffRecommended: true,
+        actionType: "offer_handoff",
+        conversationTags: ["order", "missing-order"],
+        retrievalSummary: {
+          sources: ["orders"],
+          matchedOrderCount: 0,
+        },
         citations: [{ type: "orders", label: "No recent order records found" }],
         reply:
           "I could not find recent orders in your account. Please place an order first or contact support if you think this is incorrect.",
@@ -448,6 +695,12 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
       sourceType: "database-direct",
       confidence: 0.96,
       handoffRecommended: false,
+      actionType: "answer",
+      conversationTags: ["order", "resolved"],
+      retrievalSummary: {
+        sources: ["orders"],
+        matchedOrderCount: recentOrders.length,
+      },
       citations: [
         {
           type: "orders",
@@ -464,6 +717,11 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
       sourceType: "database-direct",
       confidence: 0.97,
       handoffRecommended: false,
+      actionType: "answer",
+      conversationTags: ["shipping", "resolved"],
+      retrievalSummary: {
+        sources: ["settings"],
+      },
       citations: [
         {
           type: "settings",
@@ -481,6 +739,12 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
         sourceType: "database-direct",
         confidence: 0.4,
         handoffRecommended: true,
+        actionType: "offer_handoff",
+        conversationTags: ["product", "no-match"],
+        retrievalSummary: {
+          sources: ["catalog"],
+          matchedProductCount: 0,
+        },
         citations: [{ type: "products", label: "No product matched this query" }],
         reply:
           "I could not find a matching product in our database for your query. Please share the exact product name and I will check again.",
@@ -494,15 +758,15 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
     const strictProducts =
       strictKeywords.length > 0
         ? products.filter((product) => {
-            const nameAndBrand = `${product?.name || ""} ${product?.brand || ""}`.toLowerCase();
-            return strictKeywords.some((keyword) => nameAndBrand.includes(keyword));
+            const searchableText = getProductSearchText(product);
+            return strictKeywords.some((keyword) => searchableText.includes(keyword));
           })
         : products;
 
     const scoredProducts = strictProducts.map((product) => {
-      const nameAndBrand = `${product?.name || ""} ${product?.brand || ""}`.toLowerCase();
+      const searchableText = getProductSearchText(product);
       const matchedKeywordCount = strictKeywords.filter((keyword) =>
-        nameAndBrand.includes(keyword),
+        searchableText.includes(keyword),
       ).length;
       const keywordCoverage =
         strictKeywords.length > 0
@@ -520,8 +784,7 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
       .filter(
         (item) =>
           strictKeywords.length === 0 ||
-          item.matchedKeywordCount >= Math.min(2, strictKeywords.length) ||
-          item.keywordCoverage >= 0.5,
+          item.matchedKeywordCount >= Math.min(2, strictKeywords.length),
       )
       .map((item) => item.product);
 
@@ -532,19 +795,46 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
           ? []
           : strictProducts;
 
-    if (productsToShow.length === 0) {
+    const preferLowestPrice = isLowPriceProductQuery(normalizedMessage);
+    const sortedProductsToShow = [...productsToShow].sort((left, right) => {
+      const leftInStock = toNumberOrNull(left?.stock) > 0 ? 1 : 0;
+      const rightInStock = toNumberOrNull(right?.stock) > 0 ? 1 : 0;
+
+      if (leftInStock !== rightInStock) {
+        return rightInStock - leftInStock;
+      }
+
+      if (preferLowestPrice) {
+        const leftPrice = getEffectivePriceValue(left) ?? Number.MAX_SAFE_INTEGER;
+        const rightPrice = getEffectivePriceValue(right) ?? Number.MAX_SAFE_INTEGER;
+
+        if (leftPrice !== rightPrice) {
+          return leftPrice - rightPrice;
+        }
+      }
+
+      return 0;
+    });
+
+    if (sortedProductsToShow.length === 0) {
       return {
         intent: "product",
         sourceType: "database-direct",
         confidence: 0.42,
         handoffRecommended: true,
+        actionType: "clarify",
+        conversationTags: ["product", "ambiguous"],
+        retrievalSummary: {
+          sources: ["catalog"],
+          matchedProductCount: products.length,
+        },
         citations: [{ type: "products", label: "No high-confidence product match" }],
         reply:
           "I could not confidently match your product request in our catalog. Please share the exact product name (or brand + grade), and I can connect you to human support if needed.",
       };
     }
 
-    const lines = productsToShow.slice(0, 3).map((product, index) => {
+    const lines = sortedProductsToShow.slice(0, 3).map((product, index) => {
       const stockText = toNumberOrNull(product.stock) > 0 ? `${product.stock} in stock` : "Out of stock";
       return `${index + 1}. ${product.name} | Price: ${getEffectivePriceText(product)} | Stock: ${stockText} | Link: ${product.url}`;
     });
@@ -552,14 +842,21 @@ const buildDirectDatabaseReply = ({ message, knowledgeContext }) => {
     return {
       intent: "product",
       sourceType: "database-direct",
-      confidence: productsToShow.length > 0 ? 0.92 : 0.55,
-      handoffRecommended: productsToShow.length === 0,
-      citations: productsToShow.slice(0, 3).map((product) => ({
+      confidence: sortedProductsToShow.length > 0 ? 0.92 : 0.55,
+      handoffRecommended: sortedProductsToShow.length === 0,
+      actionType: preferLowestPrice ? "recommend_products" : "recommend_products",
+      conversationTags: ["product", preferLowestPrice ? "price-intent" : "browse"],
+      retrievalSummary: {
+        sources: ["catalog"],
+        matchedProductCount: sortedProductsToShow.length,
+        sortMode: preferLowestPrice ? "lowest-price" : "relevance",
+      },
+      citations: sortedProductsToShow.slice(0, 3).map((product) => ({
         type: "product",
         label: product.name,
         url: product.url,
       })),
-      reply: `Based on our product database, here are the closest matches:\n${lines.join("\n")}`,
+      reply: `${preferLowestPrice ? "Here are the lowest-priced matching products from our database:" : "Based on our product database, here are the closest matches:"}\n${lines.join("\n")}`,
     };
   }
 
@@ -649,6 +946,41 @@ const buildLlmCitations = ({ intent, knowledgeContext }) => {
   return faqCount > 0
     ? [{ type: "faq", label: `${faqCount} FAQ reference line(s)` }]
     : [];
+};
+
+const createSupportTicket = async ({
+  userId,
+  chatSession,
+  latestUserMessage,
+  assistantMeta,
+}) => {
+  const existing = await supportTicketModel.findOne({
+    userId,
+    sessionId: chatSession.sessionId,
+    status: { $in: ["new", "assigned", "needs_user_reply"] },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  const ticket = await supportTicketModel.create({
+    userId,
+    sessionId: chatSession.sessionId,
+    status: "new",
+    intent: assistantMeta.intent,
+    actionType: assistantMeta.actionType,
+    confidence: assistantMeta.confidence,
+    reason: assistantMeta.handoff?.reason || "Assistant requested human follow-up",
+    latestUserMessage,
+    transcript: chatSession.messages,
+    retrievalSummary: assistantMeta.retrievalSummary || {},
+    handoff: assistantMeta.handoff || {},
+    conversationTags: assistantMeta.conversationTags || [],
+  });
+
+  supportMetrics.handoffCreated += 1;
+  return ticket;
 };
 
 const getModelFallbackList = () => {
@@ -806,6 +1138,7 @@ const sendSupportMessage = async (req, res) => {
   try {
     const { userId, sessionId, message } = req.body;
     supportMetrics.totalMessages += 1;
+    const requestStartedAt = Date.now();
 
     const normalizedMessage = String(message || "").trim();
     if (!normalizedMessage) {
@@ -835,13 +1168,20 @@ const sendSupportMessage = async (req, res) => {
       knowledgeContext,
     });
 
-    const intent = detectSupportIntent(normalizedMessage);
+    const classification = classifySupportQuery(normalizedMessage);
+    const intent = classification.intent;
     let model = "database-direct";
     let sourceType = "database-direct";
     let confidence = 0.5;
     let handoffRecommended = false;
     let citations = [];
     let reply = "";
+    let actionType = "answer";
+    let retrievalSummary = buildRetrievalSummary({
+      knowledgeContext,
+      sourceType: "database-direct",
+    });
+    let conversationTags = [intent];
 
     if (directReply) {
       reply = directReply.reply;
@@ -849,6 +1189,13 @@ const sendSupportMessage = async (req, res) => {
       confidence = clampConfidence(directReply.confidence, 0.8);
       handoffRecommended = Boolean(directReply.handoffRecommended);
       citations = dedupeCitations(directReply.citations);
+      actionType = directReply.actionType || "answer";
+      retrievalSummary =
+        directReply.retrievalSummary ||
+        buildRetrievalSummary({ knowledgeContext, sourceType });
+      conversationTags =
+        directReply.conversationTags ||
+        buildConversationTags({ intent, handoffRecommended, sourceType });
       supportMetrics.databaseDirect += 1;
     } else {
       const llmResult = await callOpenRouterWithFallback({
@@ -865,15 +1212,35 @@ const sendSupportMessage = async (req, res) => {
       );
       citations = dedupeCitations(buildLlmCitations({ intent, knowledgeContext }));
       handoffRecommended = confidence < LOW_CONFIDENCE_THRESHOLD;
+      actionType =
+        confidence < LOW_CONFIDENCE_THRESHOLD
+          ? "offer_handoff"
+          : confidence < CLARIFY_CONFIDENCE_THRESHOLD
+            ? "clarify"
+            : "answer";
+      retrievalSummary = buildRetrievalSummary({ knowledgeContext, sourceType });
+      conversationTags = buildConversationTags({ intent, handoffRecommended, sourceType });
       supportMetrics.llmFallback += 1;
     }
 
     if (handoffRecommended) {
       supportMetrics.handoffRecommended += 1;
       reply = `${reply}\n\nIf you want, I can connect you to human support for a precise answer.`;
+      if (actionType === "answer") {
+        actionType = "offer_handoff";
+      }
     }
 
     const finalReply = appendCitationBlockToReply(reply, citations);
+    const handoff = {
+      available: true,
+      recommended: handoffRecommended,
+      status: "not_created",
+      ticketId: "",
+      reason: handoffRecommended
+        ? "Low confidence or human review recommended"
+        : "",
+    };
 
     supportMetrics.byIntent[intent] = (supportMetrics.byIntent[intent] || 0) + 1;
     supportMetrics.success += 1;
@@ -887,6 +1254,8 @@ const sendSupportMessage = async (req, res) => {
       confidence,
       handoffRecommended,
       citationsCount: citations.length,
+      actionType,
+      latencyMs: Date.now() - requestStartedAt,
       metrics: supportMetrics,
     });
 
@@ -905,6 +1274,11 @@ const sendSupportMessage = async (req, res) => {
           confidence,
           handoffRecommended,
           citations,
+          actionType,
+          retrievalSummary,
+          handoff,
+          conversationTags,
+          promptVersion: PROMPT_VERSION,
         },
         createdAt: new Date(),
       },
@@ -922,6 +1296,10 @@ const sendSupportMessage = async (req, res) => {
       confidence,
       handoffRecommended,
       citations,
+      actionType,
+      retrievalSummary,
+      handoff,
+      conversationTags,
       messages: chatSession.messages,
     });
   } catch (error) {
@@ -943,6 +1321,122 @@ const sendSupportMessage = async (req, res) => {
   }
 };
 
+const createSupportHandoff = async (req, res) => {
+  try {
+    const { userId, sessionId } = req.body;
+    const chatSession = await getOrCreateSession({ userId, sessionId });
+    const latestAssistantMessage = [...chatSession.messages]
+      .reverse()
+      .find((item) => item.role === "assistant");
+    const latestUserMessage = [...chatSession.messages]
+      .reverse()
+      .find((item) => item.role === "user");
+
+    if (!latestAssistantMessage?.meta) {
+      return res.json({
+        success: false,
+        message: "No assistant response is available to hand off yet.",
+      });
+    }
+
+    const ticket = await createSupportTicket({
+      userId,
+      chatSession,
+      latestUserMessage: latestUserMessage?.content || "",
+      assistantMeta: latestAssistantMessage.meta,
+    });
+
+    latestAssistantMessage.meta.handoff = {
+      ...(latestAssistantMessage.meta.handoff || {}),
+      available: true,
+      recommended: true,
+      ticketId: String(ticket._id),
+      status: ticket.status,
+      reason:
+        latestAssistantMessage.meta.handoff?.reason ||
+        "Human follow-up requested by customer",
+    };
+    latestAssistantMessage.meta.actionType = "handoff_created";
+
+    await chatSession.save();
+
+    res.json({
+      success: true,
+      handoff: latestAssistantMessage.meta.handoff,
+      ticket,
+      sessionId: chatSession.sessionId,
+      messages: chatSession.messages,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const submitSupportFeedback = async (req, res) => {
+  try {
+    const { userId, sessionId, messageCreatedAt, feedback } = req.body;
+    const allowedFeedback = new Set(["helpful", "not_helpful", "escalated"]);
+    if (!allowedFeedback.has(String(feedback || ""))) {
+      return res.json({ success: false, message: "Invalid feedback value" });
+    }
+
+    const chatSession = await getOrCreateSession({ userId, sessionId });
+    const targetMessage = chatSession.messages.find(
+      (item) =>
+        item.role === "assistant" &&
+        item.createdAt &&
+        new Date(item.createdAt).toISOString() === new Date(messageCreatedAt).toISOString(),
+    );
+
+    if (!targetMessage) {
+      return res.json({ success: false, message: "Support message not found" });
+    }
+
+    targetMessage.meta = {
+      ...(targetMessage.meta || {}),
+      feedback,
+    };
+
+    if (feedback === "escalated") {
+      const ticket = await createSupportTicket({
+        userId,
+        chatSession,
+        latestUserMessage:
+          [...chatSession.messages].reverse().find((item) => item.role === "user")?.content || "",
+        assistantMeta: {
+          ...(targetMessage.meta || {}),
+          handoff: {
+            ...(targetMessage.meta?.handoff || {}),
+            reason: "Escalated via user feedback",
+          },
+        },
+      });
+
+      targetMessage.meta.handoff = {
+        ...(targetMessage.meta?.handoff || {}),
+        available: true,
+        recommended: true,
+        ticketId: String(ticket._id),
+        status: ticket.status,
+        reason: "Escalated via user feedback",
+      };
+      targetMessage.meta.actionType = "handoff_created";
+    }
+
+    await chatSession.save();
+
+    res.json({
+      success: true,
+      sessionId: chatSession.sessionId,
+      messages: chatSession.messages,
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 const clearSupportSession = async (req, res) => {
   try {
     const { userId, sessionId } = req.body;
@@ -960,4 +1454,20 @@ const clearSupportSession = async (req, res) => {
   }
 };
 
-export { getSupportHistory, sendSupportMessage, clearSupportSession };
+const __testables = {
+  buildDirectDatabaseReply,
+  buildFaqReply,
+  buildUnsupportedReply,
+  detectSupportIntent,
+  classifySupportQuery,
+  getProductSearchKeywords,
+};
+
+export {
+  getSupportHistory,
+  sendSupportMessage,
+  clearSupportSession,
+  createSupportHandoff,
+  submitSupportFeedback,
+  __testables,
+};
